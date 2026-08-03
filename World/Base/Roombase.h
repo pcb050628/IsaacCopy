@@ -84,7 +84,7 @@ protected:
 
 protected:
     virtual void OnEnterRoom() = 0;
-    virtual void WinRoom() = 0;
+    virtual void WinRoom() = 0; //여는데 조건이 있는 문을 제외하고 다 열기
     virtual void OnExitRoom() = 0;
 
     virtual bool WinCheck() = 0;

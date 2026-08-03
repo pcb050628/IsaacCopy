@@ -7,6 +7,8 @@
 
 #include "GameSystemActor.h"
 
+#include "World/ColliderBox2D.h"
+
 FVector2 CChapter::FourDirections[4] =
 {
 	FVector2(1, 0),
@@ -44,6 +46,13 @@ bool CChapter::Init()
 	//최대 (층 * 5.5 + 3: 1 * 5.5 + 3 = 8 | 2 * 5.5 + 3 = 14)
 
 	mChapterManagementActor = CreateActor<CChapterSystemActor>("GSA");
+
+	for (int i = 0; i < 6; ++i)
+	{
+		auto actor = CreateActor<CActor>("Wall");
+		actor.lock()->CreateComponent<CColliderBox2D>("Root");
+		mWalls.push_back(actor);
+	}
 
 	mRoomRowMax = 10;
 	mRoomColMax = 10;
@@ -117,6 +126,10 @@ void CChapter::GenerateRoom()
 		room->GenerateRoom(FourDirections[2], min, max, CurrentSize);
 		room->GenerateRoom(FourDirections[3], min, max, CurrentSize);
 	}
+}
+void CChapter::SetWallToFocus()
+{
+	//현재 포커스 중인 방으로 벽 이동시키기
 }
 bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 {

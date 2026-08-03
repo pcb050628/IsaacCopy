@@ -37,6 +37,7 @@ protected:
 	//UI On/Off 시 움직이는 효과는 이 객체에 있음
 	//아직 만들지 않았고 만들어야함
 	std::weak_ptr<class CChapterSystemActor> mChapterManagementActor;
+	std::vector<std::weak_ptr<CActor>> mWalls; //벽 6개 만들기
 
 	int mChapterLevel = 1;
 	int mRoomRowMax = 0;
@@ -187,6 +188,7 @@ public:
 		return std::weak_ptr<CGameObject>();
 	}
 
+	void SetWallToFocus();
 	bool ReturnGObj(std::weak_ptr<CGameObject> Obj);
 
 	//좌표가 잘못됐으면 0 좌표에 방이 있으면 1 아무것도 없으면 2

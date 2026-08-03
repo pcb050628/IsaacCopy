@@ -3,6 +3,11 @@
 
 class CGameObject;
 
+//1-방 (예시: 10, 11, 141, 111, 101, 15 등
+//2-적 (예시: 20, 21, 22, 211, 213, 24 등
+//6-픽업
+//7-아이템
+//9-보스
 class CGameClassContainer
 {
 	Singleton(CGameClassContainer)
@@ -36,4 +41,5 @@ private:
 	void MakeRoom(class CRoomGData* GData);
 	void MakePlayer(class CPlayerGData* GData);
 };
+
 
