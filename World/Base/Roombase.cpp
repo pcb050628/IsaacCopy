@@ -32,10 +32,9 @@ CRoombase::~CRoombase()
 
 bool CRoombase::Init()
 {
-	mBackgroundMesh1 = CreateComponent<CMeshComponent>("Root");
-	mShadeMesh1 = CreateComponent<CMeshComponent>("ShadeMesh");
+	mShadeMesh1 = CreateComponent<CMeshComponent>("Root");
 
-	if (mBackgroundMesh1.expired() || mShadeMesh1.expired())
+	if (mShadeMesh1.expired())
 		return false;
 
 	//객체 생성
@@ -79,14 +78,45 @@ void CRoombase::SetEnableAll(bool Enable)
 	}
 }
 
+void CRoombase::AdjustRoomPos()
+{
+	std::shared_ptr<CChapter> chapter = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	if (mNearRooms.empty() || !chapter)
+		return;
+
+	FVector2 center = chapter->GetStartRoomCoord();
+	int dist = 1000000;
+	std::weak_ptr<CRoombase> targetRoom;
+	std::list<std::pair<FVector2, std::weak_ptr<CRoombase>>>::iterator iter = mNearRooms.begin();
+	std::list<std::pair<FVector2, std::weak_ptr<CRoombase>>>::iterator iterEnd = mNearRooms.end();
+	for (; iter != iterEnd; ++iter)
+	{
+		int cal = abs(static_cast<int>(iter->first.x - center.x)) + abs(static_cast<int>(iter->first.y - center.y));
+		if (cal < dist)
+		{
+			dist = cal;
+			targetRoom = iter->second;
+		}
+	}
+	FVector2 dir = mCoord - targetRoom.lock()->mCoord;
+	//거리를 모르니까 일단 100으로 할까
+	SetWorldPos(targetRoom.lock()->GetWorldPos() + FVector3(dir.x * 1300.f, dir.y * 700.f, 0));
+}
+
 bool CRoombase::SetInitRoom(FVector2 Coord, const std::vector<std::pair<int, FVector2>>& Objs) //모양도 여기서 받아서 초기화 하기
 {
-	std::weak_ptr<CChapter> chapter = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
-	if (chapter.expired())
+	std::shared_ptr<CChapter> chapter = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	if (!chapter)
 		return false;
 
 	mCoord = Coord;
 	mInitInfo = Objs;
+	//주변 방 찾아서 위치 조정하기
+	//이동 기준이 될 방을 먼저 구해야함
+	//기준이 되는 방은 중심 방향에 가까운 방
+	//만약 두개 이상의 거리가 같은 경우 연결된 방 <- 생각해보니 연결된 두 방의 거리가 같으려면 두 방이 서로 마주보는 모양이여야 하는데 그러면 기준을 어디로 두든 문제 없음
+	AdjustRoomPos();
+
 	for (std::pair<int, FVector2> pair : Objs)
 	{
 		if (mRedFlag != FVector2(-1, -1))
@@ -98,7 +128,7 @@ bool CRoombase::SetInitRoom(FVector2 Coord, const std::vector<std::pair<int, FVe
 			}
 		}
 
-		std::shared_ptr<CGameObject> gobj = CGameClassContainer::GetInst()->Instantiate(pair.first, pair.second).lock();
+		std::shared_ptr<CGameObject> gobj = CGameClassContainer::GetInst()->Instantiate(pair.first, pair.second, chapter->GetLevel()).lock();
 		if (!gobj)
 		{
 			//LOG_DEBUG("객체 생성 실패 | 객체 ID: ", pair.first);
@@ -190,6 +220,7 @@ void CRoombase::ConnectRoom(std::weak_ptr<CRoombase> Room)
 	}
 
 	mNearRooms.push_back(std::make_pair(Room.lock()->mCoord, Room));
+
 }
 
 void CRoombase::GenerateRoom(FVector2 Direction, int Min, int Max, int& Current) //이거 이대로 쓰면 안되겠다. 하위 객체들 생성하면 함수 오버라이드 해서 내용 수정하기
@@ -223,7 +254,7 @@ void CRoombase::GenerateRoom(FVector2 Direction, int Min, int Max, int& Current)
 	//원래는 인접한 방중 비밀방이 있는 경우에는 방의 비밀방을 가지 못하게 막는 구조의 방은 사용하면 안되지만
 	//일단은 주변방에는 관련없이 모든 방을 사용 가능하게 만들고
 	//만약 오브젝트가 길을 막는 경우에는 해당 오브젝트를 파괴하자
-	std::weak_ptr<CRoombase> generatedRoom = std::dynamic_pointer_cast<CRoombase>(CGameClassContainer::GetInst()->Instantiate(10, mCoord + dest).lock()); //생성 후 내부에서 방 연결하기
+	std::weak_ptr<CRoombase> generatedRoom = std::dynamic_pointer_cast<CRoombase>(CGameClassContainer::GetInst()->Instantiate(10, dest).lock()); //생성 후 내부에서 방 연결하기
 	std::shared_ptr<CRoombase> room = generatedRoom.lock();
 	if (!room) 
 		return;

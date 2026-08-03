@@ -79,11 +79,17 @@
     <Filter Include="소스 파일\GameDataAsset\Data\Player">
       <UniqueIdentifier>{2f994386-83b3-4940-8295-f2fbcfc4da49}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\GameDataAsset\Data\Character">
-      <UniqueIdentifier>{2a1d55c1-4581-4aa7-9775-a2cd1e5336b4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\GameDataAsset\Data\Item">
       <UniqueIdentifier>{3df6d157-2ffa-4c10-8cfb-9ec5bc33fc25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameDataAsset\Data\Chapter">
+      <UniqueIdentifier>{53970eff-e139-4a37-b072-291d8425bdf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\World\Chapter">
+      <UniqueIdentifier>{4f363d85-fb67-467f-96ea-5353a79e6c98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\World\Chapter\GameSystem">
+      <UniqueIdentifier>{7da11b31-5d54-4f7a-8a2a-a1d819271f68}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -114,9 +120,6 @@
     <ClCompile Include="World\Monster\Walker.cpp">
       <Filter>소스 파일\Room\Other\Unit\Monster\Base</Filter>
     </ClCompile>
-    <ClCompile Include="World\Chapter.cpp">
-      <Filter>소스 파일\World</Filter>
-    </ClCompile>
     <ClCompile Include="World\Base\Obstaclebase.cpp">
       <Filter>소스 파일\Room\Other\Obstacle\Base</Filter>
     </ClCompile>
@@ -140,6 +143,18 @@
     </ClCompile>
     <ClCompile Include="World\Data\RoomGData.cpp">
       <Filter>소스 파일\GameDataAsset\Data\Room</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Data\ChapterGData.cpp">
+      <Filter>소스 파일\GameDataAsset\Data\Chapter</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Chapter.cpp">
+      <Filter>소스 파일\World\Chapter</Filter>
+    </ClCompile>
+    <ClCompile Include="World\DebugChapter.cpp">
+      <Filter>소스 파일\World\Chapter</Filter>
+    </ClCompile>
+    <ClCompile Include="World\GameSystemActor.cpp">
+      <Filter>소스 파일\World\Chapter\GameSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,9 +188,6 @@
     <ClInclude Include="World\Monster\Walker.h">
       <Filter>소스 파일\Room\Other\Unit\Monster\Base</Filter>
     </ClInclude>
-    <ClInclude Include="World\Chapter.h">
-      <Filter>소스 파일\World</Filter>
-    </ClInclude>
     <ClInclude Include="Rooms.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -203,8 +215,20 @@
     <ClInclude Include="World\Data\RoomGData.h">
       <Filter>소스 파일\GameDataAsset\Data\Room</Filter>
     </ClInclude>
-    <ClInclude Include="World\GameObjectStructure.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="World\Data\GameObjectStructure.h">
+      <Filter>소스 파일\GameDataAsset</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Data\ChapterGData.h">
+      <Filter>소스 파일\GameDataAsset\Data\Chapter</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Chapter.h">
+      <Filter>소스 파일\World\Chapter</Filter>
+    </ClInclude>
+    <ClInclude Include="World\DebugChapter.h">
+      <Filter>소스 파일\World\Chapter</Filter>
+    </ClInclude>
+    <ClInclude Include="World\GameSystemActor.h">
+      <Filter>소스 파일\World\Chapter\GameSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

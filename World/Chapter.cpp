@@ -5,6 +5,8 @@
 
 #include "LogManager.h"
 
+#include "GameSystemActor.h"
+
 FVector2 CChapter::FourDirections[4] =
 {
 	FVector2(1, 0),
@@ -40,6 +42,8 @@ bool CChapter::Init()
 	//방 생성하기
 	//최소 (층 * 5      : 1 * 5 =       5 | 2 * 5 =       10)
 	//최대 (층 * 5.5 + 3: 1 * 5.5 + 3 = 8 | 2 * 5.5 + 3 = 14)
+
+	mChapterManagementActor = CreateActor<CChapterSystemActor>("GSA");
 
 	mRoomRowMax = 10;
 	mRoomColMax = 10;
@@ -103,8 +107,8 @@ void CChapter::GenerateRoom()
 		return;
 	}
 
-	int min = mChapterNumber * 5;
-	int max = static_cast<int>(mChapterNumber * 5.5f + 3);
+	int min = mChapterLevel * 5;
+	int max = static_cast<int>(mChapterLevel * 5.5f + 3);
 	int CurrentSize = 1;
 	while (CurrentSize < min)
 	{

@@ -36,9 +36,9 @@ protected:
 	//포커스된 방을 비추고
 	//UI On/Off 시 움직이는 효과는 이 객체에 있음
 	//아직 만들지 않았고 만들어야함
-	std::weak_ptr<class CGameSystemActor> mGameSystemActor; 
+	std::weak_ptr<class CChapterSystemActor> mChapterManagementActor;
 
-	int mChapterNumber = 1;
+	int mChapterLevel = 1;
 	int mRoomRowMax = 0;
 	int mRoomColMax = 0;
 
@@ -99,12 +99,12 @@ public:
 			return std::weak_ptr<CRoombase>();
 
 		std::shared_ptr<CRoombase> generatedRoom = std::dynamic_pointer_cast<CRoombase>(room.lock());
-		std::vector<std::pair<int, FVector2>> GObjs;
+		if (!generatedRoom)
+			return std::weak_ptr<CRoombase>();
+		std::vector<std::pair<int, FVector2>> GObjs; //<- 이건 파일 만들기 전 일단 테스트용
 		//generatedRoom->GetRoomType()
 		//현재 생성될 방의 타입을 보내서 해당 방에 맞는 파일 읽어오기
 		//SetInitRoom 에 방 모양도 입력해주기
-		if (!generatedRoom->SetInitRoom(Coord, GObjs))
-			return std::weak_ptr<CRoombase>();
 
 		mRoomMap[Coord2Hash(Coord)] = generatedRoom;
 		for (int i = 0; i < 4; i++)
@@ -116,6 +116,7 @@ public:
 				mRoomMap[dest].lock()->ConnectRoom(generatedRoom);
 			}
 		}
+		generatedRoom->SetInitRoom(Coord, GObjs);
 		return std::dynamic_pointer_cast<CRoombase>(room.lock());
 	}
 	template<typename T>
@@ -193,6 +194,10 @@ public:
 	std::weak_ptr<CRoombase> GetRoom(FVector2 Coord);
 	const int GetRowMax() const { return mRoomRowMax; }
 	const int GetColMax() const { return mRoomColMax; }
+
+	const int GetLevel() const { return mChapterLevel; }
+
+	const FVector2 GetStartRoomCoord() { return FVector2(static_cast<float>(mRoomRowMax / 2), static_cast<float>(mRoomColMax / 2)); }
 
 public:
 	static FVector2 FourDirections[4];

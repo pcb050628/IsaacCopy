@@ -1,58 +1,54 @@
 #include "RoomGData.h"
 
+#include "../Data/GameObjectStructure.h"
+
+CRoomGData::CRoomGData()
+    :CGameData(EGDataType::Room)
+{
+}
+
 CRoomGData::~CRoomGData()
 {
 }
 
-bool CRoomGData::WriteData(const TCHAR* FileName)
+bool CRoomGData::Write(rapidjson::Writer<rapidjson::StringBuffer>& Writer)
 {
-    StartWrite();
-    writer.Key("ID");
-    writer.Int(mData.ID);
+    Writer.Key("ID");
+    Writer.Int(mData.ID);
 
-    writer.Key("CoordX");
-    writer.Int(static_cast<int>(mData.Coord.x));
-    writer.Key("CoordY");
-    writer.Int(static_cast<int>(mData.Coord.y));
+    Writer.Key("CoordX");
+    Writer.Int(static_cast<int>(mData.Coord.x));
+    Writer.Key("CoordY");
+    Writer.Int(static_cast<int>(mData.Coord.y));
 
-    writer.Key("Clear");
-    writer.Bool(mData.Clear);
+    Writer.Key("Clear");
+    Writer.Bool(mData.Clear);
 
-    writer.Key("OBJS");
-    writer.StartArray();
+    Writer.Key("Doors");
+    Writer.StartArray();
+    for (int i = 0; i < mData.Doors.size(); ++i)
+    {
+        Writer.Bool(mData.Doors[i]);
+    }
+    Writer.EndArray();
+
+    Writer.Key("OBJS");
+    Writer.StartArray();
     //여기에 오브젝트들 입력
     for (int i = 0; i < mData.CurrentObjs.size(); i++)
     {
-        std::string Name = "OBJ_" + i;
-        writer.Key(Name.c_str());
-        writer.StartObject();
-        writer.Key("ID");
-        writer.Int(mData.CurrentObjs[i].ID);
-        writer.Key("CoordX");
-        writer.Int(static_cast<int>(mData.CurrentObjs[i].Coord.x));
-        writer.Key("CoordY");
-        writer.Int(static_cast<int>(mData.CurrentObjs[i].Coord.y));
-        writer.EndObject();
+        std::string Name = "OBJ_" + std::to_string(i + 1);
+        Writer.Key(Name.c_str());
+        Writer.StartObject();
+        Writer.Key("ID");
+        Writer.Int(mData.CurrentObjs[i].ID);
+        Writer.Key("CoordX");
+        Writer.Int(static_cast<int>(mData.CurrentObjs[i].Coord.x));
+        Writer.Key("CoordY");
+        Writer.Int(static_cast<int>(mData.CurrentObjs[i].Coord.y));
+        Writer.EndObject();
     }
 
-    writer.EndArray();
-    if (!EndWrite())
-        return false;
-
-    const TCHAR* BasePath = CPathManager::FindPath("Data");
-
-    TCHAR FullPath[MAX_PATH] = {};
-
-    lstrcpy(FullPath, BasePath);
-    lstrcat(FullPath, FileName);
-
-    std::ofstream outFile(FullPath, std::ios::out);
-    if (!outFile.is_open())
-        return false;
-
-    outFile << buffer.GetString();
-
-    outFile.close();
     return true;
 }
 
@@ -65,20 +61,55 @@ bool CRoomGData::Read(const TCHAR* FileName)
     if (!Load(FileName, d))
         return false;
 
-    d["ID"].GetInt();
-    d["CoordX"].GetInt();
-    d["CoordY"].GetInt();
-    d["Clear"].GetBool();
+    mData.ID = d["ID"].GetInt();
+    mData.Coord = FVector2(static_cast<float>(d["CoordX"].GetInt()), static_cast<float>(d["CoordY"].GetInt()));
+    mData.Clear = d["Clear"].GetBool();
+    
+    const rapidjson::Value& doorArray = d["Doors"];
+    int size = doorArray.Size();
+    mData.Doors.reserve(size);
+    for (int i = 0; i < size; ++i)
+    {
+        const rapidjson::Value& val = doorArray[i];
+        mData.Doors[i] = val.GetBool();
+    }
 
     const rapidjson::Value& objArray = d["OBJ"];
-    int size = objArray.Size();
+    size = objArray.Size();
     mData.CurrentObjs.reserve(size);
     for (int i = 0; i < size; i++)
     {
         const rapidjson::Value& obj = objArray[i];
         mData.CurrentObjs[i].ID = obj["ID"].GetInt();
-        mData.CurrentObjs[i].Coord = FVector2(obj["CoordX"].GetInt(), obj["CoordY"].GetInt());
+        mData.CurrentObjs[i].Coord = FVector2(static_cast<float>(obj["CoordX"].GetInt()), static_cast<float>(obj["CoordY"].GetInt()));
     }
     
+    return true;
+}
+
+bool CRoomGData::Read(const rapidjson::Value& Val)
+{
+    mData.ID = Val["ID"].GetInt();
+    mData.Coord = FVector2(static_cast<float>(Val["CoordX"].GetInt()), static_cast<float>(Val["CoordY"].GetInt()));
+    mData.Clear = Val["Clear"].GetBool();
+
+    const rapidjson::Value& doorArray = Val["Doors"];
+    int size = doorArray.Size();
+    mData.Doors.reserve(size);
+    for (int i = 0; i < size; ++i)
+    {
+        const rapidjson::Value& door = doorArray[i];
+        mData.Doors[i] = door.GetBool();
+    }
+
+    const rapidjson::Value& objArray = Val["OBJ"];
+    size = objArray.Size();
+    mData.CurrentObjs.reserve(size);
+    for (int i = 0; i < size; i++)
+    {
+        const rapidjson::Value& obj = objArray[i];
+        mData.CurrentObjs[i].ID = obj["ID"].GetInt();
+        mData.CurrentObjs[i].Coord = FVector2(static_cast<float>(obj["CoordX"].GetInt()), static_cast<float>(obj["CoordY"].GetInt()));
+    }
     return true;
 }

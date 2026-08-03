@@ -74,7 +74,7 @@ protected:
     //std::weak_ptr<class CPickUp> mReward;
 
 protected:
-    std::weak_ptr<class CMeshComponent> mBackgroundMesh1;    //방 배경 / 기본 배경을 몇개나 깔아둬야하는지 아직 확인을 못함
+    std::vector<std::weak_ptr<class CMeshComponent>> mBackgroundMesh;
     std::weak_ptr<CMeshComponent> mShadeMesh1;               //방 음영
 
     //방의 진입점(문의 위치)
@@ -90,6 +90,8 @@ protected:
     virtual bool WinCheck() = 0;
 
     void SetEnableAll(bool Enable = false);
+
+    void AdjustRoomPos();
 public:
     bool SetInitRoom(FVector2 Coord, const std::vector<std::pair<int, FVector2>>& Objs);//여기에 정보를 넣어서 방 초기화하기 / 지금은 방의 좌표 정보만 들어가지만 나중에는 방 내부의 정보들도 포함되어야 함
     virtual void Reset(bool HardReset = false) override; //방 초기화(클리어 상태는 초기화 x) / 하드 리셋시 클리어도 초기화 몬스터 전부 생성

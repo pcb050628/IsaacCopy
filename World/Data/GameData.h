@@ -11,12 +11,25 @@
 #include "Asset/Asset.h"
 #include "Asset/PathManager.h"
 
-#include "../GameObjectStructure.h"
+#include "GameObjectStructure.h"
+
+enum class EGDataType
+{
+	Run,
+	Chapter,
+	Room,
+	Player,
+	Item,
+	End,
+};
 
 class CGameData : CAsset
 {
 public:
+	CGameData(EGDataType Type);
 	virtual ~CGameData() = 0;
+private:
+	const EGDataType mGDType;
 protected:
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer<rapidjson::StringBuffer> writer;
@@ -28,7 +41,12 @@ protected: //읽기
 	void StartWrite(); 
 	bool EndWrite(); 
 
+	virtual bool Write(rapidjson::Writer<rapidjson::StringBuffer>& Writer) = 0;
+
 public:
-	virtual bool WriteData(const TCHAR* FileName) = 0;
+	virtual bool WriteData(const TCHAR* FileName);
 	virtual bool Read(const TCHAR* FileName) = 0;
+
+public:
+	const EGDataType GetType() const { return mGDType; }
 };
