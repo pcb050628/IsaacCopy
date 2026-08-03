@@ -78,7 +78,7 @@ void CWalker::OnHitOverlaps(const FVector3& HitPoint, const FVector3& Normal, st
 		return;
 	}
 
-	unit->GetHit(std::dynamic_pointer_cast<CUnitbase>(GetThisPtr()));
+	unit->GetHit(GetThisPtr<CUnitbase>());
 }
 
 void CWalker::ExitHitOverlaps(std::weak_ptr<CCollider> Collider)

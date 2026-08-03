@@ -50,8 +50,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//-로딩 레벨(챕터 진입 전 레벨)
 	//-디버그 레벨(디버그 빌드는 항상 이쪽으로 진입)
 	//	디버그 레벨에서는 방을 찍고 저장한다.
-	//CWorldManager::GetInst()->CreateWorld<CDebugChapter>(false);
-	CWorldManager::GetInst()->CreateWorld<CChapter>(false);
+	CWorldManager::GetInst()->CreateWorld<CDebugChapter>(false);
+	//CWorldManager::GetInst()->CreateWorld<CChapter>(false);
 
 	int Ret = CEngine::GetInst()->Run();
 

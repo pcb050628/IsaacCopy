@@ -140,12 +140,12 @@ bool CRoombase::SetInitRoom(FVector2 Coord, const std::vector<std::pair<int, FVe
 		{
 		case EObjectType::Monster: {
 			std::shared_ptr<CUnitbase> unit = std::dynamic_pointer_cast<CUnitbase>(gobj);
-			unit->SetRoom(std::dynamic_pointer_cast<CRoombase>(GetThisPtr()));
+			unit->SetRoom(GetThisPtr<CRoombase>());
 			}			
 			break;
 		case EObjectType::Obstacle: {
 			std::shared_ptr<CObstaclebase> obstacle = std::dynamic_pointer_cast<CObstaclebase>(gobj);
-			obstacle->SetRoom(std::dynamic_pointer_cast<CRoombase>(GetThisPtr()));
+			obstacle->SetRoom(GetThisPtr<CRoombase>());
 			}
 			break;
 		case EObjectType::Pickup:

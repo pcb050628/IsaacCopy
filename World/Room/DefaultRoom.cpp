@@ -4,10 +4,13 @@
 #include "../Manager/GameClassContainer.h"
 
 #include "Asset/PathManager.h"
+#include "Asset/AssetManager.h"
+#include "Asset/AnimationManager.h"
 #include "World/WorldManager.h"
 #include "../Chapter.h"
 
 #include "World/MeshComponent.h"
+#include "World/Animation2DComponent.h"
 
 REGISTER_GAMECLASS(CDefaultRoom, "Room_Default", EObjectType::Room);
 
@@ -33,13 +36,23 @@ bool CDefaultRoom::Init()
 	//mBackgroundMesh.push_back(CreateComponent<CMeshComponent>("BackgroundLB"));
 	//mBackgroundMesh.push_back(CreateComponent<CMeshComponent>("BackgroundRT"));
 
-	mBackgroundMesh[0].lock()->SetRelativeScale(FVector2(1300.f, 700.f));
-	mBackgroundMesh[0].lock()->SetMesh("TexRect");
-	mBackgroundMesh[0].lock()->SetShader("Material");
+	mBackgroundMesh[0].lock()->SetRelativePos(FVector2(-325.f, 175.f));
+	mBackgroundMesh[0].lock()->SetRelativeScale(FVector2(650.f, 350.f));
+	mBackgroundMesh[0].lock()->SetMesh("TexRect"); mBackgroundMesh[0].lock()->SetShader("Animation2D");
 	std::wstring path = CPathManager::FindPath("Texture");
 	path += TEXT("Room\\Basement.png");
 	mBackgroundMesh[0].lock()->AddTextureFullPath(0, "Basement", path.c_str());
-	//uv 는 여기서 골라서 올려주기
+
+	//애니메이션으로 uv 설정중
+	auto mgr = CAssetManager::GetInst()->GetSubManager<CAnimationManager>(EAssetType::Animation2D);
+	mgr->CreateAnimation("Background_1");
+	mgr->SetTexture("Background_1", "Basement");
+	mgr->SetAnimationTextureType("Background_1", EAnimation2DTextureType::SpriteSheet);
+	mgr->AddFrame("Background_1", FVector2::Zero, FVector2(234.f, 155.f));
+
+	auto animator = CreateComponent<CAnimation2DComponent>("Animator").lock();
+	animator->SetUpdateComponent(mBackgroundMesh[0]);
+	animator->AddAnimation("Background_1", 1.f, 1.f, true);
 
 	return true;
 }
