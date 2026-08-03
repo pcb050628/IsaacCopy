@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="소스 파일\World">
+      <UniqueIdentifier>{e5b2d89a-1ef6-48c8-a53b-4fba16c8335b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\SceneComponent">
+      <UniqueIdentifier>{7a68e21c-dc64-44c8-b5d2-216d37ab51fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room">
+      <UniqueIdentifier>{bd5da692-7472-4254-97a9-5306d93cbe8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Base">
+      <UniqueIdentifier>{93167817-30ff-4cf9-8012-6a6676fe13f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameRuleManager">
+      <UniqueIdentifier>{1f26cd9c-f580-4090-a62c-0e87cff80da4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Other">
+      <UniqueIdentifier>{87401af5-ca06-4305-a9f6-eb169a9cdef1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Other\Door">
+      <UniqueIdentifier>{4e61cb1a-6a28-4003-b124-2fb6c8405b56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Other\Obstacle">
+      <UniqueIdentifier>{34156043-5c96-4f22-87b4-9e1e48f5112d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Other\Obstacle\Base">
+      <UniqueIdentifier>{ef5697e0-ea0c-4472-be9a-253d395d1ec9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Other\Unit">
+      <UniqueIdentifier>{cdf22f46-dd2d-4d81-b73e-565b9519a1c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Other\Unit\Base">
+      <UniqueIdentifier>{c8bd5a9c-48fc-472d-827e-f93e286ac562}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Other\Unit\PlayerCharacter">
+      <UniqueIdentifier>{a09cbb4c-cc67-4b0d-9745-657932ebcc3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Other\Unit\Monster">
+      <UniqueIdentifier>{615cab64-f73b-4f21-9df9-42927a479e6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Other\Unit\Monster\Base">
+      <UniqueIdentifier>{2fa46ce5-1063-4343-b360-1ea3af116042}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Other\Unit\ActorComponent">
+      <UniqueIdentifier>{11478bd3-53c6-4d6c-b8a5-c8d473f9c62d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\InstancingMananger">
+      <UniqueIdentifier>{d247f1cb-cb7c-43d4-8729-f56253d4f0b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Room">
+      <UniqueIdentifier>{43257701-caf4-4ccc-9658-e1505f0b6e27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameDataAsset">
+      <UniqueIdentifier>{4c1062d0-41aa-4ac5-8616-aa822f6e2a19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameDataAsset\Data">
+      <UniqueIdentifier>{afd6325f-2ecc-415c-bb81-e067fa54eeb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameDataAsset\Data\Room">
+      <UniqueIdentifier>{7998830e-b7df-49bd-847e-05c1d466c226}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameDataAsset\Data\Run">
+      <UniqueIdentifier>{01edd74e-1b8b-4d3f-996e-a823939aee66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameDataAsset\Data\Player">
+      <UniqueIdentifier>{2f994386-83b3-4940-8295-f2fbcfc4da49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameDataAsset\Data\Character">
+      <UniqueIdentifier>{2a1d55c1-4581-4aa7-9775-a2cd1e5336b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameDataAsset\Data\Item">
+      <UniqueIdentifier>{3df6d157-2ffa-4c10-8cfb-9ec5bc33fc25}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="World\MainWorld.cpp">
+      <Filter>소스 파일\World</Filter>
+    </ClCompile>
+    <ClCompile Include="World\GlobalCollision.cpp">
+      <Filter>소스 파일\World</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Base\Unitbase.cpp">
+      <Filter>소스 파일\Room\Other\Unit\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Component\RigidBodyComponent.cpp">
+      <Filter>소스 파일\SceneComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Base\Roombase.cpp">
+      <Filter>소스 파일\Room\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Door.cpp">
+      <Filter>소스 파일\Room\Other\Door</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Base\Monster.cpp">
+      <Filter>소스 파일\Room\Other\Unit\Monster\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Monster\Walker.cpp">
+      <Filter>소스 파일\Room\Other\Unit\Monster\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Chapter.cpp">
+      <Filter>소스 파일\World</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Base\Obstaclebase.cpp">
+      <Filter>소스 파일\Room\Other\Obstacle\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Base\GameObject.cpp">
+      <Filter>소스 파일\Room</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Manager\GameClassContainer.cpp">
+      <Filter>소스 파일\InstancingMananger</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Manager\GameRuleManager.cpp">
+      <Filter>소스 파일\GameRuleManager</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Room\DefaultRoom.cpp">
+      <Filter>소스 파일\Room\Room</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Data\GameData.cpp">
+      <Filter>소스 파일\GameDataAsset\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Data\GameDataManager.cpp">
+      <Filter>소스 파일\GameDataAsset</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Data\RoomGData.cpp">
+      <Filter>소스 파일\GameDataAsset\Data\Room</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="World\MainWorld.h">
+      <Filter>소스 파일\World</Filter>
+    </ClInclude>
+    <ClInclude Include="World\GlobalCollision.h">
+      <Filter>소스 파일\World</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Base\Unitbase.h">
+      <Filter>소스 파일\Room\Other\Unit\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="World\UnitData.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Component\RigidBodyComponent.h">
+      <Filter>소스 파일\SceneComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Base\Roombase.h">
+      <Filter>소스 파일\Room\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Door.h">
+      <Filter>소스 파일\Room\Other\Door</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Base\Monster.h">
+      <Filter>소스 파일\Room\Other\Unit\Monster\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Monster\Walker.h">
+      <Filter>소스 파일\Room\Other\Unit\Monster\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Chapter.h">
+      <Filter>소스 파일\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Rooms.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Base\Obstaclebase.h">
+      <Filter>소스 파일\Room\Other\Obstacle\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Base\GameObject.h">
+      <Filter>소스 파일\Room</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Manager\GameClassContainer.h">
+      <Filter>소스 파일\InstancingMananger</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Manager\GameRuleManager.h">
+      <Filter>소스 파일\GameRuleManager</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Room\DefaultRoom.h">
+      <Filter>소스 파일\Room\Room</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Data\GameData.h">
+      <Filter>소스 파일\GameDataAsset\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Data\GameDataManager.h">
+      <Filter>소스 파일\GameDataAsset</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Data\RoomGData.h">
+      <Filter>소스 파일\GameDataAsset\Data\Room</Filter>
+    </ClInclude>
+    <ClInclude Include="World\GameObjectStructure.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Client.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
