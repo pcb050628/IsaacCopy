@@ -1,6 +1,18 @@
 #pragma once
 #include "Math/Vector2.h"
 
+struct FFrameData
+{
+	FVector2 Start;
+	FVector2 Size;
+};
+
+struct FAnimationData
+{
+	std::string Name;
+	std::vector<FFrameData> Frames;
+};
+
 struct FRoomObjectData
 {
 	int ID;

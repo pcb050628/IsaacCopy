@@ -91,6 +91,12 @@
     <Filter Include="소스 파일\World\Chapter\GameSystem">
       <UniqueIdentifier>{7da11b31-5d54-4f7a-8a2a-a1d819271f68}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\GameDataAsset\Data\Anim">
+      <UniqueIdentifier>{c97bd0b8-3753-4e18-a942-26037a242571}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Other\Unit\Monster\Gaper">
+      <UniqueIdentifier>{38a171e8-0195-4bcc-b154-c42e5e9de14a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -155,6 +161,12 @@
     </ClCompile>
     <ClCompile Include="World\GameSystemActor.cpp">
       <Filter>소스 파일\World\Chapter\GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Data\AnimGData.cpp">
+      <Filter>소스 파일\GameDataAsset\Data\Anim</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Monster\Gaper.cpp">
+      <Filter>소스 파일\Room\Other\Unit\Monster\Gaper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +241,12 @@
     </ClInclude>
     <ClInclude Include="World\GameSystemActor.h">
       <Filter>소스 파일\World\Chapter\GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Data\AnimGData.h">
+      <Filter>소스 파일\GameDataAsset\Data\Anim</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Monster\Gaper.h">
+      <Filter>소스 파일\Room\Other\Unit\Monster\Gaper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

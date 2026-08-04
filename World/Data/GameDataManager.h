@@ -5,6 +5,7 @@
 class CGameDataManager :
     public CAssetSubManager
 {
+	Singleton(CGameDataManager);
 protected:
 	std::unordered_map<std::string, std::shared_ptr<CGameData>> mMap;
 

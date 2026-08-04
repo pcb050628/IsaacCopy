@@ -1,6 +1,13 @@
 #include "Unitbase.h"
 
+#include "Asset/AssetManager.h"
+#include "Asset/AnimationManager.h"
+
+#include "../Data/GameDataManager.h"
+#include "../Data/AnimGData.h"
+
 #include "../Component/RigidBodyComponent.h"
+#include "World/Animation2DComponent.h"
 #include "World/MeshComponent.h"
 #include "World/ColliderSphere2D.h"
 
@@ -29,9 +36,9 @@ bool CUnitbase::Init()
 	if (mRigidBody.expired())
 		return false;
 
-	mHeadMesh = CreateComponent<CMeshComponent>("MHead");
-	mBodyMesh = CreateComponent<CMeshComponent>("MBody");
-	if (mHeadMesh.expired() || mBodyMesh.expired())
+	mHead = CreateComponent<CMeshComponent>("MHead");
+	mBody = CreateComponent<CMeshComponent>("MBody");
+	if (mHead.expired() || mBody.expired())
 		return false;
 
 	//몸 머리 오프셋 넣기 - SetRelativePos, SetRelativeScale
@@ -58,6 +65,26 @@ void CUnitbase::Update(float DeltaTime)
 void CUnitbase::Destroy()
 {
 	CActor::Destroy();
+}
+
+bool CUnitbase::SetAnim(const std::string& Name, const TCHAR* FilePath, bool Upper, float PlayTime, float PlayRate, bool Loop, bool Reverse, bool Symmetry)
+{
+	std::shared_ptr<CAnimationManager> mgr = CAssetManager::GetInst()->GetSubManager<CAnimationManager>(EAssetType::Animation2D);
+	std::weak_ptr<CAnimation2D> anim = mgr->FindAnimation(Name);
+	if (anim.expired()) //애니메이션이 없을 때
+	{
+		if (!CGameDataManager::GetInst()->LoadDataFile<CAnimGData>("Anim_" + Name, FilePath))
+			return false;
+		std::shared_ptr<CAnimGData> d = std::dynamic_pointer_cast<CAnimGData>(CGameDataManager::GetInst()->FindData("Anim_" + Name).lock());
+		d->MakeAnim();
+	}
+
+	if (Upper)
+		mHead.lock()->AddAnimation(Name, PlayTime, PlayRate, Loop, Reverse, Symmetry);
+	else
+		mBody.lock()->AddAnimation(Name, PlayTime, PlayRate, Loop, Reverse, Symmetry);
+
+	return true;
 }
 
 void CUnitbase::Move(const FVector3& Force) const

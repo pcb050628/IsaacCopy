@@ -14,9 +14,9 @@ public:
     
 protected:
     std::weak_ptr<class CRoombase> mRoomOwner;
-    std::weak_ptr<class CRigidBodyComponent> mRigidBody;
-    std::weak_ptr<class CMeshComponent> mHeadMesh; //나중에 애니메이터로 바꾸기
-    std::weak_ptr<class CMeshComponent> mBodyMesh;
+    std::weak_ptr<class CRigidBodyComponent> mRigidBody; //root
+    std::weak_ptr<class CAnimation2DComponent> mHead;
+    std::weak_ptr<class CAnimation2DComponent> mBody;
     std::weak_ptr<class CColliderSphere2D> mHurtBox;
 
     FUnitAttribute mAttribute;
@@ -38,6 +38,7 @@ public:
 
     virtual void Reset(bool HardReset = false) = 0;
 protected:
+    bool SetAnim(const std::string& Name, const TCHAR* FilePath, bool Upper = false, float PlayTime = 1.f, float PlayRate = 1.f, bool Loop = false, bool Reverse = false, bool Symmetry = false);
     virtual void Move(const FVector3& Force) const;
 
     virtual void Fire();

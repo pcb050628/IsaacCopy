@@ -20,6 +20,7 @@ enum class EGDataType
 	Room,
 	Player,
 	Item,
+	Anim,
 	End,
 };
 
@@ -30,7 +31,6 @@ public:
 	virtual ~CGameData() = 0;
 private:
 	const EGDataType mGDType;
-protected:
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer<rapidjson::StringBuffer> writer;
 

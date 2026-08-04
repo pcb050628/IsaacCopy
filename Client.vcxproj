@@ -160,6 +160,7 @@
     <ClCompile Include="World\Base\Unitbase.cpp" />
     <ClCompile Include="World\Chapter.cpp" />
     <ClCompile Include="World\Component\RigidBodyComponent.cpp" />
+    <ClCompile Include="World\Data\AnimGData.cpp" />
     <ClCompile Include="World\Data\ChapterGData.cpp" />
     <ClCompile Include="World\Data\GameData.cpp" />
     <ClCompile Include="World\Data\GameDataManager.cpp" />
@@ -171,6 +172,7 @@
     <ClCompile Include="World\MainWorld.cpp" />
     <ClCompile Include="World\Manager\GameClassContainer.cpp" />
     <ClCompile Include="World\Manager\GameRuleManager.cpp" />
+    <ClCompile Include="World\Monster\Gaper.cpp" />
     <ClCompile Include="World\Monster\Walker.cpp" />
     <ClCompile Include="World\Room\DefaultRoom.cpp" />
   </ItemGroup>
@@ -184,6 +186,7 @@
     <ClInclude Include="World\Base\Unitbase.h" />
     <ClInclude Include="World\Chapter.h" />
     <ClInclude Include="World\Component\RigidBodyComponent.h" />
+    <ClInclude Include="World\Data\AnimGData.h" />
     <ClInclude Include="World\Data\ChapterGData.h" />
     <ClInclude Include="World\Data\GameData.h" />
     <ClInclude Include="World\Data\GameDataManager.h" />
@@ -196,6 +199,7 @@
     <ClInclude Include="World\MainWorld.h" />
     <ClInclude Include="World\Manager\GameClassContainer.h" />
     <ClInclude Include="World\Manager\GameRuleManager.h" />
+    <ClInclude Include="World\Monster\Gaper.h" />
     <ClInclude Include="World\Monster\Walker.h" />
     <ClInclude Include="World\Room\DefaultRoom.h" />
     <ClInclude Include="World\UnitData.h" />
