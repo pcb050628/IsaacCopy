@@ -15,7 +15,9 @@ public:
 protected:
     std::weak_ptr<class CRoombase> mRoomOwner;
     std::weak_ptr<class CRigidBodyComponent> mRigidBody; //root
+    std::weak_ptr<class CMeshComponent> mHeadMesh;
     std::weak_ptr<class CAnimation2DComponent> mHead;
+    std::weak_ptr<class CMeshComponent> mBodyMesh;
     std::weak_ptr<class CAnimation2DComponent> mBody;
     std::weak_ptr<class CColliderSphere2D> mHurtBox;
 

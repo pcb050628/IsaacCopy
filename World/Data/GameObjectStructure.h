@@ -10,6 +10,8 @@ struct FFrameData
 struct FAnimationData
 {
 	std::string Name;
+	std::string TextureName;
+	std::string TexturePath;
 	std::vector<FFrameData> Frames;
 };
 

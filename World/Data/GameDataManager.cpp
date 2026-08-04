@@ -1,17 +1,5 @@
 #include "GameDataManager.h"
 
-CGameDataManager* CGameDataManager::mInstance;
-
-CGameDataManager::CGameDataManager()
-{
-
-}
-
-CGameDataManager::~CGameDataManager()
-{
-
-}
-
 bool CGameDataManager::Init()
 {
     return true;

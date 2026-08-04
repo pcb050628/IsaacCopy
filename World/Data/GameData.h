@@ -38,10 +38,9 @@ protected: //읽기
 	bool Load(const TCHAR* FileName, rapidjson::Document& Doc);
 
 	//쓰기
-	void StartWrite(); 
-	bool EndWrite(); 
-
+	void StartWrite();
 	virtual bool Write(rapidjson::Writer<rapidjson::StringBuffer>& Writer) = 0;
+	bool EndWrite();
 
 public:
 	virtual bool WriteData(const TCHAR* FileName);

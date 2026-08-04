@@ -71,7 +71,7 @@ bool CRoomGData::Read(const TCHAR* FileName)
     for (int i = 0; i < size; ++i)
     {
         const rapidjson::Value& val = doorArray[i];
-        mData.Doors[i] = val.GetBool();
+        mData.Doors.push_back(val.GetBool());
     }
 
     const rapidjson::Value& objArray = d["OBJ"];
@@ -80,8 +80,10 @@ bool CRoomGData::Read(const TCHAR* FileName)
     for (int i = 0; i < size; i++)
     {
         const rapidjson::Value& obj = objArray[i];
-        mData.CurrentObjs[i].ID = obj["ID"].GetInt();
-        mData.CurrentObjs[i].Coord = FVector2(static_cast<float>(obj["CoordX"].GetInt()), static_cast<float>(obj["CoordY"].GetInt()));
+        FRoomObjectData objData;
+        objData.ID = obj["ID"].GetInt();
+        objData.Coord = FVector2(static_cast<float>(obj["CoordX"].GetInt()), static_cast<float>(obj["CoordY"].GetInt()));
+        mData.CurrentObjs.push_back(objData);
     }
     
     return true;
@@ -99,7 +101,7 @@ bool CRoomGData::Read(const rapidjson::Value& Val)
     for (int i = 0; i < size; ++i)
     {
         const rapidjson::Value& door = doorArray[i];
-        mData.Doors[i] = door.GetBool();
+        mData.Doors.push_back(door.GetBool());
     }
 
     const rapidjson::Value& objArray = Val["OBJ"];
@@ -108,8 +110,10 @@ bool CRoomGData::Read(const rapidjson::Value& Val)
     for (int i = 0; i < size; i++)
     {
         const rapidjson::Value& obj = objArray[i];
-        mData.CurrentObjs[i].ID = obj["ID"].GetInt();
-        mData.CurrentObjs[i].Coord = FVector2(static_cast<float>(obj["CoordX"].GetInt()), static_cast<float>(obj["CoordY"].GetInt()));
+        FRoomObjectData objData;
+        objData.ID = obj["ID"].GetInt();
+        objData.Coord = FVector2(static_cast<float>(obj["CoordX"].GetInt()), static_cast<float>(obj["CoordY"].GetInt()));
+        mData.CurrentObjs.push_back(objData);
     }
     return true;
 }

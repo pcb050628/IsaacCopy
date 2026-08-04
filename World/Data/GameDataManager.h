@@ -1,12 +1,12 @@
 #pragma once
+#include "EngineInfo.h"
 #include "Asset/AssetSubManager.h"
 #include "GameData.h"
 
 class CGameDataManager :
     public CAssetSubManager
 {
-	Singleton(CGameDataManager);
-protected:
+private:
 	std::unordered_map<std::string, std::shared_ptr<CGameData>> mMap;
 
 public:
@@ -20,7 +20,7 @@ public:
 
 		std::shared_ptr<T> original = std::make_shared<T>();
 		std::shared_ptr<CGameData> data = std::dynamic_pointer_cast<CGameData>(original);
-		if (!data->Read(Name))
+		if (!data->Read(FileName))
 			return false;
 		mMap.insert(std::make_pair(Name, data));
 		return true;

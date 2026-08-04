@@ -70,6 +70,7 @@ bool CChapter::Init()
 }
 void CChapter::Update(float DeltaTime)
 {
+	CWorld::Update(DeltaTime);
 	//1. 현재 포커스 중인 방만 업데이트
 	//2. 다른 방들은 어짜피 disable 상태니까 그냥 전부 업데이트
 	//

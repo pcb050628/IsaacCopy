@@ -38,8 +38,6 @@ public:
 
 private:
 	void MakeChapter(class CChapterGData* GData, bool IsFocused = false);
-	void MakeRoom(class CRoomGData* GData);
-	void MakePlayer(class CPlayerGData* GData);
 };
 
 

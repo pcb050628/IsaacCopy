@@ -2,6 +2,7 @@
 
 #include "Asset/AssetManager.h"
 #include "Asset/AnimationManager.h"
+#include "Asset/TextureManager.h"
 
 #include "../Data/GameDataManager.h"
 #include "../Data/AnimGData.h"
@@ -36,8 +37,8 @@ bool CUnitbase::Init()
 	if (mRigidBody.expired())
 		return false;
 
-	mHead = CreateComponent<CMeshComponent>("MHead");
-	mBody = CreateComponent<CMeshComponent>("MBody");
+	mHead = CreateComponent<CAnimation2DComponent>("MHead");
+	mBody = CreateComponent<CAnimation2DComponent>("MBody");
 	if (mHead.expired() || mBody.expired())
 		return false;
 
@@ -69,15 +70,19 @@ void CUnitbase::Destroy()
 
 bool CUnitbase::SetAnim(const std::string& Name, const TCHAR* FilePath, bool Upper, float PlayTime, float PlayRate, bool Loop, bool Reverse, bool Symmetry)
 {
+	std::shared_ptr<CGameDataManager> dataMgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
+	std::weak_ptr<CGameData> data = dataMgr->FindData("Anim_" + Name);
+	if (data.expired())
+	{
+		if (!dataMgr->LoadDataFile<CAnimGData>("Anim_" + Name, FilePath))
+			return false;
+		data = dataMgr->FindData("Anim_" + Name);
+	}
+	std::shared_ptr<CAnimGData> d = std::dynamic_pointer_cast<CAnimGData>(data.lock());
+	d->MakeAnim();
+
 	std::shared_ptr<CAnimationManager> mgr = CAssetManager::GetInst()->GetSubManager<CAnimationManager>(EAssetType::Animation2D);
 	std::weak_ptr<CAnimation2D> anim = mgr->FindAnimation(Name);
-	if (anim.expired()) //애니메이션이 없을 때
-	{
-		if (!CGameDataManager::GetInst()->LoadDataFile<CAnimGData>("Anim_" + Name, FilePath))
-			return false;
-		std::shared_ptr<CAnimGData> d = std::dynamic_pointer_cast<CAnimGData>(CGameDataManager::GetInst()->FindData("Anim_" + Name).lock());
-		d->MakeAnim();
-	}
 
 	if (Upper)
 		mHead.lock()->AddAnimation(Name, PlayTime, PlayRate, Loop, Reverse, Symmetry);

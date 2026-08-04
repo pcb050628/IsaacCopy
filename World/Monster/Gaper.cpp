@@ -27,7 +27,7 @@ bool CGaper::Init()
 	if (!SetAnim("Gaper_Idle_Body", TEXT("Anim/Gaper_Idle_Body.txt")))
 		return false;
 
-	//tlqkf 뭐 하나 하려면 해야하는게 시발 10개는 쳐 넘어가는거같아
+	//디버그 챕터에서 애니메이션 만들고 데이터 저장하기
 }
 
 void CGaper::Update(float DeltaTime)

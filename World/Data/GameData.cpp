@@ -1,4 +1,5 @@
 #include "GameData.h"
+#include "LogManager.h"
 
 CGameData::CGameData(EGDataType Type)
 	:mGDType(Type)
@@ -51,6 +52,7 @@ bool CGameData::EndWrite()
 
 bool CGameData::WriteData(const TCHAR* FileName)
 {
+	LOG_DEBUG(": 파일 저장 시도");
 	StartWrite();
 	Write(writer);
 	if (!EndWrite())
@@ -70,5 +72,6 @@ bool CGameData::WriteData(const TCHAR* FileName)
 	outFile << buffer.GetString();
 
 	outFile.close();
+	LOG_DEBUG(": 파일 저장 성공");
 	return true;
 }
