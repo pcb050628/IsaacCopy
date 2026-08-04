@@ -1,6 +1,8 @@
 #pragma once
 #include "Chapter.h"
 
+#include "../Debug/ImGuiAnimationMaker.h"
+
 class CDebugChapter :
     public CChapter
 {
@@ -11,5 +13,8 @@ public:
 public:
 	virtual bool Init();
 	virtual void Update(float DeltaTime);
+
+private:
+	CImGuiAnimationMaker animMaker;
 };
 

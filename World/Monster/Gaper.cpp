@@ -28,6 +28,7 @@ bool CGaper::Init()
 		return false;
 
 	//디버그 챕터에서 애니메이션 만들고 데이터 저장하기
+	return true;
 }
 
 void CGaper::Update(float DeltaTime)

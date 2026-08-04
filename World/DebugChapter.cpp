@@ -11,6 +11,8 @@
 
 #include "Data/AnimGData.h"
 
+#include "ImGui/include/imgui.h"
+
 CDebugChapter::CDebugChapter()
 {
 	mChapterLevel = -1;
@@ -38,7 +40,7 @@ bool CDebugChapter::Init()
 	//if (!SetAnim("Gaper_Idle_Body", TEXT("Anim/Gaper_Idle_Body.txt")))
 	//	return false;
 
-	CAnimGData d;
+	//CAnimGData d;
 	//FAnimationData data;
 	//data.Name = "Gaper_Body_Walk_H";
 	//data.TextureName = "Gaper";
@@ -81,10 +83,24 @@ bool CDebugChapter::Init()
 	//animator->SetUpdateComponent(mesh);
 	//animator->AddAnimation(d.GetData().Name, 1.f, 1.f, true);
 
+	//애니메이션 만들 때 필요한것
+	//1. 애니메이션 이름, 텍스쳐 이름, 텍스쳐 경로, 데이터 저장 경로
+	//2. 저장할 객체는 지역변수로 해도 문제없음
+	//다시
+	//필요한것
+	//1. 메뉴만으로 충분함
+	//2. 초기 제작용 문자열 4개
+	//3. 프레임 제작용 실수 4개
+	//imgui 붙이는건 얼마나 귀찮지?
+
+	animMaker.Init();
+
 	return true;
 }
 
 void CDebugChapter::Update(float DeltaTime)
 {
 	CChapter::Update(DeltaTime);
+
+	animMaker.Update();
 }

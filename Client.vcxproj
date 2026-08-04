@@ -152,6 +152,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Debug\ImGuiAnimationMaker.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="World\Base\Monster.cpp" />
     <ClCompile Include="World\Base\Obstaclebase.cpp" />
@@ -177,6 +178,7 @@
     <ClCompile Include="World\Room\DefaultRoom.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Debug\ImGuiAnimationMaker.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rooms.h" />
     <ClInclude Include="World\Base\Monster.h" />
