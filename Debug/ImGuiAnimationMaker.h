@@ -36,6 +36,7 @@ private:
 	void DrawImage();
 
 	void FrameList();
+	void FrameClearButton();
 	void AddFrameButton();
 	void MakeButton();
 

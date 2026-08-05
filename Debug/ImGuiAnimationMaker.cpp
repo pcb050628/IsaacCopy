@@ -7,6 +7,8 @@
 #include "Asset/AssetManager.h"
 #include "Asset/TextureManager.h"
 
+#include "../World/Data/GameDataManager.h"
+
 #include "../World/Data/AnimGData.h"
 #include "../World/Data/GameObjectStructure.h"
 
@@ -29,6 +31,7 @@ void CImGuiAnimationMaker::Update()
 		FrameList();
 		InputFrame();
 		LoadTexture();
+		LoadAnimButton();
 		AddFrameButton();
 		MakeButton();
 
@@ -112,6 +115,8 @@ void CImGuiAnimationMaker::FrameList()
 
 			if (ImGui::Selectable(std::to_string(n).c_str(), is_selected))
 			{
+				Start = d->Frames[SelectedIdx].Start;
+				Size = d->Frames[SelectedIdx].Size;
 				SelectedIdx = n; // Update selection when clicked
 			}
 			std::string StartText = "Start X: " + std::to_string(d->Frames[n].Start.x) + ", Y:" + std::to_string(d->Frames[n].Start.y);
@@ -126,6 +131,25 @@ void CImGuiAnimationMaker::FrameList()
 		}
 		ImGui::EndListBox();
 	}
+
+	if (!d->Frames.empty())
+	{
+		ImGui::Spacing;
+		if (ImGui::Button("Remove Selected Frame"))
+		{
+			d->Frames.erase(d->Frames.begin() + SelectedIdx);
+		}
+	}
+
+	ImGui::Spacing;
+	if (ImGui::Button("Frame Clear"))
+	{
+		d->Frames.clear();
+	}
+}
+
+void CImGuiAnimationMaker::FrameClearButton()
+{
 }
 
 void CImGuiAnimationMaker::AddFrameButton()
@@ -193,5 +217,30 @@ void CImGuiAnimationMaker::SaveAnimButton()
 
 void CImGuiAnimationMaker::LoadAnimButton()
 {
+	ImGui::Spacing();
+	if (ImGui::Button("Load Anim"))
+	{
+		std::shared_ptr<CGameDataManager> mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
+		std::wstring fileName = L"Anim\\" + std::wstring().assign(AnimPath.begin(), AnimPath.end());
+		if (!mgr->LoadDataFile<CAnimGData>(Name, fileName.c_str()))
+		{
+			ImGui::OpenPopup(ErrorPopupID.c_str());
+			return;
+		}
 
+		gd = std::dynamic_pointer_cast<CAnimGData>(mgr->FindData(Name).lock());
+		if (!gd)
+		{
+			ImGui::OpenPopup(ErrorPopupID.c_str());
+			return;
+		}
+
+		d.reset();
+		d = std::make_shared<FAnimationData>(gd->GetData());
+
+		Name = d->Name;
+		TextureName = d->TextureName;
+		TexturePath = d->TexturePath;
+		SelectedIdx = 0;
+	}
 }

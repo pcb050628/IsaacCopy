@@ -1,5 +1,14 @@
 #include "Gaper.h"
+
+#include "World/Animation2DComponent.h"
+
+#include "../Manager/GameClassContainer.h"
+
+#include "../Chapter.h"
 #include "../Base/Roombase.h"
+#include "../Component/RigidBodyComponent.h"
+
+REGISTER_GAMECLASS(CGaper, "Gaper", EObjectType::Monster);
 
 CGaper::CGaper()
 {
@@ -22,72 +31,36 @@ bool CGaper::Init()
 	if (!CWalker::Init())
 		return false;
 
-	//머리
-	if (!AddAnim("Gaper_Head_Close", TEXT("Anim/Gaper_.txt"), true))
+	//머리 //거지같은 rapidjson 잘못써서 다시 만들어야함
+	//머리 다시 만들기
+	//있는거 그대로 이어 붙이는게 아니라 애니메이션 효과를 생각하면서 붙여야함
+	//.처음->처음(찌그러짐)->눈뜸(세로로 살짝 길어짐)->뜸 순으로 만들어야함
+	if (!AddAnim("Gaper_Head_Close", TEXT("Anim/Gaper_Head_Close"), true))
 		return false;
-	if (!AddAnim("Gaper_Head_Open_1", TEXT("Anim/Gaper_.txt"), true))
+	if (!AddAnim("Gaper_Head_Open_2", TEXT("Anim/Gaper_Head_Open_2"), true, 0.6f))
 		return false;
 
 	//몸
-	if (!AddAnim("Gaper_Walk_Body_H", TEXT("Anim/Gaper_.txt")))
+	if (!AddAnim("Gaper_Body_Walk_V", TEXT("Anim/Gaper_Body_Walk_V"), false, 0.8f ,1.f, true))
 		return false;
-	if (!AddAnim("Gaper_Walk_Body_V", TEXT("Anim/Gaper_.txt")))
+	if (!AddAnim("Gaper_Body_Walk_H", TEXT("Anim/Gaper_Body_Walk_H"), false, 1.f, 1.f, true))
 		return false;
 
-	//초기화 단계에서 할것
-	//1. 컴포넌트 초기화 및 추가하기
-	//2. 애셋 가져오기
-	
-	//게이퍼에게 필요한것(사실 거의 모든 유닛에게 필요한 것)
-	//애니메이션 컨트롤러가 따로 필요함
-	//-애니메이션을 멈추고 처음으로 돌아가는 기능
-	//-애니메이션 플립 기능
-	//이정도는 필수임
-	//그럼? 그냥 유닛에 넣을까 컴포넌트로 뺄까
-	//컴포넌트로 빼면 뭐가 좋은가
-	// 컴포넌트는 다른 객체에도 붙여서 조립가능함 <- 다른 객체에도 필요한가?
-	// 액터 코드가 덜 지저분해지고 역할 분배가 명확함 <- 중요
-	// 
-	//컴포넌트로 하지 않아야 하는 이유는? 없음
-	// 
-	//그럼 유닛에 넣어야 하는 이유는?
-	// 초기 필요한 기능이 몇가지 없는데 액터컴포넌트로 나눌 필요까진 없음
-	// 현재 기준으로 생각해봤을때는 해당 기능이 필요한 객체들은 전부 유닛을 상속받음
-	// 애니메이션 컴포넌트가 여러개일때의 관리가 더 편함 | 컴포넌트로 만들 경우에는 각각 컴포넌트를 할당해야함
-	//										그렇게 하지 않으면 컴포넌트가 너무 커지거나 함수들이 엉키고 가독성도 떨어지고 사용하기에 불편해짐
-	//					해당 방향으로 생각했을때는 컴포넌트로 만들면 안되긴하네, 애니메이션을 사용하는 객체들은 몸과 머리로 두개 이상의 애니메이션을 가지는 경우가 많으니까
-	//					그건 또 아닌가? 그냥 각각 추가하면 되나?
-	// 유닛
-	// ㄴ머리(메시, 애니메이션 컴포넌트, 애니메이션 컨트롤러 컴포넌트)
-	// ㄴ몸(메시, 애니메이션 컴포넌트, 애니메이션 컨트롤러 컴포넌트)
+	//현재 몬스터의 머리 몸 위치 비율
+	//mHeadMesh.lock()->SetRelativePos(FVector2(0, 44.f));
+	//mBodyMesh.lock()->SetRelativePos(FVector2(0, 9.f));
 	//
-	//아니면 컴포넌트로 만들되 여러개로 만들까?
-	//유닛의 경우 대부분이 몸과 머리지만 그렇지 않은 객체들도 꽤나 있으니
-	//그렇지않은 객체는 뭐가 있지
-	//몬스터(절반정도?)
-	//보스(단일 객체가 아닌 보스 몇)
-	//픽업, 아이템, 오브젝트(대부분),
-	//여러개를 쓰면 얼마나 쓰나?
-	//
+	//mHeadMesh.lock()->SetRelativeScale(FVector2(7.f, 7.f));
+	//mBodyMesh.lock()->SetRelativeScale(FVector2(5.5f, 5.5f));
 
-	//게이퍼의 루틴
-	//1. 플레이어 찾기
-	//2. 플레이어에게 갈 수 있는지 확인하기
-	// 어떻게 확인하지
-	// 비용을 많이 쓸 필요없다. -> 내 주변 및 플레이어 주변이 막혀있는지
-	//3. 갈수있을때만 플레이어에게 접근하기
-	//플레이어게 가는 길을 찾으면
-	//어떻게 가야할까
-	//플레이어의 위치는 실시간으로 변하니까
-	//루트 계산을 매 프레임해야할텐데
-	//그럼 루트 계산을 그렇게 열심히 할 필요가 있나?
-	//?A* 정도되는것도 목표위치가 일정할때 훨씬 유효하지 않나
-	//그렇다면 비교를 한번 해보자
-	//매 프레임 호출될때
-	//1. 플레이어 캐릭터 방향으로 이동 (단 이동 방향에 장애물이 있는 경우 피해감
-	//2. A*로 전체 루트 얻기 (하지만 매 프레임 전체루트를 다시 얻어야함
-	//A*로 할 필요는 없어보이지만 이 알고리즘의 비용이 그렇게 높지는않음
-	//그래도 비교하면 그냥 주변 셀 상태만 보는게 훨씬 빠를테니
+	mBody.lock()->Stop();
+	//mBody.lock()->ChangeAnimation("Gaper_Body_Walk_H");
+	mHead.lock()->ChangeAnimation("Gaper_Head_Open_2");
+
+	//다시 
+	//게이퍼의 행동들 역할들과 연관지어 분리하기
+	//.이동 -> 애니메이션 변경 + Rb로 방향 보내기
+	//.대기 -> 애니메이션 정지
 
 	return true;
 }
@@ -96,7 +69,14 @@ void CGaper::Update(float DeltaTime)
 {
 	if (mTarget.expired())
 	{
+		std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+		if (!chptr)
+		{
+			assert("월드 없이 생성된 객체가 있습니다.");
+			return;
+		}
 		//유닛 가져오기
+		mTarget = std::dynamic_pointer_cast<CUnitbase>(chptr->GetPlayerCharacter().lock());
 	}
 	else
 	{
@@ -115,8 +95,19 @@ void CGaper::Update(float DeltaTime)
 			// 여기서는 해당 좌표의 셀을 얻어오는 것이고
 			// 범용성있게는 raycast 를 사용하는 것
 			//3. 장애물이 있다면 다른 두번째로 가까운 방향으로 가기
+
+			FVector3 dir = mTarget.lock()->GetWorldPos() - GetWorldPos();
+			dir.Normalize();
+			mRigidBody.lock()->AddForce(dir * 400.f);
+		}
+		else
+		{
+			mHead.lock()->Clear();
+			mBody.lock()->Clear();
 		}
 	}
+
+	CWalker::Update(DeltaTime);
 }
 
 void CGaper::Destory()
@@ -125,6 +116,11 @@ void CGaper::Destory()
 
 void CGaper::Dead()
 {
+}
+
+void CGaper::Reset(bool HardReset)
+{
+
 }
 
 void CGaper::MoveToTarget()

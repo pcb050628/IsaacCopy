@@ -24,7 +24,7 @@ CWalker::~CWalker()
 
 bool CWalker::Init()
 {
-	if (CMonster::Init())
+	if (!CMonster::Init())
 		return false;
 
 	std::shared_ptr<CColliderSphere2D> hurt = mHurtBox.lock();
@@ -42,10 +42,10 @@ bool CWalker::Init()
 
 void CWalker::Update(float DeltaTime)
 {
-	if (!mTarget.expired())
+	/*if (!mTarget.expired())
 	{
 		mTarget.lock()->GetHit(GetThisPtr<CUnitbase>());
-	}
+	}*/
 
 	CMonster::Update(DeltaTime);
 }

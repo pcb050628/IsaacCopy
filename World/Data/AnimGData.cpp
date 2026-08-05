@@ -58,6 +58,7 @@ bool CAnimGData::Read(const TCHAR* FileName)
 	mData.Frames.reserve(size);
 	for (const rapidjson::Value& item : d["Frames"].GetArray())
 	{
+		bool te = item.IsObject();
 		FFrameData frame;
 		frame.Start = FVector2(static_cast<float>(item["StartX"].GetDouble()), static_cast<float>(item["StartY"].GetDouble()));
 		frame.Size = FVector2(static_cast<float>(item["SizeX"].GetDouble()), static_cast<float>(item["SizeY"].GetDouble()));

@@ -37,12 +37,34 @@ bool CUnitbase::Init()
 	if (mRigidBody.expired())
 		return false;
 
-	mHead = CreateComponent<CAnimation2DComponent>("MHead");
-	mBody = CreateComponent<CAnimation2DComponent>("MBody");
+	mHeadMesh = CreateComponent<CMeshComponent>("MHead");
+	mBodyMesh = CreateComponent<CMeshComponent>("MBody");
+	if (mHeadMesh.expired() || mBodyMesh.expired())
+		return false;
+
+	mHead = CreateComponent<CAnimation2DComponent>("AHead");
+	mBody = CreateComponent<CAnimation2DComponent>("ABody");
 	if (mHead.expired() || mBody.expired())
 		return false;
 
-	//몸 머리 오프셋 넣기 - SetRelativePos, SetRelativeScale
+	mHead.lock()->SetUpdateComponent(mHeadMesh);
+	mBody.lock()->SetUpdateComponent(mBodyMesh);
+
+	mRigidBody.lock()->SetWorldScale(FVector2(10.f, 10.f));
+
+	mHeadMesh.lock()->SetRenderLayer("Head");
+	mBodyMesh.lock()->SetRenderLayer("Body");
+
+	mHeadMesh.lock()->SetMesh("TexRect");
+	mHeadMesh.lock()->SetShader("Animation2D");
+	mBodyMesh.lock()->SetMesh("TexRect");
+	mBodyMesh.lock()->SetShader("Animation2D");
+
+	mHeadMesh.lock()->SetRelativePos(FVector2(0, 47.f));
+	mBodyMesh.lock()->SetRelativePos(FVector2(0, 9.f));
+
+	mHeadMesh.lock()->SetRelativeScale(FVector2(7.f, 7.f));
+	mBodyMesh.lock()->SetRelativeScale(FVector2(5.5f, 5.5f));
 
 	mHurtBox = CreateComponent<CColliderSphere2D>("HurtBox");
 	if (mHurtBox.expired())

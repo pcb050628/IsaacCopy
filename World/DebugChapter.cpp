@@ -6,6 +6,7 @@
 
 #include "GameSystemActor.h"
 
+#include "RenderManager.h"
 #include "World/MeshComponent.h"
 #include "World/Animation2DComponent.h"
 
@@ -28,13 +29,26 @@ bool CDebugChapter::Init()
 	/*if (!CChapter::Init())
 		return false;*/
 
+	CRenderManager::GetInst()->SetState("AlphaBlend");
+
 	mRoomRowMax = 10;
 	mRoomColMax = 10;
 
+	//카메라 
 	mChapterManagementActor = CreateActor<CChapterSystemActor>("GSA");
+	debugMode = false;
 
-	//CGameClassContainer::GetInst()->Instantiate(10, FVector2(3, 3));
-
+	if (debugMode) //애니메이션 만들기
+	{
+		//애니메이션 만들때 명심할것
+		//같은 부위인 애니메이션들의 사이즈는 항상 동일해야함
+		animMaker.Init();
+	}
+	else //테스트 코드
+	{
+		CGameClassContainer::GetInst()->Instantiate(10, FVector2(3, 3));
+		CGameClassContainer::GetInst()->Instantiate(20, FVector2(3, 3));
+	}
 	//if (!SetAnim("Gaper_Idle_Head", TEXT("Anim/Gaper_Idle_Head.txt"), true))
 	//	return false;
 	//if (!SetAnim("Gaper_Idle_Body", TEXT("Anim/Gaper_Idle_Body.txt")))
@@ -79,7 +93,7 @@ bool CDebugChapter::Init()
 	//3. 프레임 제작용 실수 4개
 	//imgui 붙이는건 얼마나 귀찮지?
 
-	animMaker.Init();
+	//
 
 	return true;
 }
@@ -88,5 +102,6 @@ void CDebugChapter::Update(float DeltaTime)
 {
 	CChapter::Update(DeltaTime);
 
-	animMaker.Update();
+	if(debugMode)
+		animMaker.Update();
 }

@@ -16,5 +16,6 @@ public:
 
 private:
 	CImGuiAnimationMaker animMaker;
+	bool debugMode = true;
 };
 

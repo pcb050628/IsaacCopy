@@ -4,6 +4,7 @@
 class CGaper :
     public CWalker
 {
+    GAMECLASS(CGaper, 20);
 public:
     CGaper();
     CGaper(const CGaper& src);
@@ -15,6 +16,8 @@ public:
     virtual void Update(float DeltaTime);
     virtual void Destory();
     virtual void Dead();
+
+    virtual void Reset(bool HardReset = false);
 
 private:
     void MoveToTarget();

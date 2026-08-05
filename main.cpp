@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "resource.h"
 
+#include "RenderManager.h"
 #include "Asset/AssetManager.h"
 
 #include "World/MainWorld.h"
@@ -38,6 +39,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		CEngine::GetInst()->DestroyInst();
 		return 0;
 	}
+
+	CRenderManager::GetInst()->CreateLayer("Head", 4, ERenderSortType::Y);
+	CRenderManager::GetInst()->CreateLayer("Body", 3, ERenderSortType::Y);
 
 	CGlobalCollision::SetGlobalCollision();
 	if (!CAssetManager::GetInst()->AddSubManager<CGameDataManager>(EAssetType::GameData))

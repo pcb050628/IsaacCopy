@@ -30,7 +30,7 @@ protected:
 public:
     virtual bool Init();
     virtual void Update(float DeltaTime);
-    virtual void UnitUpdate(float DeltaTime, float GameTimeScale) = 0;
+    //virtual void UnitUpdate(float DeltaTime, float GameTimeScale) = 0;
     virtual void Destroy();
 
     void SetRoom(std::weak_ptr<CRoombase> Room) { mRoomOwner = Room; }
