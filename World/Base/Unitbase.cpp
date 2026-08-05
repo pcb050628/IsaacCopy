@@ -68,7 +68,7 @@ void CUnitbase::Destroy()
 	CActor::Destroy();
 }
 
-bool CUnitbase::SetAnim(const std::string& Name, const TCHAR* FilePath, bool Upper, float PlayTime, float PlayRate, bool Loop, bool Reverse, bool Symmetry)
+bool CUnitbase::AddAnim(const std::string& Name, const TCHAR* FilePath, bool Upper, float PlayTime, float PlayRate, bool Loop, bool Reverse, bool Symmetry)
 {
 	std::shared_ptr<CGameDataManager> dataMgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
 	std::weak_ptr<CGameData> data = dataMgr->FindData("Anim_" + Name);

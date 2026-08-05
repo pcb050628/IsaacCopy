@@ -28,6 +28,7 @@ protected:
 	std::weak_ptr<CRoombase> mFocusedRoom;
 	std::unordered_map<int, std::weak_ptr<CRoombase>> mRoomMap;
 	//구조 변경하기 / 맵 -> 리스트 / 불을 키로 쓰는것보다 리스트에 불 유닛 쌍으로 넣고 불값으로 정렬하는게 나을듯
+	std::weak_ptr<CActor> mPlayerCharacter;
 	std::unordered_map<int, std::pair<bool, std::weak_ptr<CUnitbase>>> mUnits;
 	std::unordered_map<int, std::pair<bool, std::weak_ptr<CObstaclebase>>> mObstacles;
 
@@ -189,6 +190,7 @@ public:
 	}
 
 	void SetWallToFocus();
+	//받은 오브젝트 반납하기 - 오브젝트 비활성화하고 방에서 분리한 해제안하고 들고있음
 	bool ReturnGObj(std::weak_ptr<CGameObject> Obj);
 
 	//좌표가 잘못됐으면 0 좌표에 방이 있으면 1 아무것도 없으면 2
@@ -200,6 +202,8 @@ public:
 	const int GetLevel() const { return mChapterLevel; }
 
 	const FVector2 GetStartRoomCoord() { return FVector2(static_cast<float>(mRoomRowMax / 2), static_cast<float>(mRoomColMax / 2)); }
+
+	std::weak_ptr<CActor> GetPlayerCharacter() { return mPlayerCharacter; }
 
 public:
 	static FVector2 FourDirections[4];

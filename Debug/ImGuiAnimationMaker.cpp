@@ -38,9 +38,8 @@ void CImGuiAnimationMaker::Update()
 
 			ImGui::EndPopup();
 		}
-
-		ImGui::End();
 	}
+	ImGui::End();
 
 	DrawUpdate();
 }
@@ -70,9 +69,11 @@ void CImGuiAnimationMaker::InputFrame()
 
 void CImGuiAnimationMaker::DrawUpdate()
 {
-	ImGui::Begin("Image", &isOpen);
-	DrawFrame();
-	DrawImage();
+	if (ImGui::Begin("Image", &isOpen))
+	{
+		DrawFrame();
+		DrawImage();
+	}
 	ImGui::End();
 }
 
@@ -154,8 +155,14 @@ void CImGuiAnimationMaker::MakeButton()
 		}
 		else
 		{
+			d->Name = Name;
+			d->TextureName = TextureName;
+			d->TexturePath = TexturePath;
 			gd->ContainData(*d.get());
 			gd->MakeAnim();
+			std::wstring path = L"Anim\\";
+			path += std::wstring().assign(AnimPath.begin(), AnimPath.end());
+			gd->WriteData(path.c_str());
 		}
 	}
 }
@@ -178,4 +185,13 @@ void CImGuiAnimationMaker::LoadTexture()
 			DrawingTex = tex;
 		}
 	}
+}
+
+void CImGuiAnimationMaker::SaveAnimButton()
+{
+}
+
+void CImGuiAnimationMaker::LoadAnimButton()
+{
+
 }

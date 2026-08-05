@@ -40,5 +40,8 @@ private:
 	void MakeButton();
 
 	void LoadTexture();
+
+	void SaveAnimButton();
+	void LoadAnimButton();
 };
 

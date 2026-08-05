@@ -43,6 +43,7 @@ public:
 	virtual void Destroy() = 0;
 
 protected:
+    FVector2 mRoomCellMax = FVector2(13, 7);
     ERoomShape mShape;
     ERoomType mRoomType;
     //현재 챕터에서 방의 좌표
@@ -62,6 +63,7 @@ protected:
     std::list<std::weak_ptr<class CDoor>> mDoors;           //문 / 방 생성이 끝난 후 생성
     std::list<std::weak_ptr<class CObstaclebase>> mObstacle;    //장애물(돌, 불 등의 체력이 없고 파괴가능한 객체들)
 	std::list<std::weak_ptr<class CUnitbase>> mUnits;       //유닛
+    std::unordered_map<int, EObjectType> mObjGridMap;
     //벽이 필요한데, 벽의 경우 나올 수 있는 모양들이 몇가지 없어고 비활성화될 일도 없어서 월드에 올려두고 돌려쓰는 형식으로 쓸 것
     //따라서 벽을 세팅하는 함수를 작성하거나 Reset 함수 내부에 작성해야한다
     
@@ -95,9 +97,13 @@ protected:
 public:
     bool SetInitRoom(FVector2 Coord, const std::vector<std::pair<int, FVector2>>& Objs);//여기에 정보를 넣어서 방 초기화하기 / 지금은 방의 좌표 정보만 들어가지만 나중에는 방 내부의 정보들도 포함되어야 함
     virtual void Reset(bool HardReset = false) override; //방 초기화(클리어 상태는 초기화 x) / 하드 리셋시 클리어도 초기화 몬스터 전부 생성
-    //방의 현재 상태를 격자로 내보내 주는 함수 필요
-    //방의 크기가 다른 경우를 고려하여 가상함수로 만들어 둠
+  
+
     const virtual FVector2 GetUnitCoordInGrid(FVector3 WorldPos);
+    const bool CanGetToPlayerCharacter(FVector3 FromWorldPos);
+    bool CheckNearCell(FVector2 Coord);
+
+
     void ConnectRoom(std::weak_ptr<CRoombase> Room);
 
     virtual void GenerateRoom(FVector2 Direction, int Min, int Max, int& Current);

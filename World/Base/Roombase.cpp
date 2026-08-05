@@ -206,9 +206,45 @@ const FVector2 CRoombase::GetUnitCoordInGrid(FVector3 WorldPos)
 	FVector3 Result = WorldPos -= GetWorldPos();
 	Result /= ROOM_GRID_SIZE;
 	Result -= ROOM_GRID_HALF;
-	Result.x = Result.x + 13;
-	Result.y = Result.y + 7;
+	Result.x = floor(Result.x + mRoomCellMax.x / 2);
+	Result.y = floor(Result.y + mRoomCellMax.y / 2);
 	return FVector2(Result.x, Result.y);
+}
+
+//나중에 수정해야하는 내용
+//1. 플레이어 및 요청하는 유닛의 상태를 알고 상태에 따라 다르게 값을 계산해야함
+//2. 날아다니는 유닛은 항상 장애물이 없음으로 판단
+const bool CRoombase::CanGetToPlayerCharacter(FVector3 FromWorldPos)
+{
+	std::shared_ptr<CChapter> chpter = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	if (!chpter)
+		return false;
+
+	std::shared_ptr<CUnitbase> pUnit = std::dynamic_pointer_cast<CUnitbase>(chpter->GetPlayerCharacter().lock());
+	if (!pUnit)
+		return false;
+
+	FVector2 PlayerCoord = GetUnitCoordInGrid(pUnit->GetWorldPos());
+	FVector2 FromCoord = GetUnitCoordInGrid(FromWorldPos);
+	if (!CheckNearCell(FromCoord) || !CheckNearCell(PlayerCoord))
+		return false;
+
+	return true;
+}
+
+bool CRoombase::CheckNearCell(FVector2 Coord)
+{
+	for (int i = 0; i < 4; ++i)
+	{
+		FVector2 dest = Coord + CChapter::FourDirections[i];
+		if (dest.x < 0 || dest.y < 0 || dest.x >= mRoomCellMax.x || dest.y >= mRoomCellMax.y)
+			continue;
+
+		int hash = CChapter::Coord2Hash(dest);
+		if (EObjectType::Obstacle != mObjGridMap[hash])	
+			return true;
+	}
+	return false;
 }
 
 void CRoombase::ConnectRoom(std::weak_ptr<CRoombase> Room)

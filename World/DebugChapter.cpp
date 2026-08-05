@@ -69,20 +69,6 @@ bool CDebugChapter::Init()
 	//d.ContainData(data);
 	//d.WriteData(TEXT("Anim\\Gaper_Body_Walk_H"));
 
-
-	//d.Read(TEXT("Anim\\Gaper_Body_Walk_H"));
-	//d.MakeAnim();
-	//
-	//std::shared_ptr<CActor> a = CreateActor<CActor>("Test").lock();
-	//auto mesh = a->CreateComponent<CMeshComponent>("Root");
-	//auto animator = a->CreateComponent<CAnimation2DComponent>("Animator").lock();
-	//mesh.lock()->SetMesh("TexRect");
-	//mesh.lock()->SetShader("Animation2D");
-	//mesh.lock()->SetWorldScale(FVector2(200.f, 200.f));
-	//
-	//animator->SetUpdateComponent(mesh);
-	//animator->AddAnimation(d.GetData().Name, 1.f, 1.f, true);
-
 	//애니메이션 만들 때 필요한것
 	//1. 애니메이션 이름, 텍스쳐 이름, 텍스쳐 경로, 데이터 저장 경로
 	//2. 저장할 객체는 지역변수로 해도 문제없음

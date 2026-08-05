@@ -40,7 +40,7 @@ public:
 
     virtual void Reset(bool HardReset = false) = 0;
 protected:
-    bool SetAnim(const std::string& Name, const TCHAR* FilePath, bool Upper = false, float PlayTime = 1.f, float PlayRate = 1.f, bool Loop = false, bool Reverse = false, bool Symmetry = false);
+    bool AddAnim(const std::string& Name, const TCHAR* FilePath, bool Upper = false, float PlayTime = 1.f, float PlayRate = 1.f, bool Loop = false, bool Reverse = false, bool Symmetry = false);
     virtual void Move(const FVector3& Force) const;
 
     virtual void Fire();
