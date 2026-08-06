@@ -183,6 +183,9 @@
     <ClCompile Include="World\Base\Tear.cpp">
       <Filter>소스 파일\Room\Other\Tear</Filter>
     </ClCompile>
+    <ClCompile Include="World\Component\TearShooter.cpp">
+      <Filter>소스 파일\Room\Other\Unit\ActorComponent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -268,6 +271,9 @@
     </ClInclude>
     <ClInclude Include="World\Base\Tear.h">
       <Filter>소스 파일\Room\Other\Tear</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Component\TearShooter.h">
+      <Filter>소스 파일\Room\Other\Unit\ActorComponent</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

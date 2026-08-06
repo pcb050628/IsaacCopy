@@ -21,6 +21,7 @@ enum class EObjectType
     Room,
     Door,
     //방 내부 객체
+    Tear,
     Monster,
     Obstacle,
     Pickup,

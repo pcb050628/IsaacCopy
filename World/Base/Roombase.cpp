@@ -222,12 +222,13 @@ const FVector3 CRoombase::CoordToWorldPos(FVector2 Coord)
 
 const FVector2 CRoombase::GetUnitCoordInGrid(FVector3 WorldPos)
 {
-	FVector3 Result = WorldPos -= GetWorldPos();
-	Result /= ROOM_GRID_SIZE;
-	Result -= ROOM_GRID_HALF;
-	Result.x = floor(Result.x + mRoomCellMax.x / 2);
-	Result.y = floor(Result.y + mRoomCellMax.y / 2);
-	return FVector2(Result.x, Result.y);
+	FVector3 pos = WorldPos -= GetWorldPos();
+	pos.x -= mRoomCellSize.x / 2;
+	FVector2 result = FVector2(pos.x, pos.y) / mRoomCellSize;
+	result += mRoomCellMax / 2;
+	result.x = floor(result.x);
+	result.y = floor(result.y);
+	return result;
 }
 
 //나중에 수정해야하는 내용

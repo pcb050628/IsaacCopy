@@ -162,6 +162,7 @@
     <ClCompile Include="World\Base\Unitbase.cpp" />
     <ClCompile Include="World\Chapter.cpp" />
     <ClCompile Include="World\Component\RigidBodyComponent.cpp" />
+    <ClCompile Include="World\Component\TearShooter.cpp" />
     <ClCompile Include="World\Data\AnimGData.cpp" />
     <ClCompile Include="World\Data\ChapterGData.cpp" />
     <ClCompile Include="World\Data\GameData.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="World\Base\Unitbase.h" />
     <ClInclude Include="World\Chapter.h" />
     <ClInclude Include="World\Component\RigidBodyComponent.h" />
+    <ClInclude Include="World\Component\TearShooter.h" />
     <ClInclude Include="World\Data\AnimGData.h" />
     <ClInclude Include="World\Data\ChapterGData.h" />
     <ClInclude Include="World\Data\GameData.h" />
