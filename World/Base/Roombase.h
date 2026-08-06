@@ -2,7 +2,9 @@
 #include "GameObject.h"
 #include "World\WorldManager.h"
 
-#define ROOM_GRID_SIZE 100
+//13 x 7 : 14 x 9
+//117 : 98
+#define ROOM_GRID_SIZE 25
 #define ROOM_GRID_HALF ROOM_GRID_SIZE / 2
 
 enum class ERoomShape
@@ -44,6 +46,11 @@ public:
 
 protected:
     FVector2 mRoomCellMax = FVector2(13, 7);
+    //방의 크기는 항상 13 : 7
+    //한칸의 크기는 화면비 / 방크기
+    //현재 화면비는? 계산하기 쉽게 1300:700
+    //그럼 한칸의 크기는 ? 100이어야 하는데 왜 아닐까
+    FVector2 mRoomCellSize = FVector2(85.f, 85.f); //85가 어떻게 나온거지
     ERoomShape mShape;
     ERoomType mRoomType;
     //현재 챕터에서 방의 좌표
@@ -98,7 +105,7 @@ public:
     bool SetInitRoom(FVector2 Coord, const std::vector<std::pair<int, FVector2>>& Objs);//여기에 정보를 넣어서 방 초기화하기 / 지금은 방의 좌표 정보만 들어가지만 나중에는 방 내부의 정보들도 포함되어야 함
     virtual void Reset(bool HardReset = false) override; //방 초기화(클리어 상태는 초기화 x) / 하드 리셋시 클리어도 초기화 몬스터 전부 생성
   
-
+    const FVector3 CoordToWorldPos(FVector2 Coord);
     const virtual FVector2 GetUnitCoordInGrid(FVector3 WorldPos);
     const bool CanGetToPlayerCharacter(FVector3 FromWorldPos);
     bool CheckNearCell(FVector2 Coord);

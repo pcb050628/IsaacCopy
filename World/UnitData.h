@@ -38,7 +38,8 @@ struct FUnitAttribute
 	float Height = 0.f;
 	float knockback = 10.f;
 };
-
+//공격시 효과들도 그냥 다 집어넣기
+//독이나 석화나 화상이나 상관없음
 
 enum class EPlayerHeartType
 {

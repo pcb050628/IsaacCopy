@@ -158,6 +158,7 @@
     <ClCompile Include="World\Base\Obstaclebase.cpp" />
     <ClCompile Include="World\Base\Roombase.cpp" />
     <ClCompile Include="World\Base\GameObject.cpp" />
+    <ClCompile Include="World\Base\Tear.cpp" />
     <ClCompile Include="World\Base\Unitbase.cpp" />
     <ClCompile Include="World\Chapter.cpp" />
     <ClCompile Include="World\Component\RigidBodyComponent.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="World\Base\Obstaclebase.h" />
     <ClInclude Include="World\Base\Roombase.h" />
     <ClInclude Include="World\Base\GameObject.h" />
+    <ClInclude Include="World\Base\Tear.h" />
     <ClInclude Include="World\Base\Unitbase.h" />
     <ClInclude Include="World\Chapter.h" />
     <ClInclude Include="World\Component\RigidBodyComponent.h" />

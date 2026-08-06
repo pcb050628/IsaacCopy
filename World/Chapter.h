@@ -25,12 +25,21 @@ public:
 
 protected:
 	//RoomMap 은 맵으로 쓰는 이유가 인접한 다른 방에 접근할 때 너무 불편함
-	std::weak_ptr<CRoombase> mFocusedRoom;
+	int mFocusedRoomCoord;
 	std::unordered_map<int, std::weak_ptr<CRoombase>> mRoomMap;
 	//구조 변경하기 / 맵 -> 리스트 / 불을 키로 쓰는것보다 리스트에 불 유닛 쌍으로 넣고 불값으로 정렬하는게 나을듯
 	std::weak_ptr<CActor> mPlayerCharacter;
-	std::unordered_map<int, std::pair<bool, std::weak_ptr<CUnitbase>>> mUnits;
-	std::unordered_map<int, std::pair<bool, std::weak_ptr<CObstaclebase>>> mObstacles;
+	std::unordered_map<int, std::weak_ptr<CUnitbase>> mUnitsActive;
+	std::unordered_map<int, std::weak_ptr<CUnitbase>> mUnitsDeactive;
+	std::unordered_map<int, std::weak_ptr<CObstaclebase>> mObstaclesActive;
+	std::unordered_map<int, std::weak_ptr<CObstaclebase>> mObstaclesDeactive;
+	//std::unordered_map<int, std::pair<bool, std::weak_ptr<class CTear>>> mTears;
+
+	//눈물 발사기(컴포넌트) <- 이거 필요한가? 어짜피 보관되는 위치도 Chapter 고 다 여기서 받아오는데 기능도 전부 Chapter 에 의탁해버리면?
+	//							챕터가 너무 방대해지긴하네 이미 다른 유닛들의 관리도 책임지고 있는데 책임을 합치는것이면 모르겠지만 다른 객체들과 다르게
+	//							눈물의 경우는 시도때도 없이 생성되고 반납되기를 반복하니
+	//1. 입력받을 내용(발사한 객체, 크기, 방향, 높이, 거리, 속도, 충돌시 효과(함수 포인터))
+	//2. 필요한 기능(객체 생성 및 가져오기, 객체 반납받기, 발사 위치 조정, 
 
 	//방에 종속되지않는 객체
 	//카메라 및 UI 역할을 겸함 / 각각의 역할을 하는 액터 컴포넌트를 각각 지님 각각각각각각각각
@@ -108,7 +117,8 @@ public:
 		//현재 생성될 방의 타입을 보내서 해당 방에 맞는 파일 읽어오기
 		//SetInitRoom 에 방 모양도 입력해주기
 
-		mRoomMap[Coord2Hash(Coord)] = generatedRoom;
+		mFocusedRoomCoord = Coord2Hash(Coord);
+		mRoomMap[mFocusedRoomCoord] = generatedRoom;
 		for (int i = 0; i < 4; i++)
 		{
 			int dest = Coord2Hash(Coord + FourDirections[i]);
@@ -122,18 +132,21 @@ public:
 		return std::dynamic_pointer_cast<CRoombase>(room.lock());
 	}
 	template<typename T>
-	std::weak_ptr<T> CreateUnit(const std::string& Name)
+	std::weak_ptr<T> CreateUnit(const std::string& Name, FVector2 Coord)
 	{
-		std::unordered_map<int, std::pair<bool, std::weak_ptr<CUnitbase>>>::iterator iter = mUnits.begin();
-		std::unordered_map<int, std::pair<bool, std::weak_ptr<CUnitbase>>>::iterator iterEnd = mUnits.end();
+		std::unordered_map<int, std::weak_ptr<CUnitbase>>::iterator iter = mUnitsDeactive.begin();
+		std::unordered_map<int, std::weak_ptr<CUnitbase>>::iterator iterEnd = mUnitsDeactive.end();
 		for (; iter != iterEnd; ++iter)
 		{
-			if (iter->second.first || !std::dynamic_pointer_cast<T>(iter->second.second.lock()))
+			std::shared_ptr<CUnitbase> unit = iter->second.lock();
+			if (typeid(unit.get()) != typeid(T))
 				continue;
 
-			std::shared_ptr<CUnitbase> unit = iter->second.second.lock();
+			mUnitsDeactive.erase(iter);
+			mUnitsActive[unit->GetID()] = unit;
+
 			unit->Reset(true);
-			iter->second.first = true;
+			unit->SetWorldPos(mRoomMap[mFocusedRoomCoord].lock()->CoordToWorldPos(Coord));
 			return std::dynamic_pointer_cast<T>(unit);
 		}
 
@@ -141,23 +154,28 @@ public:
 		if (!unit.expired())
 		{
 			std::shared_ptr<CUnitbase> ub = std::dynamic_pointer_cast<CUnitbase>(unit.lock());
-			mUnits[ub->GetID()] = std::make_pair(true, ub);
+			mUnitsActive[ub->GetID()] = ub;
+
+			ub->SetWorldPos(mRoomMap[mFocusedRoomCoord].lock()->CoordToWorldPos(Coord));
 		}
 		return unit;
 	}
 	template<typename T>
-	std::weak_ptr<T> CreateObstacle(const std::string& Name)
+	std::weak_ptr<T> CreateObstacle(const std::string& Name, FVector2 Coord)
 	{
-		std::unordered_map<int, std::pair<bool, std::weak_ptr<CObstaclebase>>>::iterator iter = mObstacles.begin();
-		std::unordered_map<int, std::pair<bool, std::weak_ptr<CObstaclebase>>>::iterator iterEnd = mObstacles.end();
+		std::unordered_map<int, std::weak_ptr<CObstaclebase>>::iterator iter = mObstaclesDeactive.begin();
+		std::unordered_map<int, std::weak_ptr<CObstaclebase>>::iterator iterEnd = mObstaclesDeactive.end();
 		for (; iter != iterEnd; ++iter)
 		{
-			if (iter->second.first || !std::dynamic_pointer_cast<T>(iter->second.second.lock()))
+			std::shared_ptr<CObstaclebase> obstacle = iter->second.lock();
+			if (typeid(obstacle.get()) != typeid(T))
 				continue;
 
-			std::shared_ptr<CObstaclebase> obstacle = iter->second.second.lock();
+			mObstaclesDeactive.erase(iter);
+			mObstaclesActive[obstacle->GetID()] = obstacle;
+
 			obstacle->Reset(true);
-			iter->second.first = true;
+			obstacle->SetWorldPos(mRoomMap[mFocusedRoomCoord].lock()->CoordToWorldPos(Coord));
 			return std::dynamic_pointer_cast<T>(obstacle);
 		}
 
@@ -165,7 +183,9 @@ public:
 		if (!obstacle.expired())
 		{
 			std::shared_ptr<CObstaclebase> ob = std::dynamic_pointer_cast<CObstaclebase>(obstacle.lock());
-			mObstacles[ob->GetID()] = std::make_pair(true, ob);
+			mObstaclesActive[ob->GetID()] = ob;
+
+			ob->SetWorldPos(mRoomMap[mFocusedRoomCoord].lock()->CoordToWorldPos(Coord));
 		}
 		return obstacle;
 	}
@@ -178,10 +198,12 @@ public:
 			return CreateRoom<T>(Name, Coord);
 		case EObjectType::PlayerCharacter:
 			break;
+			//함수에 챕터내의 방 좌표, 방 내부좌표 받기
+			//현재 생성되고 있는 객체들은 전부 포커싱된 방에 생성되게 만들어져 있으므로 여러방을 동시에 생성하는데에 부적합함
 		case EObjectType::Monster:
-			return CreateUnit<T>(Name);
+			return CreateUnit<T>(Name, Coord);
 		case EObjectType::Obstacle:
-			return CreateObstacle<T>(Name);
+			return CreateObstacle<T>(Name, Coord);
 		case EObjectType::Door:
 			break;
 		}

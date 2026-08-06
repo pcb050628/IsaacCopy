@@ -141,7 +141,8 @@ bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 	if (EObjectType::Monster == t)
 	{
 		std::shared_ptr<CUnitbase> unit = std::dynamic_pointer_cast<CUnitbase>(Obj.lock());
-		mUnits[unit->GetID()].first = false;
+		mUnitsActive.erase(unit->GetID());
+		mUnitsDeactive[unit->GetID()] = unit;
 		return true;
 	}
 	else if (EObjectType::Pickup == t)

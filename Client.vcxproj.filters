@@ -103,6 +103,9 @@
     <Filter Include="소스 파일\Debug\Imgui">
       <UniqueIdentifier>{30c0e073-5b43-42cb-add6-e399659eeb81}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Room\Other\Tear">
+      <UniqueIdentifier>{5eb6a53a-734f-4590-b7bd-c31d0efa54a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -176,6 +179,9 @@
     </ClCompile>
     <ClCompile Include="Debug\ImGuiAnimationMaker.cpp">
       <Filter>소스 파일\Debug\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Base\Tear.cpp">
+      <Filter>소스 파일\Room\Other\Tear</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="Debug\ImGuiAnimationMaker.h">
       <Filter>소스 파일\Debug\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Base\Tear.h">
+      <Filter>소스 파일\Room\Other\Tear</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

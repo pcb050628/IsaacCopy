@@ -36,8 +36,11 @@ bool CDefaultRoom::Init()
 	//mBackgroundMesh.push_back(CreateComponent<CMeshComponent>("BackgroundLB"));
 	//mBackgroundMesh.push_back(CreateComponent<CMeshComponent>("BackgroundRT"));
 
-	mBackgroundMesh[0].lock()->SetRelativePos(FVector2(-325.f, 175.f));
-	mBackgroundMesh[0].lock()->SetRelativeScale(FVector2(650.f, 350.f));
+	//1300 x 700
+	//14:8
+	//3.5 2
+	mBackgroundMesh[0].lock()->SetRelativePos(FVector2(-350.f, 200.f));
+	mBackgroundMesh[0].lock()->SetRelativeScale(FVector2(700.f, 400.f));
 	mBackgroundMesh[0].lock()->SetMesh("TexRect"); mBackgroundMesh[0].lock()->SetShader("Animation2D");
 	std::wstring path = CPathManager::FindPath("Texture");
 	path += TEXT("Room\\Basement.png");

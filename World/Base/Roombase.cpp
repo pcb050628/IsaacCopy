@@ -37,6 +37,9 @@ bool CRoombase::Init()
 	if (mShadeMesh1.expired())
 		return false;
 
+	mShadeMesh1.lock()->SetWorldScale(FVector2(1.f, 1.f));
+
+
 	//객체 생성
 	return true;
 }
@@ -100,7 +103,8 @@ void CRoombase::AdjustRoomPos()
 	}
 	FVector2 dir = mCoord - targetRoom.lock()->mCoord;
 	//거리를 모르니까 일단 100으로 할까
-	SetWorldPos(targetRoom.lock()->GetWorldPos() + FVector3(dir.x * 1300.f, dir.y * 700.f, 0));
+	SetWorldPos(targetRoom.lock()->GetWorldPos() 
+		+ FVector3(dir.x * mRoomCellMax.x * mRoomCellSize.x, dir.y * mRoomCellMax.x * mRoomCellSize.x, 0));
 }
 
 bool CRoombase::SetInitRoom(FVector2 Coord, const std::vector<std::pair<int, FVector2>>& Objs) //모양도 여기서 받아서 초기화 하기
@@ -199,6 +203,21 @@ void CRoombase::Reset(bool HardReset)
 	{
 
 	}
+}
+
+const FVector3 CRoombase::CoordToWorldPos(FVector2 Coord)
+{
+	//좌표기준으로 00이 좌하단
+	//00에 그냥 위치를 곱하면 제자리니까 00에서 그리드크기 절반만큼 빼기
+	//0, 0->-6, -4
+	//셀 크기만큼 곱하기
+	//-6, -4 -> -60, -40
+	//벽이 있으니까 벽만큼의 오프셋을 줘야하는데
+	//
+	//방의 중심으로부터 이동하기
+	FVector2 cal = ((Coord - mRoomCellMax / 2) * mRoomCellSize);
+	cal.x += mRoomCellSize.x / 2;
+	return GetWorldPos() + FVector3(cal.x, cal.y, 1);
 }
 
 const FVector2 CRoombase::GetUnitCoordInGrid(FVector3 WorldPos)

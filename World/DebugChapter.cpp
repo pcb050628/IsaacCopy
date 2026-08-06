@@ -47,7 +47,13 @@ bool CDebugChapter::Init()
 	else //테스트 코드
 	{
 		CGameClassContainer::GetInst()->Instantiate(10, FVector2(3, 3));
-		CGameClassContainer::GetInst()->Instantiate(20, FVector2(3, 3));
+		for (int y = 0; y < 7; ++y)
+		{
+			for (int x = 0; x < 13; ++x)
+			{
+				CGameClassContainer::GetInst()->Instantiate(20, FVector2(x, y));
+			}
+		}
 	}
 	//if (!SetAnim("Gaper_Idle_Head", TEXT("Anim/Gaper_Idle_Head.txt"), true))
 	//	return false;
