@@ -26,28 +26,13 @@ protected:
 	std::weak_ptr<class CMeshComponent> mMesh;
 	std::weak_ptr<class CAnimation2DComponent> mAnimator;
 
-	FUnitAttribute mUnitOwnerAttribute;
-	float mMovedDistance = 0.f;
-
+	std::weak_ptr<class CTearShooter> mShooter; //눈물을 발사한 객체
 	bool mIsOwnerCharacter = false;
+	float mMovedDistance = 0.f;
 
 	std::string TexName;
 	std::weak_ptr<class CUnitbase> mTarget;
-	FVector2 mDirection;
-
-	bool mHoming = false; //적 추적
-	bool mPiercing = false; //관통(유닛만)
-	bool mSpectral = false; //관통(장애물만)
-	bool mOrbiting = false; //특정 객체 공전
-	bool mBoomerang = false; //부메랑(절반 갔다가 캐릭터 방향으로 돌아옴)
-	bool mShield = false; //눈물 파괴
-	bool mBouncing = false; //튕김
-	int mSplitStack = 0; //분열 횟수
-	int mSplitCount = 0; //분열되는 갯수
-
-	bool mSine = false;
-	bool mSquareWave = false;
-	bool mSpiral = false;
+	FTearAttribute mTearAttribute;
 
 	//나중에 어느정도 만든 후에
 	//레이저를 다시 해보고싶을때 만들자
@@ -67,6 +52,7 @@ public:
 		, bool Homing = false, bool Piercing = false, bool Spectral = false, bool Orbiting = false
 		, bool Boomerang = false, bool Shield = false, bool Bouncing = false, bool Sine = false, bool Square = false, bool Spiral = false
 		, int SplitStack = 0, int SplitCount = 0);
+	void Set(bool IsPlayer, FVector3 StartPos, FTearAttribute Attribute);
 
 private:
 	//눈물 궤적 함수들
@@ -85,20 +71,22 @@ private:
 	void SpiralUpdate(float DeltaTime);
 
 public:
-	const bool GetIsHoming() const { return mHoming; }
-	const bool GetIsPiercing() const { return mPiercing; }
-	const bool GetIsSpectral() const { return mSpectral; }
-	const bool GetIsOrbiting() const { return mOrbiting; }
-	const bool GetIsBoomerang() const { return mBoomerang; }
-	const bool GetIsShield() const { return mShield; }
-	const bool GetIsBouncing() const { return mBouncing; }
+	FTearAttribute GetTearAttribute() { return mTearAttribute; }
 
-	void SetHoming(const bool Val) { mHoming = Val; }
-	void SetPiercing(const bool Val) { mPiercing = Val; }
-	void SetSpectral(const bool Val) { mSpectral = Val; }
-	void SetOrbiting(const bool Val) { mOrbiting = Val; }
-	void SetBoomerang(const bool Val) { mBoomerang = Val; }
-	void SetShield(const bool Val) { mShield = Val; }
-	void SetBouncing(const bool Val) { mBouncing = Val; }
+	const bool GetIsHoming() const { return mTearAttribute.Homing; }
+	const bool GetIsPiercing() const { return mTearAttribute.Piercing; }
+	const bool GetIsSpectral() const { return mTearAttribute.Spectral; }
+	const bool GetIsOrbiting() const { return mTearAttribute.Orbiting; }
+	const bool GetIsBoomerang() const { return mTearAttribute.Boomerang; }
+	const bool GetIsShield() const { return mTearAttribute.Shield; }
+	const bool GetIsBouncing() const { return mTearAttribute.Bouncing; }
+
+	void SetHoming(const bool Val) { mTearAttribute.Homing = Val; }
+	void SetPiercing(const bool Val) { mTearAttribute.Piercing = Val; }
+	void SetSpectral(const bool Val) { mTearAttribute.Spectral = Val; }
+	void SetOrbiting(const bool Val) { mTearAttribute.Orbiting = Val; }
+	void SetBoomerang(const bool Val) { mTearAttribute.Boomerang = Val; }
+	void SetShield(const bool Val) { mTearAttribute.Shield = Val; }
+	void SetBouncing(const bool Val) { mTearAttribute.Bouncing = Val; }
 };
 

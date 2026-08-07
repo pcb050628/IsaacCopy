@@ -31,6 +31,8 @@ bool CTear::Init()
 	if (mRigidBody.expired() || mHitBox.expired() || mMesh.expired() || mAnimator.expired())
 		return false;
 
+	//mHitBox.lock()->SetBeginOverlapFunc()
+
 	//히트 박스 스케일(radius) 조정
 	//메시 스케일 조정
 	//애니메이션 불러오고
@@ -44,15 +46,16 @@ void CTear::Update(float DeltaTime)
 	//보니까 사거리가 6.5여도 속도가 0.1이면 한칸도 안가서 멈추더라
 	//느리게 꾸역꾸역 사거리 만큼 가는게 아니라 시간누적해서 가는거
 
-	if (mHoming)
+	
+	if (mTearAttribute.Homing)
 	{
 		HomingUpdate(DeltaTime);
 	}
-	if (mOrbiting)
+	if (mTearAttribute.Orbiting)
 	{
 		OrbitUpdate(DeltaTime);
 	}
-	if (mBoomerang)
+	if (mTearAttribute.Boomerang)
 	{
 		BoomerangUpdate(DeltaTime);
 	}
@@ -60,8 +63,8 @@ void CTear::Update(float DeltaTime)
 	//그럼 시간누적은 어떻게 할까
 	//mMoveDistance = DeltaTime * speed * RoomCellSize(85.f);
 	//if(mMoveDistance > mUnitOwnerAttribute.Range) Destroy();
-	mMovedDistance += DeltaTime * mUnitOwnerAttribute.ShotSpeed * 85.f;
-	if (mMovedDistance >= mUnitOwnerAttribute.Range)
+	mMovedDistance += DeltaTime * mTearAttribute.Speed * 85.f;
+	if (mMovedDistance >= mTearAttribute.Range)
 	{
 		Destroy();
 	}
@@ -80,52 +83,54 @@ void CTear::Destroy()
 void CTear::Reset(bool HardReset)
 {
 	mIsOwnerCharacter = false;
-	mDirection = FVector2::Zero;
-	mUnitOwnerAttribute = FUnitAttribute();
 
-	mHoming = false;
-	mPiercing = false;
-	mSpectral = false;
-	mOrbiting = false;
-	mBoomerang = false;
-	mShield = false;
-	mBouncing = false;
-	mSine = false;
-	mSquareWave = false;
-	mSpiral = false;
-
-	mSplitStack = 0;
-	mSplitCount = 0;
-
+	mTearAttribute = FTearAttribute();
 	TexName = "Tear_Default";
 }
 
 //생각해보니까 텍스쳐도 골라줘야함
 //눈물이 너무 여러가지라서
-void CTear::Set(bool IsPlayer, FVector3 StartPos, FVector2 Dir, FUnitAttribute Attribute, bool Homing, bool Piercing, bool Spectral, bool Orbiting, bool Boomerang, bool Shield, bool Bouncing, bool Sine = false, bool Square = false, bool Spiral = false, int SplitStack, int SplitCount)
+void CTear::Set(bool IsPlayer, FVector3 StartPos, FVector2 Dir, FUnitAttribute Attribute
+	, bool Homing, bool Piercing, bool Spectral, bool Orbiting, bool Boomerang, bool Shield, bool Bouncing
+	, bool Sine, bool Square, bool Spiral, int SplitStack, int SplitCount)
 {
 	TexName;
 	mIsOwnerCharacter = IsPlayer;
 	SetWorldPos(StartPos);
-	mDirection = Dir;
-	mUnitOwnerAttribute = Attribute;
+	mTearAttribute.Direction = Dir;
 
-	mHoming = Homing;
-	mPiercing = Piercing;
-	mSpectral = Spectral;
-	mOrbiting = Orbiting;
-	mBoomerang = Boomerang;
-	mShield = Shield;
-	mBouncing = Bouncing;
+	mTearAttribute.Damage = Attribute.Damage;
+	mTearAttribute.Speed = Attribute.ShotSpeed;
+	mTearAttribute.Range = Attribute.Range;
+	mTearAttribute.Height = Attribute.Height;
+	mTearAttribute.knockback = Attribute.knockback;
 
-	mSine = Sine;
-	mSquareWave = Square;
-	mSpiral = Spiral;
+	mTearAttribute.Homing = Homing;
+	mTearAttribute.Piercing = Piercing;
+	mTearAttribute.Spectral = Spectral;
+	mTearAttribute.Orbiting = Orbiting;
+	mTearAttribute.Boomerang = Boomerang;
+	mTearAttribute.Shield = Shield;
+	mTearAttribute.Bouncing = Bouncing;
 
-	mSplitStack = SplitStack;
-	mSplitCount = SplitCount;
+	mTearAttribute.Sine = Sine;
+	mTearAttribute.SquareWave = Square;
+	mTearAttribute.Spiral = Spiral;
 
-	FVector2 velocity = mDirection * mUnitOwnerAttribute.ShotSpeed;
+	mTearAttribute.SplitStack = SplitStack;
+	mTearAttribute.SplitCount = SplitCount;
+
+	FVector2 velocity = mTearAttribute.Direction * mTearAttribute.Speed;
+	mRigidBody.lock()->SetVelocity(FVector3(velocity.x, velocity.y, 0));
+}
+
+void CTear::Set(bool IsPlayer, FVector3 StartPos, FTearAttribute Attribute)
+{
+	mIsOwnerCharacter = IsPlayer;
+	SetWorldPos(StartPos);
+	mTearAttribute = Attribute;
+
+	FVector2 velocity = mTearAttribute.Direction * mTearAttribute.Speed;
 	mRigidBody.lock()->SetVelocity(FVector3(velocity.x, velocity.y, 0));
 }
 

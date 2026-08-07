@@ -16,9 +16,6 @@
     <Filter Include="소스 파일\World">
       <UniqueIdentifier>{e5b2d89a-1ef6-48c8-a53b-4fba16c8335b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\SceneComponent">
-      <UniqueIdentifier>{7a68e21c-dc64-44c8-b5d2-216d37ab51fa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Room">
       <UniqueIdentifier>{bd5da692-7472-4254-97a9-5306d93cbe8d}</UniqueIdentifier>
     </Filter>
@@ -54,9 +51,6 @@
     </Filter>
     <Filter Include="소스 파일\Room\Other\Unit\Monster\Base">
       <UniqueIdentifier>{2fa46ce5-1063-4343-b360-1ea3af116042}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Room\Other\Unit\ActorComponent">
-      <UniqueIdentifier>{11478bd3-53c6-4d6c-b8a5-c8d473f9c62d}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\InstancingMananger">
       <UniqueIdentifier>{d247f1cb-cb7c-43d4-8729-f56253d4f0b5}</UniqueIdentifier>
@@ -106,6 +100,21 @@
     <Filter Include="소스 파일\Room\Other\Tear">
       <UniqueIdentifier>{5eb6a53a-734f-4590-b7bd-c31d0efa54a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Component">
+      <UniqueIdentifier>{7353a8c6-1f9d-4333-ad23-22c70b625e9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component\SceneComponent">
+      <UniqueIdentifier>{7a68e21c-dc64-44c8-b5d2-216d37ab51fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Component\ActorComponent">
+      <UniqueIdentifier>{11478bd3-53c6-4d6c-b8a5-c8d473f9c62d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Other\Unit\PlayerCharacter\Base">
+      <UniqueIdentifier>{8d99020a-5ca5-4f25-96bf-fd372f2605ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Room\Other\Unit\PlayerCharacter\Isaac">
+      <UniqueIdentifier>{cb073f81-f02c-4350-9933-e98b27fdc5ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -121,7 +130,7 @@
       <Filter>소스 파일\Room\Other\Unit\Base</Filter>
     </ClCompile>
     <ClCompile Include="World\Component\RigidBodyComponent.cpp">
-      <Filter>소스 파일\SceneComponent</Filter>
+      <Filter>소스 파일\Component\SceneComponent</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\Roombase.cpp">
       <Filter>소스 파일\Room\Base</Filter>
@@ -184,7 +193,13 @@
       <Filter>소스 파일\Room\Other\Tear</Filter>
     </ClCompile>
     <ClCompile Include="World\Component\TearShooter.cpp">
-      <Filter>소스 파일\Room\Other\Unit\ActorComponent</Filter>
+      <Filter>소스 파일\Component\ActorComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Base\Character.cpp">
+      <Filter>소스 파일\Room\Other\Unit\PlayerCharacter\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Character\CharacterIsaac.cpp">
+      <Filter>소스 파일\Room\Other\Unit\PlayerCharacter\Isaac</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -204,7 +219,7 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="World\Component\RigidBodyComponent.h">
-      <Filter>소스 파일\SceneComponent</Filter>
+      <Filter>소스 파일\Component\SceneComponent</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\Roombase.h">
       <Filter>소스 파일\Room\Base</Filter>
@@ -273,7 +288,13 @@
       <Filter>소스 파일\Room\Other\Tear</Filter>
     </ClInclude>
     <ClInclude Include="World\Component\TearShooter.h">
-      <Filter>소스 파일\Room\Other\Unit\ActorComponent</Filter>
+      <Filter>소스 파일\Component\ActorComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Base\Character.h">
+      <Filter>소스 파일\Room\Other\Unit\PlayerCharacter\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Character\CharacterIsaac.h">
+      <Filter>소스 파일\Room\Other\Unit\PlayerCharacter\Isaac</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

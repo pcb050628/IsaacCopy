@@ -14,6 +14,13 @@
                                     }\
                            const bool GAMEOBJ::IsRegister = CGameClassContainer::GetInst()->RegisterGameClass<GAMEOBJ>(GAMEOBJ::GObjID, &GAMEOBJ::InstanceGObj);
 
+/// 아이디 구조
+/// 1. 방
+/// 2. 몬스터
+/// 3. 플레이어 캐릭터
+/// 6. 눈물
+/// </summary>
+
 enum class EObjectType
 {
     //방 외부 객체

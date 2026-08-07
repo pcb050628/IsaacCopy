@@ -12,6 +12,7 @@ public:
 
 private:
     FVector3 mRBVelocity;
+    float mRBSpeedLimit;
     float mMass = 5.f;
     float mGravity = 9.8f;
 
@@ -27,6 +28,7 @@ public:
 
     void AddForce(FVector3 Force) { mRBVelocity += Force; }
     void SetVelocity(FVector3 Velocity) { mRBVelocity = Velocity; }
+    void SetLimit(float Limit) { mRBSpeedLimit = Limit; }
     void SetMass(float Mass) { mMass = Mass; }
     void SetGravity(float Gravity) { mGravity = Gravity; }
 };

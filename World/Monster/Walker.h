@@ -25,7 +25,6 @@ protected:
     virtual void ExitHitOverlaps(std::weak_ptr<CCollider> Collider);
 
 protected:
-    std::weak_ptr<class CColliderSphere2D> mHitBox;
     std::weak_ptr<CUnitbase> mTarget;
 
     float mSpeedLimit = 500.f;

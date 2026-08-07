@@ -36,7 +36,6 @@ bool CWalker::Init()
 
 	std::shared_ptr<CColliderSphere2D> hit = mHitBox.lock();
 	hit->SetCollisionProfile("ContactHit_Monster");
-	hit->SetDebugDraw(true);
 
 	return true;
 }

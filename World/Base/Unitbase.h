@@ -16,13 +16,20 @@ protected:
     std::weak_ptr<class CRoombase> mRoomOwner;
     std::weak_ptr<class CRigidBodyComponent> mRigidBody; //root
     std::weak_ptr<class CMeshComponent> mHeadMesh;
-    std::weak_ptr<class CAnimation2DComponent> mHead;
     std::weak_ptr<class CMeshComponent> mBodyMesh;
+    std::weak_ptr<class CAnimation2DComponent> mHead;
     std::weak_ptr<class CAnimation2DComponent> mBody;
-    std::weak_ptr<class CColliderSphere2D> mHurtBox;
+    std::weak_ptr<class CColliderSphere2D> mHurtBox; //피격체 | 피격을 당하지 않는 경우에는 기본 충돌체로 사용됨
+    std::weak_ptr<class CColliderSphere2D> mHitBox; //기본으로는 생성하지 않음, 필요한 경우에만 상속받은 객체에서 생성
+
+    std::weak_ptr<class CTearShooter> mShooter; //기본으로는 생성하지않음, 필요한 경우에만 상속받은 객체에서 생성
+
+    //머리 몸이 바라보는 방향
+    FVector2 mBodyDirection;
+    FVector2 mHeadDirection;
 
     FUnitAttribute mAttribute;
-    std::vector<std::pair<EUnitStatus, float>> mStatusQueue;
+    std::vector<std::pair<EUnitStatus, float>> mStatusQueue; //상태와 유지시간
 
     bool mbIsTemporary = false;
     bool mbIsDead = false;
@@ -52,6 +59,17 @@ protected:
                         
     virtual void OnHurtOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider) = 0;
     virtual void ExitHurtOverlaps(std::weak_ptr<CCollider> Collider) = 0;
+
+    virtual void OnHitOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider) = 0;
+    virtual void ExitHitOverlaps(std::weak_ptr<CCollider> Collider) = 0;
+
+    virtual void SetBodyDirection(FVector2 Dir);
+    virtual void SetHeadDirection(FVector2 Dir);
+
+    virtual void PlayBodyVerticalAnim();
+    virtual void PlayBodyHorizontalAnim();
+    virtual void PlayHeadVerticalAnim();
+    virtual void PlayHeadHorizontalAnim();
 
 public:
     const bool GetIsDead() const { return mbIsDead; }

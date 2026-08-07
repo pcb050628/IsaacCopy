@@ -47,7 +47,9 @@ bool CDebugChapter::Init()
 	else //테스트 코드
 	{
 		CGameClassContainer::GetInst()->Instantiate(10, FVector2(3, 3));
-		CGameClassContainer::GetInst()->Instantiate(20, FVector2(6, 3));
+		CGameClassContainer::GetInst()->Instantiate(20, FVector2(3, 3));
+		CGameClassContainer::GetInst()->Instantiate(31, FVector2(6, 3));
+		//20 gaper | 31 isaac
 		//for (int y = 0; y < 7; ++y)
 		//{
 		//	for (int x = 0; x < 13; ++x)

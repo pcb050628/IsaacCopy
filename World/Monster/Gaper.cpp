@@ -1,6 +1,8 @@
 #include "Gaper.h"
 
 #include "World/Animation2DComponent.h"
+#include "World/ColliderBox2D.h"
+#include "World/ColliderSphere2D.h"
 
 #include "../Manager/GameClassContainer.h"
 
@@ -35,15 +37,15 @@ bool CGaper::Init()
 	//머리 다시 만들기
 	//있는거 그대로 이어 붙이는게 아니라 애니메이션 효과를 생각하면서 붙여야함
 	//.처음->처음(찌그러짐)->눈뜸(세로로 살짝 길어짐)->뜸 순으로 만들어야함
-	if (!AddAnim("Gaper_Head_Close", TEXT("Anim/Gaper_Head_Close"), true))
+	if (!AddAnim("Gaper_Head_Close", TEXT("Gaper_Head_Close"), true))
 		return false;
-	if (!AddAnim("Gaper_Head_Open_2", TEXT("Anim/Gaper_Head_Open_2"), true, 0.6f))
+	if (!AddAnim("Gaper_Head_Open_2", TEXT("Gaper_Head_Open_2"), true, 0.6f))
 		return false;
 
 	//몸
-	if (!AddAnim("Gaper_Body_Walk_V", TEXT("Anim/Gaper_Body_Walk_V"), false, 0.8f ,1.f, true))
+	if (!AddAnim("Gaper_Body_Walk_V", TEXT("Gaper_Body_Walk_V"), false, 0.8f ,1.f, true))
 		return false;
-	if (!AddAnim("Gaper_Body_Walk_H", TEXT("Anim/Gaper_Body_Walk_H"), false, 1.f, 1.f, true))
+	if (!AddAnim("Gaper_Body_Walk_H", TEXT("Gaper_Body_Walk_H"), false, 1.f, 1.f, true))
 		return false;
 
 	//현재 몬스터의 머리 몸 위치 비율
@@ -56,6 +58,10 @@ bool CGaper::Init()
 	mBody.lock()->Stop();
 	//mBody.lock()->ChangeAnimation("Gaper_Body_Walk_H");
 	mHead.lock()->ChangeAnimation("Gaper_Head_Open_2");
+
+	mHurtBox.lock()->SetRadius(20.f);
+	mHurtBox.lock()->SetDebugDraw(true);
+	mHurtBox.lock()->SetRenderLayer("Debug");
 
 	//다시 
 	//게이퍼의 행동들 역할들과 연관지어 분리하기

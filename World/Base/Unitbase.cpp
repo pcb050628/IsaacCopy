@@ -4,13 +4,15 @@
 #include "Asset/AnimationManager.h"
 #include "Asset/TextureManager.h"
 
+#include "World/Animation2DComponent.h"
+#include "World/MeshComponent.h"
+#include "World/ColliderSphere2D.h"
+
 #include "../Data/GameDataManager.h"
 #include "../Data/AnimGData.h"
 
 #include "../Component/RigidBodyComponent.h"
-#include "World/Animation2DComponent.h"
-#include "World/MeshComponent.h"
-#include "World/ColliderSphere2D.h"
+#include "../Component/TearShooter.h"
 
 CUnitbase::CUnitbase(EObjectType Type)
 	:CGameObject(Type)
@@ -70,9 +72,9 @@ bool CUnitbase::Init()
 	if (mHurtBox.expired())
 		return false;
 
-	std::shared_ptr<CColliderSphere2D> hitbox = mHurtBox.lock();
-	hitbox->SetBeginOverlapFunc(this, &CUnitbase::OnHurtOverlaps);
-	hitbox->SetEndOverlapFunc(this, &CUnitbase::ExitHurtOverlaps);
+	std::shared_ptr<CColliderSphere2D> hurtbox = mHurtBox.lock();
+	hurtbox->SetBeginOverlapFunc(this, &CUnitbase::OnHurtOverlaps);
+	hurtbox->SetEndOverlapFunc(this, &CUnitbase::ExitHurtOverlaps);
 
 	//히트 박스 크기 조정
 
@@ -96,7 +98,9 @@ bool CUnitbase::AddAnim(const std::string& Name, const TCHAR* FilePath, bool Upp
 	std::weak_ptr<CGameData> data = dataMgr->FindData("Anim_" + Name);
 	if (data.expired())
 	{
-		if (!dataMgr->LoadDataFile<CAnimGData>("Anim_" + Name, FilePath))
+		std::wstring path = L"Anim\\";
+		path += FilePath;
+		if (!dataMgr->LoadDataFile<CAnimGData>("Anim_" + Name, path.c_str()))
 			return false;
 		data = dataMgr->FindData("Anim_" + Name);
 	}
@@ -121,9 +125,75 @@ void CUnitbase::Move(const FVector3& Force) const
 
 void CUnitbase::Fire()
 {
+	if (mShooter.expired())
+		return;
+
+	std::shared_ptr<CTearShooter> shooter = mShooter.lock();
+
+	//일단 해놓긴 했는데
+	//발사 가능 상태를 어디서 검사하는게 맞는지 확신이 없네
+	//일단은 슈터에서 확인하는게 맞는거같긴함
+	//유닛쪽에서는 모든 역할을 슈터에 위임한거니까
+	//아는건 아무것도 없고 능력치만 던져주고 발사하라고만 하는거니까
+	//검사는 슈터에서 해야겟지?
+	shooter->Fire();
 }
 
 void CUnitbase::Dead()
 {
 	mbIsDead = true;
+}
+
+void CUnitbase::SetBodyDirection(FVector2 Dir)
+{
+	if(mBodyDirection == Dir)
+		return;
+
+	if (mBodyDirection != Dir)
+	{
+		mBodyDirection = Dir;
+		if (0 == Dir.x)
+		{
+			PlayBodyVerticalAnim();
+		}
+		else
+		{
+			PlayBodyHorizontalAnim();
+		}
+	}
+}
+
+void CUnitbase::SetHeadDirection(FVector2 Dir)
+{
+	if (mHeadDirection == Dir)
+		return;
+
+	if (mHeadDirection.x != Dir.x)
+	{
+		if (0 == Dir.x)
+		{
+			PlayHeadVerticalAnim();
+		}
+		else
+		{
+			PlayHeadHorizontalAnim();
+		}
+	}
+	mHeadDirection = Dir;
+}
+
+void CUnitbase::PlayBodyVerticalAnim()
+{
+}
+
+void CUnitbase::PlayBodyHorizontalAnim()
+{
+}
+
+void CUnitbase::PlayHeadVerticalAnim()
+{
+}
+
+void CUnitbase::PlayHeadHorizontalAnim()
+{
 }

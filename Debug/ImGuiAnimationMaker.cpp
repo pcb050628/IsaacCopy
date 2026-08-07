@@ -115,8 +115,11 @@ void CImGuiAnimationMaker::FrameList()
 
 			if (ImGui::Selectable(std::to_string(n).c_str(), is_selected))
 			{
-				Start = d->Frames[SelectedIdx].Start;
-				Size = d->Frames[SelectedIdx].Size;
+				if (d->Frames.size() > SelectedIdx)
+				{
+					Start = d->Frames[SelectedIdx].Start;
+					Size = d->Frames[SelectedIdx].Size;
+				}
 				SelectedIdx = n; // Update selection when clicked
 			}
 			std::string StartText = "Start X: " + std::to_string(d->Frames[n].Start.x) + ", Y:" + std::to_string(d->Frames[n].Start.y);
@@ -134,14 +137,14 @@ void CImGuiAnimationMaker::FrameList()
 
 	if (!d->Frames.empty())
 	{
-		ImGui::Spacing;
+		ImGui::Spacing();
 		if (ImGui::Button("Remove Selected Frame"))
 		{
 			d->Frames.erase(d->Frames.begin() + SelectedIdx);
 		}
 	}
 
-	ImGui::Spacing;
+	ImGui::Spacing();
 	if (ImGui::Button("Frame Clear"))
 	{
 		d->Frames.clear();

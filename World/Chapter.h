@@ -28,7 +28,7 @@ protected:
 	int mFocusedRoomCoord;
 	std::unordered_map<int, std::weak_ptr<CRoombase>> mRoomMap;
 	//구조 변경하기 / 맵 -> 리스트 / 불을 키로 쓰는것보다 리스트에 불 유닛 쌍으로 넣고 불값으로 정렬하는게 나을듯
-	std::weak_ptr<CActor> mPlayerCharacter;
+	std::weak_ptr<CUnitbase> mPlayerCharacter;
 	std::unordered_map<int, std::weak_ptr<CUnitbase>> mUnitsActive;
 	std::unordered_map<int, std::weak_ptr<CUnitbase>> mUnitsDeactive;
 	std::unordered_map<int, std::weak_ptr<CObstaclebase>> mObstaclesActive;
@@ -132,7 +132,21 @@ public:
 		return std::dynamic_pointer_cast<CRoombase>(room.lock());
 	}
 	template<typename T>
-	std::weak_ptr<T> CreateUnit(const std::string& Name, FVector2 Coord)
+	std::weak_ptr<T> CreateCharacter(const std::string& Name, FVector2 Coord)
+	{
+		//플레이어가 이미 있는경우 널 반환
+		if (!mPlayerCharacter.expired())
+			return std::weak_ptr<T>();
+
+		std::weak_ptr<T> unit = CreateActor<T>(Name);
+		if (unit.expired())
+			return std::weak_ptr<T>();
+		std::shared_ptr<CUnitbase> ub = std::dynamic_pointer_cast<CUnitbase>(unit.lock());
+		ub->SetWorldPos(mRoomMap[mFocusedRoomCoord].lock()->CoordToWorldPos(Coord));
+		return unit;
+	}
+	template<typename T>
+	std::weak_ptr<T> CreateMonster(const std::string& Name, FVector2 Coord)
 	{
 		std::unordered_map<int, std::weak_ptr<CUnitbase>>::iterator iter = mUnitsDeactive.begin();
 		std::unordered_map<int, std::weak_ptr<CUnitbase>>::iterator iterEnd = mUnitsDeactive.end();
@@ -192,19 +206,20 @@ public:
 	template<typename T>
 	std::weak_ptr<class CGameObject> MakeObject(const std::string& Name, enum class EObjectType Type, FVector2 Coord)//좌표는 무조건 받아야 하고, 
 	{
+		//함수에 챕터내의 방 좌표, 방 내부좌표 받기
+		//현재 생성되고 있는 객체들은 전부 포커싱된 방에 생성되게 만들어져 있으므로 여러방을 동시에 생성하는데에 부적합함
 		switch (Type)//각 타입별 생성 함수 만들어 주기
 		{
 		case EObjectType::Room:
 			return CreateRoom<T>(Name, Coord);
 		case EObjectType::PlayerCharacter:
-			break;
-			//함수에 챕터내의 방 좌표, 방 내부좌표 받기
-			//현재 생성되고 있는 객체들은 전부 포커싱된 방에 생성되게 만들어져 있으므로 여러방을 동시에 생성하는데에 부적합함
+			return CreateCharacter<T>(Name, Coord);
 		case EObjectType::Monster:
-			return CreateUnit<T>(Name, Coord);
+			return CreateMonster<T>(Name, Coord);
 		case EObjectType::Obstacle:
 			return CreateObstacle<T>(Name, Coord);
 		case EObjectType::Door:
+			//생성하지 말고 가져가기
 			break;
 		}
 
