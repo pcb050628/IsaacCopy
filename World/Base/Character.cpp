@@ -2,7 +2,10 @@
 #include "World/World.h"
 #include "World/Input.h"
 
+#include "LogManager.h"
+
 #include "World/Collider.h"
+#include "World/ColliderSphere2D.h"
 #include "World/Animation2DComponent.h"
 
 #include "../Chapter.h"
@@ -36,9 +39,9 @@ bool CCharacter::Init()
 	std::shared_ptr<CTearShooter> shooter = mShooter.lock();
 	if (!shooter)
 		return false;
-
-	shooter->AddFirePoint(FVector2());
-	shooter->AddFirePoint(FVector2());
+	
+	shooter->AddFirePoint(FVector2(-10, -20)); //왼
+	shooter->AddFirePoint(FVector2(10, -20));	//오
 
 	shooter->AddOnCollision(this, &CCharacter::Attack);
 	shooter->UpdateUnitAttributeData(false, mAttribute);
@@ -46,6 +49,8 @@ bool CCharacter::Init()
 	std::shared_ptr<CRigidBodyComponent> rb = mRigidBody.lock();
 	rb->SetMass(1.f);
 	rb->SetLimit(500.f);
+
+	mHurtBox.lock()->SetCollisionProfile("Player");
 
 	std::shared_ptr<CInput> input = mWorld.lock()->GetInput().lock();
 	if (!input)
@@ -117,9 +122,18 @@ void CCharacter::Update(float DeltaTime)
 	{
 		SetBodyDirection(FVector2(0, -1));
 		mBody.lock()->Stop(true);
+
 	}
 
+	if (mbIsFiring)
+		mHead.lock()->Play();
+	else
+	{
+		SetHeadDirection(mBodyDirection);
+		mHead.lock()->Stop(true);
+	}
 
+	mbIsFiring = false;
 	mMoveDirection = FVector3::Zero;
 	CUnitbase::Update(DeltaTime);
 }
@@ -171,6 +185,26 @@ void CCharacter::MoveDown()
 void CCharacter::MoveRight()
 {
 	mMoveDirection.x += 1;
+}
+
+void CCharacter::Fire()
+{
+	if (mShooter.expired())
+		return;
+
+	mbIsFiring = true;
+	std::shared_ptr<CTearShooter> shooter = mShooter.lock();
+
+	//일단 해놓긴 했는데
+	//발사 가능 상태를 어디서 검사하는게 맞는지 확신이 없네
+	//일단은 슈터에서 확인하는게 맞는거같긴함
+	//유닛쪽에서는 모든 역할을 슈터에 위임한거니까
+	//아는건 아무것도 없고 능력치만 던져주고 발사하라고만 하는거니까
+	//검사는 슈터에서 해야겟지?
+	//아닌거같긴한데 아닌거같은데
+	FVector3 dir = mRigidBody.lock()->GetVelocity();
+	dir.Normalize();
+	shooter->FireWithVelocityOffset(FVector2(dir.x, dir.y));
 }
 
 void CCharacter::FireUp()

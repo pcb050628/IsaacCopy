@@ -11,10 +11,15 @@ public:
     virtual ~CTearShooter();
 
 protected:
+    std::weak_ptr<class CUnitbase> mOwnerUnit;
+    std::weak_ptr<class CSceneComponent> mOwnerUnitHead;
+    std::weak_ptr<class CSceneComponent> mOwnerUnitBody;
+    bool mbIsOwnerPlayer = false;
     //발사 위치들 | 당연히 offset 개념으로 작동함
-    std::list<FVector2> mFirePoints;
+    std::vector<FVector2> mFirePoints;
+    int mFirePointIndex = 0;
     //발사를 순서대로 할건지 동시에 하는지
-    bool mIsSynchronized = false;
+    bool mbIsSynchronized = false;
     //마지막 발사 시간
     float mLastFireTime = 0.f;
 
@@ -33,13 +38,16 @@ public:
 
 public:
     void Fire();
+    //IsSet - True: 위치 고정 | False: 오프셋 추가
+    void Fire(FVector3 firePoint, bool IsSet = false);
+    void FireWithVelocityOffset(FVector2 vOffset);
 
     void UpdateUnitAttributeData(const bool Synchronize, FUnitAttribute Attribute);
     void UpdateTearAttributeData(FTearAttribute Attribute);
     void UpdateAttributeData(FUnitAttribute Unit, FTearAttribute Tear);
     //싱크로나이즈 설정
-    void SetSynchro(const bool Val) { mIsSynchronized = Val; }
-    //발사 위치 등록
+    void SetSynchro(const bool Val) { mbIsSynchronized = Val; }
+    //발사 위치 등록 | 항상 아래쪽을 기준으로 추가하기
     void AddFirePoint(const FVector2& Point);
     void RemoveFirePoint(const FVector2& Point);
     //충돌시 등록
@@ -59,6 +67,7 @@ public:
         mOnDestroyFunc.insert(std::make_pair(id, std::bind(Func, Object, std::placeholders::_1)));
     }
 
+    //id로 해놓은 이유는 할당하는 객체들이 전부 유닛이 아니라 유닛과 아이템들로 이루어지고 객체 하나당 하나만 할당하기 때문
     void RemoveOnCollision(int ID)
     {
         if (mOnCollisionFunc.find(ID) == mOnCollisionFunc.end())
@@ -71,6 +80,9 @@ public:
             return;
         mOnDestroyFunc.erase(ID);
     }
+
+private:
+    FVector3 FirePointCalculate(int Index);
 
 public:
     //눈물에서 호출할 함수

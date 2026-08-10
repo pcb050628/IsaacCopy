@@ -22,6 +22,7 @@ protected:
     //적들이 이게 필요한 일이 있나?
 
     FVector3 mMoveDirection;
+    bool mbIsFiring = false;
 
 public:
     virtual bool Init();//초기화 단계에서 첫번째 캐릭터인지 알아야함
@@ -46,7 +47,7 @@ public:
     //아무리 생각해도 모르겠다.
     //아이템 추가 및 제거 함수
     //아이템 개수도 외부에서 알아야하고
-    //아이템은 굳이 포인터로 들어야하나 | 포인터로 안들어도 될거같은데
+    //아이템은 굳이 스마트 포인터로 들어야하나 | 포인터로 안들어도 될거같은데
     //아이템 만들때 가능하면 포인터로 안들고있어도 되게 만들자
 
 private:
@@ -55,6 +56,7 @@ private:
     void MoveDown();
     void MoveRight();
 
+    virtual void Fire();
     void FireUp();
     void FireLeft();
     void FireDown();

@@ -3,6 +3,7 @@
 #include "Base/Roombase.h"
 #include "Base/Unitbase.h"
 #include "Base/Obstaclebase.h"
+#include "Base/Tear.h"
 
 enum class ERoomType;
 enum class ERoomShape;
@@ -29,11 +30,12 @@ protected:
 	std::unordered_map<int, std::weak_ptr<CRoombase>> mRoomMap;
 	//구조 변경하기 / 맵 -> 리스트 / 불을 키로 쓰는것보다 리스트에 불 유닛 쌍으로 넣고 불값으로 정렬하는게 나을듯
 	std::weak_ptr<CUnitbase> mPlayerCharacter;
-	std::unordered_map<int, std::weak_ptr<CUnitbase>> mUnitsActive;
-	std::unordered_map<int, std::weak_ptr<CUnitbase>> mUnitsDeactive;
-	std::unordered_map<int, std::weak_ptr<CObstaclebase>> mObstaclesActive;
-	std::unordered_map<int, std::weak_ptr<CObstaclebase>> mObstaclesDeactive;
-	//std::unordered_map<int, std::pair<bool, std::weak_ptr<class CTear>>> mTears;
+	std::unordered_map<int, std::weak_ptr<CUnitbase>> mUnitsActivate;
+	std::unordered_map<int, std::weak_ptr<CUnitbase>> mUnitsDeactivate;
+	std::unordered_map<int, std::weak_ptr<CObstaclebase>> mObstaclesActivate;
+	std::unordered_map<int, std::weak_ptr<CObstaclebase>> mObstaclesDeactivate;
+	std::unordered_map<int, std::weak_ptr<CTear>> mTearsActivate;
+	std::unordered_map<int, std::weak_ptr<CTear>> mTearsDeactivate;
 
 	//눈물 발사기(컴포넌트) <- 이거 필요한가? 어짜피 보관되는 위치도 Chapter 고 다 여기서 받아오는데 기능도 전부 Chapter 에 의탁해버리면?
 	//							챕터가 너무 방대해지긴하네 이미 다른 유닛들의 관리도 책임지고 있는데 책임을 합치는것이면 모르겠지만 다른 객체들과 다르게
@@ -141,26 +143,29 @@ public:
 		std::weak_ptr<T> unit = CreateActor<T>(Name);
 		if (unit.expired())
 			return std::weak_ptr<T>();
+		mPlayerCharacter = std::dynamic_pointer_cast<CUnitbase>(unit.lock());
 		std::shared_ptr<CUnitbase> ub = std::dynamic_pointer_cast<CUnitbase>(unit.lock());
 		ub->SetWorldPos(mRoomMap[mFocusedRoomCoord].lock()->CoordToWorldPos(Coord));
+		ub->SetRoom(mRoomMap[mFocusedRoomCoord].lock());
 		return unit;
 	}
 	template<typename T>
 	std::weak_ptr<T> CreateMonster(const std::string& Name, FVector2 Coord)
 	{
-		std::unordered_map<int, std::weak_ptr<CUnitbase>>::iterator iter = mUnitsDeactive.begin();
-		std::unordered_map<int, std::weak_ptr<CUnitbase>>::iterator iterEnd = mUnitsDeactive.end();
+		std::unordered_map<int, std::weak_ptr<CUnitbase>>::iterator iter = mUnitsDeactivate.begin();
+		std::unordered_map<int, std::weak_ptr<CUnitbase>>::iterator iterEnd = mUnitsDeactivate.end();
 		for (; iter != iterEnd; ++iter)
 		{
 			std::shared_ptr<CUnitbase> unit = iter->second.lock();
 			if (typeid(unit.get()) != typeid(T))
 				continue;
 
-			mUnitsDeactive.erase(iter);
-			mUnitsActive[unit->GetID()] = unit;
+			mUnitsDeactivate.erase(iter);
+			mUnitsActivate[unit->GetID()] = unit;
 
 			unit->Reset(true);
 			unit->SetWorldPos(mRoomMap[mFocusedRoomCoord].lock()->CoordToWorldPos(Coord));
+			unit->SetRoom(mRoomMap[mFocusedRoomCoord].lock());
 			return std::dynamic_pointer_cast<T>(unit);
 		}
 
@@ -168,28 +173,30 @@ public:
 		if (!unit.expired())
 		{
 			std::shared_ptr<CUnitbase> ub = std::dynamic_pointer_cast<CUnitbase>(unit.lock());
-			mUnitsActive[ub->GetID()] = ub;
+			mUnitsActivate[ub->GetID()] = ub;
 
 			ub->SetWorldPos(mRoomMap[mFocusedRoomCoord].lock()->CoordToWorldPos(Coord));
+			ub->SetRoom(mRoomMap[mFocusedRoomCoord].lock());
 		}
 		return unit;
 	}
 	template<typename T>
 	std::weak_ptr<T> CreateObstacle(const std::string& Name, FVector2 Coord)
 	{
-		std::unordered_map<int, std::weak_ptr<CObstaclebase>>::iterator iter = mObstaclesDeactive.begin();
-		std::unordered_map<int, std::weak_ptr<CObstaclebase>>::iterator iterEnd = mObstaclesDeactive.end();
+		std::unordered_map<int, std::weak_ptr<CObstaclebase>>::iterator iter = mObstaclesDeactivate.begin();
+		std::unordered_map<int, std::weak_ptr<CObstaclebase>>::iterator iterEnd = mObstaclesDeactivate.end();
 		for (; iter != iterEnd; ++iter)
 		{
 			std::shared_ptr<CObstaclebase> obstacle = iter->second.lock();
 			if (typeid(obstacle.get()) != typeid(T))
 				continue;
 
-			mObstaclesDeactive.erase(iter);
-			mObstaclesActive[obstacle->GetID()] = obstacle;
+			mObstaclesDeactivate.erase(iter);
+			mObstaclesActivate[obstacle->GetID()] = obstacle;
 
 			obstacle->Reset(true);
 			obstacle->SetWorldPos(mRoomMap[mFocusedRoomCoord].lock()->CoordToWorldPos(Coord));
+			obstacle->SetRoom(mRoomMap[mFocusedRoomCoord].lock());
 			return std::dynamic_pointer_cast<T>(obstacle);
 		}
 
@@ -197,14 +204,15 @@ public:
 		if (!obstacle.expired())
 		{
 			std::shared_ptr<CObstaclebase> ob = std::dynamic_pointer_cast<CObstaclebase>(obstacle.lock());
-			mObstaclesActive[ob->GetID()] = ob;
+			mObstaclesActivate[ob->GetID()] = ob;
 
 			ob->SetWorldPos(mRoomMap[mFocusedRoomCoord].lock()->CoordToWorldPos(Coord));
+			ob->SetRoom(mRoomMap[mFocusedRoomCoord].lock());
 		}
 		return obstacle;
 	}
 	template<typename T>
-	std::weak_ptr<class CGameObject> MakeObject(const std::string& Name, enum class EObjectType Type, FVector2 Coord)//좌표는 무조건 받아야 하고, 
+	std::weak_ptr<CGameObject> MakeObject(const std::string& Name, enum class EObjectType Type, FVector2 Coord)//좌표는 무조건 받아야 하고, 
 	{
 		//함수에 챕터내의 방 좌표, 방 내부좌표 받기
 		//현재 생성되고 있는 객체들은 전부 포커싱된 방에 생성되게 만들어져 있으므로 여러방을 동시에 생성하는데에 부적합함
@@ -226,7 +234,34 @@ public:
 		return std::weak_ptr<CGameObject>();
 	}
 
-	void SetWallToFocus();
+	std::weak_ptr<CTear> GetTear()
+	{
+		if (mTearsDeactivate.empty())
+		{
+			std::shared_ptr<CTear> tear = CreateActor<CTear>("Tear").lock();
+			if (!tear)
+				return std::weak_ptr<CTear>();
+			mTearsActivate[tear->GetID()] = tear;
+			return tear;
+		}
+		else
+		{
+			for (std::pair<int, std::weak_ptr<CTear>> tear : mTearsDeactivate)
+			{
+				if (!tear.second.expired())
+				{
+					mTearsDeactivate.erase(tear.first);
+					mTearsActivate[tear.first] = tear.second;
+					tear.second.lock()->Reset(true);
+					return tear.second;
+				}
+			}
+		}
+
+		return std::weak_ptr<CTear>();
+	}
+
+	void SettingFocus();
 	//받은 오브젝트 반납하기 - 오브젝트 비활성화하고 방에서 분리한 해제안하고 들고있음
 	bool ReturnGObj(std::weak_ptr<CGameObject> Obj);
 
@@ -243,7 +278,7 @@ public:
 	std::weak_ptr<CActor> GetPlayerCharacter() { return mPlayerCharacter; }
 
 public:
-	static FVector2 FourDirections[4];
-	static FVector2 EightDirections[8];
+	static const FVector2 FourDirections[4];
+	static const FVector2 EightDirections[8];
 };
 

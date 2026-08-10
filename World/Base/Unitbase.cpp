@@ -168,8 +168,9 @@ void CUnitbase::SetHeadDirection(FVector2 Dir)
 	if (mHeadDirection == Dir)
 		return;
 
-	if (mHeadDirection.x != Dir.x)
+	if (mHeadDirection != Dir)
 	{
+		mHeadDirection = Dir;
 		if (0 == Dir.x)
 		{
 			PlayHeadVerticalAnim();
@@ -179,7 +180,6 @@ void CUnitbase::SetHeadDirection(FVector2 Dir)
 			PlayHeadHorizontalAnim();
 		}
 	}
-	mHeadDirection = Dir;
 }
 
 void CUnitbase::PlayBodyVerticalAnim()
@@ -196,4 +196,18 @@ void CUnitbase::PlayHeadVerticalAnim()
 
 void CUnitbase::PlayHeadHorizontalAnim()
 {
+}
+
+std::weak_ptr<CSceneComponent> CUnitbase::GetHeadComp()
+{
+	if(mHeadMesh.expired())
+		return std::weak_ptr<CSceneComponent>();
+	return mHeadMesh.lock()->GetThisPtr<CSceneComponent>();
+}
+
+std::weak_ptr<CSceneComponent> CUnitbase::GetBodyComp()
+{
+	if (mBodyMesh.expired())
+		return std::weak_ptr<CSceneComponent>();
+	return mBodyMesh.lock()->GetThisPtr<CSceneComponent>();
 }

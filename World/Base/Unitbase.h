@@ -74,5 +74,11 @@ protected:
 public:
     const bool GetIsDead() const { return mbIsDead; }
     const bool GetIsTemporary() const { return mbIsTemporary; }
-};
+
+    FVector2 GetBodyDirection() const { return mBodyDirection; }
+    FVector2 GetHeadDirection() const { return mHeadDirection; }
+
+    std::weak_ptr<CSceneComponent> GetHeadComp();
+    std::weak_ptr<CSceneComponent> GetBodyComp();
+};                                              
 

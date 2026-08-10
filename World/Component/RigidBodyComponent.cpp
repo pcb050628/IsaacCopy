@@ -36,10 +36,12 @@ void CRigidBodyComponent::Update(float DeltaTime)
             mRBVelocity *= mRBSpeedLimit;
         }
 
-        float friction = mMass * mGravity * DeltaTime;
-        mRBVelocity += -mRBVelocity * friction;
-
         AddRelativePos(mRBVelocity * DeltaTime);
+
+        float friction = mMass * mGravity * DeltaTime;
+        if (!mGravityOn)
+            friction /= mGravity;
+        mRBVelocity += -mRBVelocity * friction;
 
         if (mRBVelocity.Length() < 0.1f)
         {

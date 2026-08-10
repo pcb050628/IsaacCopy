@@ -7,6 +7,8 @@
 
 #include "World/ColliderSphere2D.h"
 
+#include "../Component/TearShooter.h"
+
 REGISTER_GAMECLASS(CCharacterIsaac, "Isaac", EObjectType::PlayerCharacter);
 
 CCharacterIsaac::CCharacterIsaac()
@@ -42,6 +44,12 @@ bool CCharacterIsaac::Init()
 
     SetBodyDirection(FVector2(0, -1));
 
+    mAttribute.Range = 85.f * 5.f;
+    mAttribute.ShotSpeed = 7.f; //이게 힘이고
+    mAttribute.ShotTerm = 1.f;
+
+    mShooter.lock()->UpdateUnitAttributeData(false, mAttribute);
+
     return true;
 }
 
@@ -61,6 +69,8 @@ void CCharacterIsaac::PlayBodyVerticalAnim()
     bool symmetry = mBodyDirection.y > 0 ? true : false;
     mBody.lock()->SetSymmetry("Isaac_Body_Walk_V", symmetry);
     mBody.lock()->Play();
+    if (!mbIsFiring)
+        SetHeadDirection(mBodyDirection);
 }
 
 void CCharacterIsaac::PlayBodyHorizontalAnim()
@@ -69,12 +79,44 @@ void CCharacterIsaac::PlayBodyHorizontalAnim()
     bool symmetry = mBodyDirection.x > 0 ? false : true;
 	mBody.lock()->SetSymmetry("Isaac_Body_Walk_H", symmetry);
     mBody.lock()->Play();
+    if(!mbIsFiring)
+        SetHeadDirection(mBodyDirection);
 }
 
 void CCharacterIsaac::PlayHeadVerticalAnim()
 {
+    bool isUp = mHeadDirection.y > 0 ? false : true;
+    if(isUp)
+        mHead.lock()->ChangeAnimation("Isaac_Head_Back");
+    else
+        mHead.lock()->ChangeAnimation("Isaac_Head_Front");
+
+    if (mbIsFiring)
+    {
+        mHead.lock()->SetFrame(1);
+        mHead.lock()->Play();
+    }
+    else
+    {
+        mHead.lock()->Stop(true);
+    }
 }
 
 void CCharacterIsaac::PlayHeadHorizontalAnim()
 {
+    bool isRight = mHeadDirection.x > 0 ? false : true;
+    if (isRight)
+        mHead.lock()->ChangeAnimation("Isaac_Head_Left");
+    else
+        mHead.lock()->ChangeAnimation("Isaac_Head_Right");
+
+    if (mbIsFiring)
+    {
+        mHead.lock()->SetFrame(1);
+        mHead.lock()->Play();
+    }
+    else
+    {
+        mHead.lock()->Stop(true);
+    }
 }

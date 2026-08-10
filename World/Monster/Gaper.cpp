@@ -63,6 +63,8 @@ bool CGaper::Init()
 	mHurtBox.lock()->SetDebugDraw(true);
 	mHurtBox.lock()->SetRenderLayer("Debug");
 
+	mRigidBody.lock()->SetLimit(100.f);
+
 	//다시 
 	//게이퍼의 행동들 역할들과 연관지어 분리하기
 	//.이동 -> 애니메이션 변경 + Rb로 방향 보내기
@@ -101,10 +103,12 @@ void CGaper::Update(float DeltaTime)
 			// 여기서는 해당 좌표의 셀을 얻어오는 것이고
 			// 범용성있게는 raycast 를 사용하는 것
 			//3. 장애물이 있다면 다른 두번째로 가까운 방향으로 가기
+			
+			//일단 그냥 방향으로만 가게 해놨는데 이건 나중에 고치기
 
 			FVector3 dir = mTarget.lock()->GetWorldPos() - GetWorldPos();
 			dir.Normalize();
-			mRigidBody.lock()->AddForce(dir * 400.f);
+			mRigidBody.lock()->AddForce(dir * 100.f);
 		}
 		else
 		{
@@ -127,6 +131,30 @@ void CGaper::Dead()
 void CGaper::Reset(bool HardReset)
 {
 
+}
+
+void CGaper::PlayBodyVerticalAnim()
+{
+	mBody.lock()->ChangeAnimation("Gaper_Body_Walk_V");
+	bool symmetry = mBodyDirection.y > 0 ? true : false;
+	mBody.lock()->SetSymmetry("Gaper_Body_Walk_V", symmetry);
+	mBody.lock()->Play();
+}
+
+void CGaper::PlayBodyHorizontalAnim()
+{
+	mBody.lock()->ChangeAnimation("Gaper_Body_Walk_H");
+	bool symmetry = mBodyDirection.x > 0 ? false : true;
+	mBody.lock()->SetSymmetry("Gaper_Body_Walk_H", symmetry);
+	mBody.lock()->Play();
+}
+
+void CGaper::PlayHeadVerticalAnim()
+{
+}
+
+void CGaper::PlayHeadHorizontalAnim()
+{
 }
 
 void CGaper::MoveToTarget()

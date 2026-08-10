@@ -7,6 +7,7 @@
 #include "GameSystemActor.h"
 
 #include "RenderManager.h"
+#include "World/ColliderBox2D.h"
 #include "World/MeshComponent.h"
 #include "World/Animation2DComponent.h"
 
@@ -36,6 +37,21 @@ bool CDebugChapter::Init()
 
 	//카메라 
 	mChapterManagementActor = CreateActor<CChapterSystemActor>("GSA");
+
+	for (int i = 0; i < 6; ++i)
+	{
+		auto actor = CreateActor<CActor>("Wall");
+		auto col = actor.lock()->CreateComponent<CColliderBox2D>("Root").lock();
+		col->SetDebugDraw(true);
+		col->SetRenderLayer("Debug");
+		col->SetCollisionProfile("Wall");
+		mWalls.push_back(actor);
+	}
+	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[0].lock()->GetRootComponent().lock())->SetBoxSize(50.f, 700.f);
+	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[1].lock()->GetRootComponent().lock())->SetBoxSize(50.f, 700.f);
+	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[2].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);
+	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);
+
 	debugMode = false;
 
 	if (debugMode) //애니메이션 만들기
@@ -57,6 +73,8 @@ bool CDebugChapter::Init()
 		//		CGameClassContainer::GetInst()->Instantiate(20, FVector2(x, y));
 		//	}
 		//}
+
+		SettingFocus();
 	}
 	//if (!SetAnim("Gaper_Idle_Head", TEXT("Anim/Gaper_Idle_Head.txt"), true))
 	//	return false;

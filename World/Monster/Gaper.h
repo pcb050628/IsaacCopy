@@ -19,6 +19,12 @@ public:
 
     virtual void Reset(bool HardReset = false);
 
+protected:
+    virtual void PlayBodyVerticalAnim();
+    virtual void PlayBodyHorizontalAnim();
+    virtual void PlayHeadVerticalAnim();
+    virtual void PlayHeadHorizontalAnim();
+
 private:
     void MoveToTarget();
         

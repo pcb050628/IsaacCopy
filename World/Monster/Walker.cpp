@@ -3,6 +3,9 @@
 #include "LogManager.h"
 
 #include "World/ColliderSphere2D.h"
+#include "World/Animation2DComponent.h"
+
+#include "../Component/RigidBodyComponent.h"
 
 CWalker::CWalker()
 {
@@ -42,10 +45,36 @@ bool CWalker::Init()
 
 void CWalker::Update(float DeltaTime)
 {
-	/*if (!mTarget.expired())
+	std::shared_ptr rb = mRigidBody.lock();
+	FVector3 velocity = rb->GetVelocity();
+	if (FVector3::Zero != velocity)
 	{
-		mTarget.lock()->GetHit(GetThisPtr<CUnitbase>());
-	}*/
+		FVector3 dir = velocity;
+		dir.Normalize();
+
+		rb->AddForce(dir * mAttribute.Speed * 5.f);
+		if (fabs(dir.x) > fabs(dir.y))
+		{
+			if (dir.x > 0)
+				SetBodyDirection(FVector2(1, 0));
+			else
+				SetBodyDirection(FVector2(-1, 0));
+		}
+		else
+		{
+			if (dir.y > 0)
+				SetBodyDirection(FVector2(0, 1));
+			else
+				SetBodyDirection(FVector2(0, -1));
+		}
+
+		mBody.lock()->Play();
+	}
+	else
+	{
+		SetBodyDirection(FVector2(0, -1));
+		mBody.lock()->Stop(true);
+	}
 
 	CMonster::Update(DeltaTime);
 }

@@ -84,6 +84,7 @@ protected:
 
 protected:
     std::vector<std::weak_ptr<class CMeshComponent>> mBackgroundMesh;
+	std::vector<std::weak_ptr<class CAnimation2DComponent>> mBackgroundAnim;
     std::weak_ptr<CMeshComponent> mShadeMesh1;               //방 음영
 
     //방의 진입점(문의 위치)

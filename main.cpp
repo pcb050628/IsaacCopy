@@ -40,6 +40,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return 0;
 	}
 
+	CRenderManager::GetInst()->CreateLayer("Tear", 5, ERenderSortType::None);
 	CRenderManager::GetInst()->CreateLayer("Head", 4, ERenderSortType::Y);
 	CRenderManager::GetInst()->CreateLayer("Body", 3, ERenderSortType::Y);
 

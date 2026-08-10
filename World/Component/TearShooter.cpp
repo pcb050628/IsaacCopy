@@ -3,6 +3,7 @@
 
 #include "World/World.h"
 #include "World/Collider.h"
+#include "World/MeshComponent.h"
 
 #include "../Chapter.h"
 
@@ -17,6 +18,19 @@ CTearShooter::~CTearShooter()
 
 bool CTearShooter::Init()
 {
+	std::weak_ptr<CUnitbase> obj = std::dynamic_pointer_cast<CUnitbase>(mOwner.lock());
+	if (obj.expired())
+		return false;
+
+	if (EObjectType::PlayerCharacter == obj.lock()->GetObjType())
+		mbIsOwnerPlayer = true;
+
+	mOwnerUnit = obj;
+	mOwnerUnitHead = mOwnerUnit.lock()->GetHeadComp();
+	mOwnerUnitBody = mOwnerUnit.lock()->GetBodyComp();
+	if (mOwnerUnitHead.expired() || mOwnerUnitBody.expired())
+		return false;
+
 	return true;
 }
 
@@ -30,18 +44,147 @@ void CTearShooter::Destroy()
 	CActorComponent::Destroy();
 }
 
-void CTearShooter::Fire()
+void CTearShooter::Fire() 
 {
-	//발사 가능한지 확인하기
-	//
+	if (static_cast<float>(CTimeManager::GetTime()) - mLastFireTime < mUnitAttribute.ShotTerm)
+		return;
+
+	mLastFireTime = static_cast<float>(CTimeManager::GetTime());
+
+	if (!mOwnerUnit.expired()) //오, 왼, 위, 아래
+	{
+		mTearAttribute.Direction = mOwnerUnit.lock()->GetHeadDirection();
+	}
+
 	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
-	
+
+	if (mbIsSynchronized)
+	{
+		for (FVector2 startPos : mFirePoints)
+		{
+			std::shared_ptr<CTear> tear = chptr->GetTear().lock();
+			if (!tear)
+			{
+				assert("ERROR: TEAR IS EMPTY");
+				return;
+			}
+			tear->Set(mbIsOwnerPlayer, FVector3(startPos.x, startPos.y, 0), mTearAttribute, GetThisPtr<CTearShooter>());
+		}
+	}
+	else
+	{
+		std::shared_ptr<CTear> tear = chptr->GetTear().lock();
+		if (!tear)
+		{
+			assert("ERROR: TEAR IS EMPTY");
+			return;
+		}
+		tear->Set(mbIsOwnerPlayer, mOwnerUnitHead.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>());
+		mFirePointIndex = (mFirePointIndex + 1) % mFirePoints.size();
+	}
+}
+
+void CTearShooter::Fire(FVector3 firePoint, bool IsSet)
+{
+	if (static_cast<float>(CTimeManager::GetTime()) - mLastFireTime < mUnitAttribute.ShotTerm)
+		return;
+
+	mLastFireTime = static_cast<float>(CTimeManager::GetTime());
+	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+
+	if (IsSet)
+	{
+		std::shared_ptr<CTear> tear = chptr->GetTear().lock();
+		if (!tear)
+		{
+			assert("ERROR: TEAR IS EMPTY");
+			return;
+		}
+		tear->Set(mbIsOwnerPlayer, firePoint, mTearAttribute, GetThisPtr<CTearShooter>());
+	}
+	else
+	{
+		if (!mOwnerUnit.expired()) //오, 왼, 위, 아래
+		{
+			mTearAttribute.Direction = mOwnerUnit.lock()->GetHeadDirection();
+		}
+
+		if (mbIsSynchronized)
+		{
+			for (FVector2 startPos : mFirePoints)
+			{
+				std::shared_ptr<CTear> tear = chptr->GetTear().lock();
+				if (!tear)
+				{
+					assert("ERROR: TEAR IS EMPTY");
+					return;
+				}
+				tear->Set(mbIsOwnerPlayer, FVector3(startPos.x, startPos.y, 0), mTearAttribute, GetThisPtr<CTearShooter>());
+			}
+		}
+		else
+		{
+			std::shared_ptr<CTear> tear = chptr->GetTear().lock();
+			if (!tear)
+			{
+				assert("ERROR: TEAR IS EMPTY");
+				return;
+			}
+			tear->Set(mbIsOwnerPlayer, firePoint + mOwnerUnitHead.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>());
+			mFirePointIndex = (mFirePointIndex + 1) % mFirePoints.size();
+		}
+	}
+}
+
+void CTearShooter::FireWithVelocityOffset(FVector2 vOffset)
+{
+	if (static_cast<float>(CTimeManager::GetTime()) - mLastFireTime < mUnitAttribute.ShotTerm)
+		return;
+
+	mLastFireTime = static_cast<float>(CTimeManager::GetTime());
+
+	if (!mOwnerUnit.expired()) //오, 왼, 위, 아래
+	{
+		mTearAttribute.Direction = mOwnerUnit.lock()->GetHeadDirection() + vOffset / 2;
+	}
+
+	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+
+	if (mbIsSynchronized)
+	{
+		for (FVector2 startPos : mFirePoints)
+		{
+			std::shared_ptr<CTear> tear = chptr->GetTear().lock();
+			if (!tear)
+			{
+				assert("ERROR: TEAR IS EMPTY");
+				return;
+			}
+			tear->Set(mbIsOwnerPlayer, FVector3(startPos.x, startPos.y, 0), mTearAttribute, GetThisPtr<CTearShooter>());
+		}
+	}
+	else
+	{
+		std::shared_ptr<CTear> tear = chptr->GetTear().lock();
+		if (!tear)
+		{
+			assert("ERROR: TEAR IS EMPTY");
+			return;
+		}
+		tear->Set(mbIsOwnerPlayer, mOwnerUnitHead.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>());
+		mFirePointIndex = (mFirePointIndex + 1) % mFirePoints.size();
+	}
 }
 
 void CTearShooter::UpdateUnitAttributeData(const bool Synchronize, FUnitAttribute Attribute)
 {
-	mIsSynchronized = Synchronize;
+	mbIsSynchronized = Synchronize;
 	mUnitAttribute = Attribute;
+	
+	mTearAttribute.Damage = mUnitAttribute.Damage;
+	mTearAttribute.Speed = mUnitAttribute.ShotSpeed;
+	mTearAttribute.Range = mUnitAttribute.Range;
+	mTearAttribute.Height = mUnitAttribute.Height;
 }
 
 void CTearShooter::UpdateTearAttributeData(FTearAttribute Attribute)
@@ -62,8 +205,8 @@ void CTearShooter::AddFirePoint(const FVector2& Point)
 
 void CTearShooter::RemoveFirePoint(const FVector2& Point)
 {
-	std::list<FVector2>::iterator iter = mFirePoints.begin();
-	std::list<FVector2>::iterator iterEnd = mFirePoints.end();
+	std::vector<FVector2>::iterator iter = mFirePoints.begin();
+	std::vector<FVector2>::iterator iterEnd = mFirePoints.end();
 	for (; iter != iterEnd; ++iter)
 	{
 		if (*iter == Point)
@@ -72,6 +215,39 @@ void CTearShooter::RemoveFirePoint(const FVector2& Point)
 			return;
 		}
 	}
+}
+
+FVector3 CTearShooter::FirePointCalculate(int Index)
+{
+	if (Index < 0 || Index >= mFirePoints.size())
+	{
+		assert("ERROR: INDEX POINT NULL");
+	}
+
+	FVector2 origin = mFirePoints[Index];
+	FVector2 headDir = mOwnerUnit.lock()->GetHeadDirection();
+	if(headDir == FVector2(0, -1))
+		return FVector3(origin.x, origin.y, 0);
+	else
+	{
+		if (CChapter::FourDirections[0] == headDir)
+		{
+			int y = origin.x;
+			int x = -origin.y;
+			return FVector3(x, y, 0);
+		}
+		else if (CChapter::FourDirections[1] == headDir)
+		{
+			int y = origin.x;
+			int x = origin.y;
+			return FVector3(x, y, 0);
+		}
+		else if (CChapter::FourDirections[2] == headDir)
+		{
+			return FVector3(-origin.x, -origin.y, 0);
+		}
+	}
+	return FVector3();
 }
 
 void CTearShooter::OnDestroy(const FVector3& WorldPos)

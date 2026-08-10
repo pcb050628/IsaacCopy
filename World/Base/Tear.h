@@ -26,6 +26,8 @@ protected:
 	std::weak_ptr<class CMeshComponent> mMesh;
 	std::weak_ptr<class CAnimation2DComponent> mAnimator;
 
+	//혹시라도 나중에 너무 무거워지고 느려지면
+	//이 변수 먼저 RawPointer 로 바꾸기
 	std::weak_ptr<class CTearShooter> mShooter; //눈물을 발사한 객체
 	bool mIsOwnerCharacter = false;
 	float mMovedDistance = 0.f;
@@ -52,7 +54,7 @@ public:
 		, bool Homing = false, bool Piercing = false, bool Spectral = false, bool Orbiting = false
 		, bool Boomerang = false, bool Shield = false, bool Bouncing = false, bool Sine = false, bool Square = false, bool Spiral = false
 		, int SplitStack = 0, int SplitCount = 0);
-	void Set(bool IsPlayer, FVector3 StartPos, FTearAttribute Attribute);
+	void Set(bool IsPlayer, FVector3 StartPos, FTearAttribute Attribute, std::weak_ptr<CTearShooter> Shooter);
 
 private:
 	//눈물 궤적 함수들

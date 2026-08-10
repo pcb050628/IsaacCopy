@@ -9,14 +9,14 @@
 
 #include "World/ColliderBox2D.h"
 
-FVector2 CChapter::FourDirections[4] =
+const FVector2 CChapter::FourDirections[4] =
 {
 	FVector2(1, 0),
 	FVector2(-1, 0),
 	FVector2(0, 1),
 	FVector2(0, -1)
 };
-FVector2 CChapter::EightDirections[8] =
+const FVector2 CChapter::EightDirections[8] =
 {
 	FVector2(2, -1),	//우측 하단
 	FVector2(2, 1),		//우측 상단
@@ -47,10 +47,13 @@ bool CChapter::Init()
 
 	mChapterManagementActor = CreateActor<CChapterSystemActor>("GSA");
 
-	for (int i = 0; i < 6; ++i)
+	for (int i = 0; i < 12; ++i)
 	{
 		auto actor = CreateActor<CActor>("Wall");
-		actor.lock()->CreateComponent<CColliderBox2D>("Root");
+		auto col = actor.lock()->CreateComponent<CColliderBox2D>("Root").lock();
+		col->SetDebugDraw(true);
+		col->SetRenderLayer("Debug");
+		col->SetCollisionProfile("Wall");
 		mWalls.push_back(actor);
 	}
 
@@ -65,8 +68,8 @@ bool CChapter::Init()
 	//4. 진행 방향으로 생성 한 방에서 다시 4방향으로 진행
 	//5. 진행 중 생성된 방의 개수가 최대값보다 크거나 같다면 바로 반환
 	//6. 시작 방에서 시작한 4방향을 다 완료했을때 최소 값보다 방이 적으면 다시 진행
-	
-    return true;
+
+	return true;
 }
 void CChapter::Update(float DeltaTime)
 {
@@ -128,26 +131,62 @@ void CChapter::GenerateRoom()
 		room->GenerateRoom(FourDirections[3], min, max, CurrentSize);
 	}
 }
-void CChapter::SetWallToFocus()
+void CChapter::SettingFocus() //지금은 벽만 설정하지만 이 함수를 포커스 이동시 초기 설정 함수로 만들기(벽, 문 모두 이동 설정하기)
 {
 	//현재 포커스 중인 방으로 벽 이동시키기
+	FVector3 center = mRoomMap[mFocusedRoomCoord].lock()->GetWorldPos();
+	//방의 크기가 기본이 아닌 경우를 생각해야함
+	//일단은 그냥 진행
+	//지금은 벽 4개 깔고 있는데 기본 방 기준으로 8개 깔기
+	//문 자리를 비워두고 문으로 넣어야 함
+	
+	//1. 벽의 개수 = 포커스 중인 방의 인접한 방의 개수 + 방의 면(기본 방 기준으로 4)
+	//2. 벽 위치 계산
+	//	1. 기존 계산 방식은 방크기 - 박스사이즈 / 2
+	//	2. 기존 계산 방식에서 문이 있는 경우 박스 사이즈 조정하고 그에 맞게 오프셋 주기
+
+	for (int i = 0; i < 4; ++i)
+	{
+		auto wall = mWalls[i].lock();
+		FVector2 offset = FourDirections[i];
+		offset.x *= 575.f;
+		offset.y *= 290.f;
+		wall->SetWorldPos(center + FVector3(offset.x, offset.y, 0));
+	}
+
+	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[0].lock()->GetRootComponent().lock())->SetBoxSize(50.f, 70.f);
+	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[1].lock()->GetRootComponent().lock())->SetBoxSize(50.f, 70.f);
+	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[2].lock()->GetRootComponent().lock())->SetBoxSize(100.f, 50.f);
+	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(130.f, 50.f);
 }
 bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 {
 	if (Obj.expired())
 		return false;
 
-	EObjectType t =  Obj.lock()->GetObjType();
-	if (EObjectType::Monster == t)
+	Obj.lock()->SetEnable(false);
+	Obj.lock()->SetRenderEnable(false);
+	EObjectType t = Obj.lock()->GetObjType();
+	switch (t)
 	{
+	case EObjectType::Room:
+		break;
+	case EObjectType::Door:
+		break;
+	case EObjectType::Tear: {
+		std::shared_ptr<CTear> tear = std::dynamic_pointer_cast<CTear>(Obj.lock());
+		mTearsActivate.erase(tear->GetID());
+		mTearsDeactivate[tear->GetID()] = tear;
+	} return true;
+	case EObjectType::Monster: {
 		std::shared_ptr<CUnitbase> unit = std::dynamic_pointer_cast<CUnitbase>(Obj.lock());
-		mUnitsActive.erase(unit->GetID());
-		mUnitsDeactive[unit->GetID()] = unit;
-		return true;
-	}
-	else if (EObjectType::Pickup == t)
-	{
-		
+		mUnitsActivate.erase(unit->GetID());
+		mUnitsDeactivate[unit->GetID()] = unit;
+	} return true;
+	case EObjectType::Obstacle:
+		break;
+	case EObjectType::Pickup:
+		break;
 	}
 
 	return false;

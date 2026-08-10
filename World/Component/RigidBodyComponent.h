@@ -12,9 +12,11 @@ public:
 
 private:
     FVector3 mRBVelocity;
-    float mRBSpeedLimit;
+    float mRBSpeedLimit = 1000.f;
     float mMass = 5.f;
     float mGravity = 9.8f;
+
+    bool mGravityOn = true;
 
 public:
     virtual bool Init();
@@ -31,5 +33,6 @@ public:
     void SetLimit(float Limit) { mRBSpeedLimit = Limit; }
     void SetMass(float Mass) { mMass = Mass; }
     void SetGravity(float Gravity) { mGravity = Gravity; }
+    void SetUseGravity(bool val) { mGravityOn = val; }
 };
 
