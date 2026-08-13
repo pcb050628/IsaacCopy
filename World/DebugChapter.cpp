@@ -1,5 +1,7 @@
 #include "DebugChapter.h"
 
+#include "LogManager.h"
+
 #include "Manager/GameClassContainer.h"
 #include "Data/GameDataManager.h"
 #include "Data/GameObjectStructure.h"
@@ -26,31 +28,21 @@ CDebugChapter::~CDebugChapter()
 
 bool CDebugChapter::Init()
 {
-	CWorld::Init();
-	/*if (!CChapter::Init())
-		return false;*/
+	//CWorld::Init();
 
-	CRenderManager::GetInst()->SetState("AlphaBlend");
-
-	mRoomRowMax = 10;
-	mRoomColMax = 10;
-
-	//카메라 
-	mChapterManagementActor = CreateActor<CChapterSystemActor>("GSA");
-
-	for (int i = 0; i < 6; ++i)
-	{
-		auto actor = CreateActor<CActor>("Wall");
-		auto col = actor.lock()->CreateComponent<CColliderBox2D>("Root").lock();
-		col->SetDebugDraw(true);
-		col->SetRenderLayer("Debug");
-		col->SetCollisionProfile("Wall");
-		mWalls.push_back(actor);
-	}
-	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[0].lock()->GetRootComponent().lock())->SetBoxSize(50.f, 700.f);
+	//CRenderManager::GetInst()->SetState("AlphaBlend");
+	//
+	//mRoomRowMax = 10;
+	//mRoomColMax = 10;
+	//
+	////카메라 
+	//mChapterManagementActor = CreateActor<CChapterSystemActor>("GSA");
+	//
+	//GenerateWallAndDoor();
+	/*std::dynamic_pointer_cast<CColliderBox2D>(mWalls[0].lock()->GetRootComponent().lock())->SetBoxSize(50.f, 700.f);
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[1].lock()->GetRootComponent().lock())->SetBoxSize(50.f, 700.f);
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[2].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);
-	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);
+	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);*/
 
 	debugMode = false;
 
@@ -62,19 +54,33 @@ bool CDebugChapter::Init()
 	}
 	else //테스트 코드
 	{
-		CGameClassContainer::GetInst()->Instantiate(10, FVector2(3, 3));
-		CGameClassContainer::GetInst()->Instantiate(20, FVector2(3, 3));
-		CGameClassContainer::GetInst()->Instantiate(31, FVector2(6, 3));
+		if (!CChapter::Init())
+			return false;
+		//CGameClassContainer::GetInst()->Instantiate(20, FVector2(5, 3));
+		//CGameClassContainer::GetInst()->Instantiate(31, FVector2(7, 3));
+		//
+		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(6, 3));
+		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(2, 2));
+		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(3, 4));
+		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(8, 5));
+		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(7, 1));
+		//
+		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(3, 4));
+		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(4, 2));
+		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(9, 2));
 		//20 gaper | 31 isaac
 		//for (int y = 0; y < 7; ++y)
 		//{
 		//	for (int x = 0; x < 13; ++x)
 		//	{
-		//		CGameClassContainer::GetInst()->Instantiate(20, FVector2(x, y));
+		//		CGameClassContainer::GetInst()->Instantiate(41, FVector2(x, y));
 		//	}
 		//}
 
-		SettingFocus();
+		//mChapterManagementActor.lock()->AddWorldPos(FVector2(650.f, 0.f));
+		InitialSetting();
+
+		CTimeManager::SetTimer(3.f, true, this, &CDebugChapter::CheckPlayerPos);
 	}
 	//if (!SetAnim("Gaper_Idle_Head", TEXT("Anim/Gaper_Idle_Head.txt"), true))
 	//	return false;
@@ -127,8 +133,18 @@ bool CDebugChapter::Init()
 
 void CDebugChapter::Update(float DeltaTime)
 {
-	CChapter::Update(DeltaTime);
-
 	if(debugMode)
 		animMaker.Update();
+	else
+		CChapter::Update(DeltaTime);
+}
+
+void CDebugChapter::CheckPlayerPos()
+{
+	auto player = mPlayerCharacter.lock();
+	if (!player)
+		return;
+
+	FVector3 pos = player->GetWorldPos();
+	LOG_DEBUG("PLAYER POS: ", std::to_string(pos.x), ", ", std::to_string(pos.y), ", ", std::to_string(pos.z));
 }

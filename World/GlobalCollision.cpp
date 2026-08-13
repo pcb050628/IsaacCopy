@@ -33,7 +33,13 @@ void CGlobalCollision::SetGlobalCollision()
 
 		//장애물
 		InfoManager->CreateChannel("Obstacle");
-		InfoManager->CreateProfile("Obstacle", "Obstacle", true, ECollisionInteraction::Block);
+		InfoManager->CreateProfile("Obstacle", "Obstacle", true, ECollisionInteraction::Ignore);
+
+		InfoManager->SetProfileInteraction("Player", "Obstacle", ECollisionInteraction::Block);
+		InfoManager->SetProfileInteraction("Obstacle", "Player", ECollisionInteraction::Block);
+
+		InfoManager->SetProfileInteraction("Monster", "Obstacle", ECollisionInteraction::Block);
+		InfoManager->SetProfileInteraction("Obstacle", "Monster", ECollisionInteraction::Block);
 
 		//장애물 히트박스
 		InfoManager->CreateChannel("ContactHit_Obstacle");
@@ -59,7 +65,13 @@ void CGlobalCollision::SetGlobalCollision()
 		//문
 		InfoManager->CreateChannel("Door");
 		InfoManager->CreateProfile("Door", "Door", true, ECollisionInteraction::Block);
+
+		InfoManager->SetProfileInteraction("Door", "Monster", ECollisionInteraction::Block);
+		InfoManager->SetProfileInteraction("Monster", "Door", ECollisionInteraction::Block);
+
 		InfoManager->SetProfileInteraction("Player", "Door", ECollisionInteraction::Overlap);
+		InfoManager->SetProfileInteraction("Door", "Player", ECollisionInteraction::Overlap);
+
 		InfoManager->SetProfileInteraction("Obstacle", "Door", ECollisionInteraction::Ignore);
 		InfoManager->SetProfileInteraction("ContactHit", "Door", ECollisionInteraction::Ignore);
 
@@ -73,6 +85,9 @@ void CGlobalCollision::SetGlobalCollision()
 		InfoManager->SetProfileInteraction("Wall", "Wall", ECollisionInteraction::Ignore);
 
 		InfoManager->SetProfileInteraction("Player", "Wall", ECollisionInteraction::Block);
+		InfoManager->SetProfileInteraction("Wall", "Player", ECollisionInteraction::Block);
+
 		InfoManager->SetProfileInteraction("Monster", "Wall", ECollisionInteraction::Block);
+		InfoManager->SetProfileInteraction("Wall", "Monster", ECollisionInteraction::Block);
 	}
 }

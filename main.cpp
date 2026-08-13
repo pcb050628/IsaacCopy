@@ -30,19 +30,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//UNREFERENCED_PARAMETER : 인자 미사용 경고를 제거하는데 사용되는 매크로
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
-	if (!CEngine::GetInst()->Init(hInstance, TEXT("MyGame"), IDI_ICON1, IDI_ICON1, 1300, 700))
+	if (!CEngine::GetInst()->Init(hInstance, TEXT("MyGame"), IDI_ICON1, IDI_ICON1, 1400, 800))
 	{
 		CEngine::GetInst()->DestroyInst();
 		return 0;
 	}
 
-	CRenderManager::GetInst()->CreateLayer("Tear", 5, ERenderSortType::None);
+	CRenderManager::GetInst()->CreateLayer("Tear", 6, ERenderSortType::None);
+	CRenderManager::GetInst()->CreateLayer("Item", 5, ERenderSortType::None);
 	CRenderManager::GetInst()->CreateLayer("Head", 4, ERenderSortType::Y);
 	CRenderManager::GetInst()->CreateLayer("Body", 3, ERenderSortType::Y);
+	CRenderManager::GetInst()->CreateLayer("Obstacle", 2, ERenderSortType::None);
 
 	CGlobalCollision::SetGlobalCollision();
 	if (!CAssetManager::GetInst()->AddSubManager<CGameDataManager>(EAssetType::GameData))

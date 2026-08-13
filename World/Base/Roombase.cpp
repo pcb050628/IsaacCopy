@@ -1,5 +1,6 @@
 #include "Roombase.h"
 
+#include "Device.h"
 #include "LogManager.h"
 
 #include "../Manager/GameRuleManager.h"
@@ -39,7 +40,7 @@ bool CRoombase::Init()
 
 	mShadeMesh1.lock()->SetWorldScale(FVector2(1.f, 1.f));
 
-
+	
 	//객체 생성
 	return true;
 }
@@ -56,29 +57,20 @@ void CRoombase::Update(float DeltaTime)
 	CActor::Update(DeltaTime);
 }
 
-void CRoombase::SetEnableAll(bool Enable)
+void CRoombase::CalculateSize()
 {
-	for (std::weak_ptr<CDoor> door : mDoors)
-	{
-		if (door.expired())
-			continue;
+	//1300x700 : 방의 넓이 1100 x 530  : 렌더 넓이 1400 x 800
+	//이미지로 50픽셀 만큼 차이인데 234.f, 155.f  468x310 짜리 이미지를 1400:800으로 폈으니까
+	//3.f x 2.5f 배율 150x125 => 방의 넓이는 1100x550 셀의 크기는 84.61538461538462 x 78.57142857142857
+	
+	FResolution resol = CDevice::GetInst()->GetResolution();
+	FVector2 magnification;
+	magnification.x = resol.Width / mRoomImageSize.x;
+	magnification.y = resol.Height / mRoomImageSize.y;
 
-		door.lock()->SetEnable(Enable);
-	}
-	/*for (std::weak_ptr<CObstacle> obstacle : mObstacle)
-	{
-		if (obstacle.expired())
-			continue;
-
-		obstacle.lock()->SetEnable(Enable);
-	}*/
-	for (std::weak_ptr<CUnitbase> unit : mUnits)
-	{
-		if (unit.expired())
-			continue;
-
-		unit.lock()->SetEnable(Enable);
-	}
+	FVector2 wallSize = magnification * 50.f;
+	mRoomSize = FVector2(resol.Width, resol.Height) - wallSize * 2;
+	mRoomCellSize = mRoomSize / mRoomCellMax;
 }
 
 void CRoombase::AdjustRoomPos()
@@ -88,7 +80,7 @@ void CRoombase::AdjustRoomPos()
 		return;
 
 	FVector2 center = chapter->GetStartRoomCoord();
-	int dist = 1000000;
+	int dist = INT_MAX;
 	std::weak_ptr<CRoombase> targetRoom;
 	std::list<std::pair<FVector2, std::weak_ptr<CRoombase>>>::iterator iter = mNearRooms.begin();
 	std::list<std::pair<FVector2, std::weak_ptr<CRoombase>>>::iterator iterEnd = mNearRooms.end();
@@ -104,24 +96,23 @@ void CRoombase::AdjustRoomPos()
 	FVector2 dir = mCoord - targetRoom.lock()->mCoord;
 	//거리를 모르니까 일단 100으로 할까
 	SetWorldPos(targetRoom.lock()->GetWorldPos() 
-		+ FVector3(dir.x * mRoomCellMax.x * mRoomCellSize.x, dir.y * mRoomCellMax.x * mRoomCellSize.x, 0));
+		+ FVector3(dir.x * mRoomCellMax.x * mRoomCellSize.x * 1.5f, dir.y * mRoomCellMax.y * mRoomCellSize.y * 1.5f, 0));
 }
 
-bool CRoombase::SetInitRoom(FVector2 Coord, const std::vector<std::pair<int, FVector2>>& Objs) //모양도 여기서 받아서 초기화 하기
+bool CRoombase::SetInitRoom(const std::vector<std::pair<int, FVector2>>& MonsterInit) //모양도 여기서 받아서 초기화 하기
 {
 	std::shared_ptr<CChapter> chapter = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
 	if (!chapter)
 		return false;
 
-	mCoord = Coord;
-	mInitInfo = Objs;
+	mMonsterInit = MonsterInit;
 	//주변 방 찾아서 위치 조정하기
 	//이동 기준이 될 방을 먼저 구해야함
 	//기준이 되는 방은 중심 방향에 가까운 방
 	//만약 두개 이상의 거리가 같은 경우 연결된 방 <- 생각해보니 연결된 두 방의 거리가 같으려면 두 방이 서로 마주보는 모양이여야 하는데 그러면 기준을 어디로 두든 문제 없음
 	AdjustRoomPos();
 
-	for (std::pair<int, FVector2> pair : Objs)
+	for (std::pair<int, FVector2> pair : MonsterInit)
 	{
 		if (mRedFlag != FVector2(-1, -1))
 		{
@@ -157,7 +148,7 @@ bool CRoombase::SetInitRoom(FVector2 Coord, const std::vector<std::pair<int, FVe
 		}
 
 		//위치 조정하기
-		FVector3 finalPos = GetWorldPos() + FVector3(pair.second.x - 13, pair.second.y - 7, 1) * ROOM_GRID_SIZE - ROOM_GRID_HALF;
+		FVector3 finalPos = GetWorldPos() + FVector3(pair.second.x - mRoomCellMax.x, pair.second.y - mRoomCellMax.y, 1) * ROOM_GRID_SIZE - ROOM_GRID_HALF;
 		gobj->SetWorldPos(finalPos);
 	}
 
@@ -167,41 +158,56 @@ bool CRoombase::SetInitRoom(FVector2 Coord, const std::vector<std::pair<int, FVe
 void CRoombase::Reset(bool HardReset)
 {
 	//InitInfo 를 이용해서 초기화를 하는데
-	std::list<std::weak_ptr<CUnitbase>>::iterator iter = mUnits.begin();
-	std::list<std::weak_ptr<CUnitbase>>::iterator iterEnd = mUnits.end();
+}
 
-	for (; iter != iterEnd;)
+void CRoombase::RegisterGObj(const std::weak_ptr<class CGameObject>& GObj, const FVector2& Coord)
+{
+	auto obj = GObj.lock();
+	if (!obj)
+		return;
+
+	switch (obj->GetObjType())
 	{
-		if (iter->expired())
-		{
-			++iter;
-			continue;
-		}
-		std::shared_ptr<CUnitbase> unit = iter->lock();
-		if (unit->GetIsTemporary())
-		{
-			std::shared_ptr<CChapter> chapter = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
-			chapter->ReturnGObj(unit);
-			iter = mUnits.erase(iter);
-			iterEnd = mUnits.end();
-			continue;
-		}
-
-		if (!HardReset && unit->GetIsDead())
-		{
-			++iter;
-			continue;
-		}
-
-		//살아있고 일시적인 객체가 아닌경우 초기화
-		unit->Reset();
-
-		++iter;
+	case EObjectType::PlayerCharacter:
+		break;
+	case EObjectType::Monster:
+		mMonsters.push_back(std::make_pair(obj->GetGObjID(), obj->GetIsTemporary()));
+		break;
+	case EObjectType::Obstacle:
+		mObstacleGridMap[CChapter::Coord2Hash(Coord)] = std::dynamic_pointer_cast<CObstaclebase>(obj)->GetObstacleType();
+		break;
+	case EObjectType::Pickup:
+		break;
 	}
+}
 
-	if (HardReset)
+void CRoombase::DisregisterGObj(const std::weak_ptr<class CGameObject>& GObj, const FVector2& Coord)
+{
+	auto obj = GObj.lock();
+	if (!obj)
+		return;
+
+	switch (obj->GetObjType())
 	{
-
+	case EObjectType::PlayerCharacter:
+		break;
+	case EObjectType::Monster: {
+		std::list<std::pair<int, bool>>::iterator iter = mMonsters.begin();
+		std::list<std::pair<int, bool>>::iterator iterEnd = mMonsters.end();
+		for (; iter != iterEnd; ++iter)
+		{
+			if (iter->first == obj->GetGObjID() && iter->second == obj->GetIsTemporary())
+			{
+				mMonsters.erase(iter);
+				return;
+			}
+		}
+	} break;
+	case EObjectType::Obstacle:
+		mObstacleGridMap[CChapter::Coord2Hash(Coord)] = EObstacleType::None;
+		break;
+	case EObjectType::Pickup:
+		break;
 	}
 }
 
@@ -215,20 +221,42 @@ const FVector3 CRoombase::CoordToWorldPos(FVector2 Coord)
 	//벽이 있으니까 벽만큼의 오프셋을 줘야하는데
 	//
 	//방의 중심으로부터 이동하기
-	FVector2 cal = ((Coord - mRoomCellMax / 2) * mRoomCellSize);
-	cal.x += mRoomCellSize.x / 2;
+	//FVector2 cell = mRoomCellSize;
+	//cell.y -= 10.f; // << 왜 Y만 10 빼야 하지 높이를 내가 잘 못 맞춰놨나? 
+	FVector2 cal = ((Coord - mRoomCellMax / 2) * mRoomCellSize); //벽 크기가 50
+	cal += mRoomCellSize / 2;
 	return GetWorldPos() + FVector3(cal.x, cal.y, 1);
 }
 
 const FVector2 CRoombase::GetUnitCoordInGrid(FVector3 WorldPos)
 {
-	FVector3 pos = WorldPos -= GetWorldPos();
-	pos.x -= mRoomCellSize.x / 2;
-	FVector2 result = FVector2(pos.x, pos.y) / mRoomCellSize;
+	FVector3 pos = WorldPos - GetWorldPos();
+	FVector2 result = FVector2(pos.x, pos.y) - mRoomCellSize / 2;
+	result /= mRoomCellSize;
 	result += mRoomCellMax / 2;
-	result.x = floor(result.x);
-	result.y = floor(result.y);
+	if (result.x < 0)
+		result.x = round(-result.x);
+	else
+		result.x = round(result.x);
+
+	if(result.y < 0)
+		result.y = round(-result.y);
+	else
+		result.y = round(result.y);
+
 	return result;
+}
+
+const FVector2 CRoombase::GetPlayerCoordInGrid()
+{
+	std::shared_ptr<CChapter> chpter = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	if (!chpter)
+		return -FVector2::One;
+	std::shared_ptr<CUnitbase> pUnit = std::dynamic_pointer_cast<CUnitbase>(chpter->GetPlayerCharacter().lock());
+	if (!pUnit)
+		return -FVector2::One;
+
+	return GetUnitCoordInGrid(pUnit->GetWorldPos());
 }
 
 //나중에 수정해야하는 내용
@@ -246,7 +274,7 @@ const bool CRoombase::CanGetToPlayerCharacter(FVector3 FromWorldPos)
 
 	FVector2 PlayerCoord = GetUnitCoordInGrid(pUnit->GetWorldPos());
 	FVector2 FromCoord = GetUnitCoordInGrid(FromWorldPos);
-	if (!CheckNearCell(FromCoord) || !CheckNearCell(PlayerCoord))
+	if (!CheckNearCell(FromCoord) || !CheckNearCell(PlayerCoord) || !CheckCell(PlayerCoord))
 		return false;
 
 	return true;
@@ -261,9 +289,21 @@ bool CRoombase::CheckNearCell(FVector2 Coord)
 			continue;
 
 		int hash = CChapter::Coord2Hash(dest);
-		if (EObjectType::Obstacle != mObjGridMap[hash])	
+		if (EObstacleType::None == mObstacleGridMap[hash])
 			return true;
 	}
+	return false;
+}
+
+bool CRoombase::CheckCell(FVector2 Coord)
+{
+	if (Coord.x < 0 || Coord.y < 0 || Coord.x >= mRoomCellMax.x || Coord.y >= mRoomCellMax.y)
+		return false;
+
+	int hash = CChapter::Coord2Hash(Coord);
+	if (EObstacleType::None == mObstacleGridMap[hash])
+		return true;
+
 	return false;
 }
 
@@ -275,8 +315,18 @@ void CRoombase::ConnectRoom(std::weak_ptr<CRoombase> Room)
 		return;
 	}
 
-	mNearRooms.push_back(std::make_pair(Room.lock()->mCoord, Room));
+	mNearRooms.push_back(std::make_pair(Room.lock()->mCoord - mCoord, Room));
 
+}
+
+bool CRoombase::HasNearRoom(FVector2 Dir)
+{
+	for (std::pair<FVector2, std::weak_ptr<CRoombase>> pair : mNearRooms)
+	{
+		if (Dir == pair.first)
+			return true;
+	}
+	return false;
 }
 
 void CRoombase::GenerateRoom(FVector2 Direction, int Min, int Max, int& Current) //이거 이대로 쓰면 안되겠다. 하위 객체들 생성하면 함수 오버라이드 해서 내용 수정하기

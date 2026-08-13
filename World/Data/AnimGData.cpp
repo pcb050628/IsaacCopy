@@ -88,7 +88,7 @@ bool CAnimGData::Read(const rapidjson::Value& Val)
 bool CAnimGData::MakeAnim()
 {
 	std::shared_ptr<CAnimationManager> mgr = CAssetManager::GetInst()->GetSubManager<CAnimationManager>(EAssetType::Animation2D);
-	if (mData.Frames.empty() || !mgr || !mgr->FindAnimation(mData.Name).expired())
+	if (mData.Frames.empty() || !mgr)
 		return false;
 
 	if (!mgr->CreateAnimation(mData.Name))

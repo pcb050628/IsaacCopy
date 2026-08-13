@@ -14,19 +14,41 @@ public:
 
 protected:
     std::weak_ptr<class CCameraComponent> mCam;
+    std::weak_ptr<class CRigidBodyComponent> mRb;
     //UI도 여기 넣을까 말까
     //넣을 생각이긴 헀는데
     //일단 넣고 커지면 분리할까?
     //좀 커도 그냥 넣어놓ㅇ르까
+
+    FVector3 mTargetPosition = -FVector3::One;
+
+    bool mbIsMoving = false;
+    float mCompareDist = 10.f;
+
+    std::function<void()> mMoveEndFunc;
 
 public:
     virtual bool Init() override;
     virtual void Update(float DeltaTime) override;
 
 private:
+    void MoveUp();
+    void MoveDown();
+    void MoveRight();
+    void MoveLeft();
+
+    void MoveToTarget(float DeltaTime);
 
 public:
+    void Move(FVector2 dir);
 
+
+public:
+    template<typename T>
+    void OnMoveEnd(T* Object, void (T::* Func)())
+    {
+        mMoveEndFunc = std::bind(Func, Object);
+    }
 
 };
 

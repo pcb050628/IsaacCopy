@@ -5,6 +5,8 @@
 #include "World/ColliderSphere2D.h"
 #include "World/Animation2DComponent.h"
 
+#include "../Chapter.h"
+#include "../Base/Roombase.h"
 #include "../Component/RigidBodyComponent.h"
 
 CWalker::CWalker()
@@ -137,4 +139,256 @@ void CWalker::ExitHitOverlaps(std::weak_ptr<CCollider> Collider)
 	std::shared_ptr<CGameObject> gobj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
 	if (gobj->GetID() == mTarget.lock()->GetID())
 		mTarget.reset();
+}
+
+bool CWalker::UpdateNextMove()
+{
+	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	if (mRoomOwner.expired() || !chptr)
+		return false;
+
+	std::shared_ptr<CRoombase> room = mRoomOwner.lock();
+
+	if(!room->CanGetToPlayerCharacter(GetWorldPos()))
+		return false;
+
+	FVector2 playerCoord = room->GetPlayerCoordInGrid();
+	if (-FVector2::One == playerCoord)
+		return false;
+
+	FVector2 myCoord = room->GetUnitCoordInGrid(GetWorldPos());
+
+	FVector2 dir = playerCoord - myCoord;
+	if (fabs(dir.x) > fabs(dir.y))
+		dir.y = 0;
+	else if (fabs(dir.x) < fabs(dir.y))
+		dir.x = 0;
+	dir.Normalize();
+	FVector2 nextCoord = myCoord + dir;
+	if (NextMoveSet(nextCoord))
+		return true;
+	else
+	{
+		if (fabs(dir.x) > fabs(dir.y))
+		{
+			nextCoord.y = 1;
+			if (NextMoveSet(nextCoord))
+				return true;
+
+			nextCoord.y = -1;
+			if (NextMoveSet(nextCoord))
+				return true;
+		}
+		else
+		{
+			nextCoord.x = 1;
+			if (NextMoveSet(nextCoord))
+				return true;
+
+			nextCoord.x = -1;
+			if (NextMoveSet(nextCoord))
+				return true;
+		}
+	}
+
+	nextCoord = myCoord + -dir;
+	if (NextMoveSet(nextCoord))
+		return true;
+	return false;
+}
+
+void CWalker::MakeRoute()
+{
+	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	if (mRoomOwner.expired() || !chptr)
+		return;
+
+	std::shared_ptr<CRoombase> room = mRoomOwner.lock();
+	if (!room->CanGetToPlayerCharacter(GetWorldPos()))
+		return;
+
+	FVector2 playerCoord = room->GetPlayerCoordInGrid();
+	if (-FVector2::One == playerCoord)
+		return;
+
+	FVector2 myCoord = room->GetUnitCoordInGrid(GetWorldPos());
+
+	FVector2 dist = playerCoord - myCoord;
+	if (dist.Length() <= 1)
+	{
+		mRoute.clear();
+		mRoute.push_back(playerCoord);
+		return;
+	}
+
+	int focus = 0;
+	bool check = false;
+	std::vector<std::pair<int, std::list<FVector2>>> routes;
+	routes.resize(4);
+	for (int i = 0; i < 4; ++i)
+	{
+		FVector2 start = myCoord + CChapter::FourDirections[i];
+		if (!room->CheckCell(start))
+		{
+			routes[i].first = 100;
+			continue;
+		}
+		routes[i].first = CoordDistance(playerCoord, start);
+		routes[i].second.push_back(start);
+		focus = i;
+	}
+
+	mRoute.clear();
+	CheckRoute(playerCoord, focus, routes, check);
+	if (!check)
+	{
+		return;
+	}
+	for (std::pair<int, std::list<FVector2>> route : routes)
+	{
+		if (-1 == route.first)
+		{
+			mRoute = std::move(route.second);
+			break;
+		}
+	}
+}
+
+bool CWalker::NextMoveSet(FVector2 Coord)
+{
+	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	if (mRoomOwner.expired() || !chptr)
+		return false;
+
+	std::shared_ptr<CRoombase> room = mRoomOwner.lock();
+	if (room->CheckCell(Coord))
+	{
+		mNextMoveDir = room->CoordToWorldPos(Coord) - GetWorldPos();
+		return true;
+	}
+	return false;
+}
+
+void CWalker::CheckRoute(const FVector2& Target, int& focus, std::vector<std::pair<int, std::list<FVector2>>>& routes, bool& Complete)
+{
+	if (Complete)
+		return;
+
+	int count = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		if (-1 == routes[i].first)
+			return;
+
+		if (100 == routes[i].first)
+		{
+			++count;
+			continue;
+		}
+
+		routes[i].first = CoordDistance(Target, routes[i].second.back()) + routes[i].second.size();
+		if (routes[focus].first > routes[i].first)
+		{
+			CheckRoute(Target, i, routes, Complete);
+		}
+	}
+
+	if (count > 3)
+		return;
+
+	FVector2 current = routes[focus].second.back();
+	FVector2 dir = Target - current;
+	if (fabs(dir.x) > fabs(dir.y))
+		dir.y = 0;
+	else
+		dir.x = 0;
+	dir.Normalize();
+	FVector2 next = current + dir;
+	if (routes[focus].second.size() > 2)
+	{
+		auto iter = routes[focus].second.end();
+		--iter;	--iter;
+		if (next == *iter)
+			return;
+	}
+
+	if (CheckCellValid(next))
+	{
+		routes[focus].second.push_back(next);
+		if (Target == next)
+		{
+			Complete = true;
+			routes[focus].first = -1;
+			return;
+		}
+		else
+		{
+			CheckRoute(Target, focus, routes, Complete);
+			return;
+		}
+	}
+	else
+	{
+		FVector2 ndir = Target - current;
+		if (fabs(dir.x) > fabs(dir.y))
+		{
+			ndir.x = 0;
+			if (0 == ndir.y)
+				ndir.y = -1;
+			else
+				ndir.y = FVector2(Target - current).y;
+		}
+		else
+		{
+			ndir.y = 0;
+			if (0 == ndir.x)
+				ndir.x = -1;
+			else
+				ndir.x = FVector2(Target - current).x;
+		}
+		ndir.Normalize();
+		
+		next = current + ndir;
+		if (CheckCellValid(next))
+		{
+			routes[focus].second.push_back(next);
+			CheckRoute(Target, focus, routes, Complete);
+			return;
+		}
+
+		next = current + -ndir;
+		if (CheckCellValid(next))
+		{
+			routes[focus].second.push_back(next);
+			CheckRoute(Target, focus, routes, Complete);
+			return;
+		}
+
+		next = current + -dir;
+		if (CheckCellValid(next))
+		{
+			routes[focus].second.push_back(next);
+			CheckRoute(Target, focus, routes, Complete);
+			return;
+		}
+
+		routes[focus].first = 100;
+	}
+}
+
+bool CWalker::CheckCellValid(const FVector2& Coord)
+{
+	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	if (mRoomOwner.expired() || !chptr)
+		return false;
+
+	std::shared_ptr<CRoombase> room = mRoomOwner.lock();
+	if (room->CheckCell(Coord))
+		return true;
+	return false;
+}
+
+int CWalker::CoordDistance(FVector2 to, FVector2 from)
+{
+	return abs(to.x - from.x) + abs(to.y - from.y);
 }

@@ -16,11 +16,8 @@ protected:
     //그렇게 되면 현재 필요한건 없나?
     // rb, 머리(메시 애님), 몸(메시 애님), 히트박스, 허트박스, 능력치, 상태(이거 나중에 유닛 가서 만들어야 함)
     //
-    
-    //이것들은 몸이랑 머리가 어느 방향을 향하고 있냐를 나타내는건데
-    //이걸 유닛을 올릴까 말까
-    //적들이 이게 필요한 일이 있나?
 
+    std::weak_ptr<class CItemContainer> mItemContainer;
     FVector3 mMoveDirection;
     bool mbIsFiring = false;
 

@@ -12,6 +12,7 @@
 #include "Monster.h"
 #include "../Component/RigidBodyComponent.h"
 #include "../Component/TearShooter.h"
+#include "../Component/ItemContainer.h"
 
 CCharacter::CCharacter()
 	:CUnitbase(EObjectType::PlayerCharacter)
@@ -51,6 +52,10 @@ bool CCharacter::Init()
 	rb->SetLimit(500.f);
 
 	mHurtBox.lock()->SetCollisionProfile("Player");
+
+	mItemContainer = CreateComponent<CItemContainer>("ItemContainer");
+	if (mItemContainer.expired())
+		return false;
 
 	std::shared_ptr<CInput> input = mWorld.lock()->GetInput().lock();
 	if (!input)

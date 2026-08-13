@@ -60,14 +60,13 @@ struct FRoomData
 {
 	//어떤 방인지(아이디)
 	int ID;
-	//챕터 내 방의 위치
-	FVector2 Coord;
+	//챕터 내 방의 위치 | 초기는 -1, 이 경우에는 방에 위치를 할당하지않고 자동으로 위치를 정해줌
+	FVector2 Coord = -FVector2::One;
 	//클리어 상태
 	bool Clear;
 	//문들의 상태 / 항상 좌상단에서 시계방향 / L모양의 경우 TL->RT->TR->R->RB...
 	std::vector<bool> Doors;
 	//내부 오브젝트들의 위치와 아이디 FRoomObjectData
-	std::vector<FRoomObjectData> CurrentObjs;
 	//초기 상태 내부 오브젝트들의 위치와 아이디
 	//일단은 사용안하는 중
 	//필요해지면 CRoomGData 클래스의 함수들 수정해주기

@@ -4,12 +4,10 @@
 class CDefaultRoom :
     public CRoombase
 {
-    GAMECLASS(CDefaultRoom, 10);
+    GAMECLASS(CDefaultRoom, 10)
 public:
     CDefaultRoom();
     virtual ~CDefaultRoom();
-
-    const static bool s;
 
 public:
     virtual bool Init();

@@ -24,9 +24,20 @@ protected:
     virtual void OnHitOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
     virtual void ExitHitOverlaps(std::weak_ptr<CCollider> Collider);
 
+    bool UpdateNextMove();
+    void MakeRoute();
+private:
+    bool NextMoveSet(FVector2 Coord);
+    void CheckRoute(const FVector2& Target, int& focus, std::vector<std::pair<int, std::list<FVector2>>>& routes, bool& Complete);
+    bool CheckCellValid(const FVector2& Coord);
+    int CoordDistance(FVector2 a, FVector2 b);
+
 protected:
     std::weak_ptr<CUnitbase> mTarget;
 
+    FVector3 mNextMoveDir = FVector3::Zero;
+    std::list<FVector2> mRoute;
+    float mMoveSpeed = 100.f;
     float mSpeedLimit = 500.f;
 };
 

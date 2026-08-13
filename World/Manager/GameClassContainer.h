@@ -12,12 +12,13 @@ class CGameClassContainer
 {
 	Singleton(CGameClassContainer)
 private:
-	std::map<int, std::function<std::weak_ptr<CGameObject>(const FVector2&, int)>> mMap;
+	std::unordered_map<int, std::function<std::weak_ptr<CGameObject>(const FVector2&, int)>> mMap;
 
 public:
 	template<typename T>
 	const bool RegisterGameClass(const int ID, std::weak_ptr<CGameObject>(* Func)(const FVector2&, int))
 	{
+		//_CrtSetBreakAlloc(2978);
 		if (mMap.contains(ID))
 		{
 			return false;

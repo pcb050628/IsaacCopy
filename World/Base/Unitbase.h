@@ -29,9 +29,8 @@ protected:
     FVector2 mHeadDirection;
 
     FUnitAttribute mAttribute;
-    std::vector<std::pair<EUnitStatus, float>> mStatusQueue; //상태와 유지시간
+    std::vector<std::pair<EUnitEffect, float>> mStatusQueue; //상태와 유지시간
 
-    bool mbIsTemporary = false;
     bool mbIsDead = false;
 
 public:
@@ -41,7 +40,7 @@ public:
     virtual void Destroy();
 
     void SetRoom(std::weak_ptr<CRoombase> Room) { mRoomOwner = Room; }
-    void UnsetRoom() { mRoomOwner.reset(); }
+    std::weak_ptr<CRoombase> UnsetRoom() { mRoomOwner.reset(); return mRoomOwner; }
 
     virtual void GetHit(std::weak_ptr<CUnitbase> From) = 0;
 
@@ -73,12 +72,15 @@ protected:
 
 public:
     const bool GetIsDead() const { return mbIsDead; }
-    const bool GetIsTemporary() const { return mbIsTemporary; }
 
     FVector2 GetBodyDirection() const { return mBodyDirection; }
     FVector2 GetHeadDirection() const { return mHeadDirection; }
 
-    std::weak_ptr<CSceneComponent> GetHeadComp();
-    std::weak_ptr<CSceneComponent> GetBodyComp();
+    const std::weak_ptr<CSceneComponent>& GetHeadComp();
+    const std::weak_ptr<CSceneComponent>& GetBodyComp();
+    const std::weak_ptr<class CTearShooter>& GetShooterComp() { return mShooter; }
+
+    FUnitAttribute GetAttribute() { return mAttribute; }
+    void SetAttribute(FUnitAttribute attribute) { mAttribute = attribute; }
 };                                              
 

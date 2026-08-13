@@ -4,6 +4,18 @@
 
 #include "World/ColliderBox2D.h"
 #include "World/MeshComponent.h"
+#include "World/Animation2DComponent.h"
+
+#include "World/CollisionInfoManager.h"
+
+#include "Asset/AssetManager.h"
+#include "Asset/AnimationManager.h"
+#include "Data/GameDataManager.h"
+#include "Data/GameObjectStructure.h"
+#include "Data/AnimGData.h"
+
+#include "Chapter.h"
+#include "Component/RigidBodyComponent.h"
 
 #include "Base/Roombase.h"
 #include "Base/Unitbase.h"
@@ -29,19 +41,41 @@ CDoor::~CDoor()
 bool CDoor::Init()
 {
 	mBoxColComp = CreateComponent<CColliderBox2D>("Root");
-	if (mBoxColComp.expired())
+	mMesh = CreateComponent<CMeshComponent>("Mesh");
+	mAnimator = CreateComponent<CAnimation2DComponent>("Animator");
+	if (mBoxColComp.expired() || mMesh.expired() || mAnimator.expired())
 		return false;
 
-	mMeshComp = CreateComponent<CMeshComponent>("MeshComp");
-	if (mMeshComp.expired())
-		return false;
+	mMesh.lock()->SetWorldScale(100.f, 100.f);
 
 	std::shared_ptr<CColliderBox2D> box = mBoxColComp.lock();
-	box->SetCollisionProfile("Door");
+	box->SetBoxSize(100.f, 100.f);
+	box->SetCollisionProfile("Wall");
 	box->SetBeginOverlapFunc(this, &CDoor::OnOverlaps);
 	box->SetEndOverlapFunc(this, &CDoor::ExitOverlaps);
+	box->SetDebugDraw(true);
 
 	//메시 또는 애니메이션 초기화 코드 작성하기
+
+	std::shared_ptr<CMeshComponent> mesh = mMesh.lock();
+	mesh->SetMesh("TexRect"); mesh->SetShader("Animation2D");
+
+	auto mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
+	if(!mgr->LoadDataFile<CAnimGData>("Door_Wooden_Frame", TEXT("Anim\\Door_Wooden_Frame")))
+		return false;
+	if (!mgr->LoadDataFile<CAnimGData>("Door_Wooden_Layer", TEXT("Anim\\Door_Wooden_Layer")))
+		return false;
+	auto frameData = std::dynamic_pointer_cast<CAnimGData>(mgr->FindData("Door_Wooden_Frame").lock());
+	frameData->MakeAnim();
+	auto layerData = std::dynamic_pointer_cast<CAnimGData>(mgr->FindData("Door_Wooden_Layer").lock());
+	layerData->MakeAnim();
+
+	std::shared_ptr<CAnimation2DComponent> animator = mAnimator.lock();
+	animator->SetUpdateComponent(mMesh);
+	animator->AddAnimation(frameData->GetData().Name);
+	animator->AddAnimation(layerData->GetData().Name);
+
+	mMesh.lock()->SetRenderLayer("Obstacle");
 
 	return true;
 }
@@ -50,11 +84,15 @@ void CDoor::Update(float DeltaTime)
 {
 	if (!mPlayer.expired())
 	{
-		if (mPlayer.lock()->GetWorldPos().Distance(GetWorldPos()) <= 0.5f) //거리가 충분히 가까워졌다면
+		if (mPlayer.lock()->GetWorldPos().Distance(GetWorldPos()) <= 15.f) //거리가 충분히 가까워졌다면
 		{
 			//이동하기
+			LOG_DEBUG("다음 방으로 이동합니다.");
+			std::dynamic_pointer_cast<CChapter>(mWorld.lock())->MoveRoom(mDirection);
 		}
 	}
+
+	CActor::Update(DeltaTime);
 }
 
 void CDoor::Destroy()
@@ -64,8 +102,30 @@ void CDoor::Destroy()
 
 void CDoor::SetOpen(bool Val)
 {
+	mbIsOpen = Val;
+	if(mbIsOpen)
+	{
+		mBoxColComp.lock()->SetCollisionProfile("Door");
+	}
+	else
+	{
+		mBoxColComp.lock()->SetCollisionProfile("Wall");
+	}
 	//나중에 작성할것
-	//
+	//애니메이션 출력
+	//문열리는 애니메이션 만들어야하는데
+	//이 거지같은 리소스가 시발 문이 양쪽이 떨어져서 만들어져 있고
+	//메시 두개 올려서 스텐실 뷰 사용해야할듯
+}
+
+void CDoor::SetBoxSize(FVector2 size)
+{
+	mBoxColComp.lock()->SetBoxSize(size);
+}
+
+void CDoor::SetBoxSize(float x, float y)
+{
+	mBoxColComp.lock()->SetBoxSize(x, y);
 }
 
 void CDoor::OnOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
@@ -84,33 +144,10 @@ void CDoor::OnOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::we
 		return;
 	}
 
-	if(mbIsOpen)
-		mPlayer = player;
-	else
+	LOG_DEBUG("Hit 발생 : ", Collider.lock()->GetOwner().lock()->GetName());
+	if (mbIsOpen)
 	{
-		float dist;
-		FVector3 aPos = player->GetWorldPos();
-		FVector3 mPos = GetWorldPos();
-
-		std::shared_ptr<CColliderBox2D> box = mBoxColComp.lock();
-		std::shared_ptr<CCollider> col = Collider.lock();
-
-		if (Normal.x != 0)
-		{
-			if (Normal.x > 0)
-				dist = (box->GetMax().x - col->GetMin().x) + 1.f;
-			else
-				dist = -((box->GetMin().x - col->GetMax().x) + 1.f);
-		}
-		else
-		{
-			if (Normal.y > 0)
-				dist = (box->GetMax().y - col->GetMin().y) + 1.f;
-			else
-				dist = -((box->GetMin().y - col->GetMax().y) + 1.f);
-		}
-
-		player->AddRelativePos(Normal * dist);
+		mPlayer = player;
 	}
 }
 

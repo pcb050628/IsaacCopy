@@ -35,17 +35,17 @@ bool CRoomGData::Write(rapidjson::Writer<rapidjson::StringBuffer>& Writer)
     Writer.Key("OBJS");
     Writer.StartArray();
     //여기에 오브젝트들 입력
-    for (int i = 0; i < mData.CurrentObjs.size(); i++)
+    for (int i = 0; i < mData.InitObjs.size(); i++)
     {
         std::string Name = "OBJ_" + std::to_string(i + 1);
         Writer.Key(Name.c_str());
         Writer.StartObject();
         Writer.Key("ID");
-        Writer.Int(mData.CurrentObjs[i].ID);
+        Writer.Int(mData.InitObjs[i].ID);
         Writer.Key("CoordX");
-        Writer.Int(static_cast<int>(mData.CurrentObjs[i].Coord.x));
+        Writer.Int(static_cast<int>(mData.InitObjs[i].Coord.x));
         Writer.Key("CoordY");
-        Writer.Int(static_cast<int>(mData.CurrentObjs[i].Coord.y));
+        Writer.Int(static_cast<int>(mData.InitObjs[i].Coord.y));
         Writer.EndObject();
     }
 
@@ -76,14 +76,14 @@ bool CRoomGData::Read(const TCHAR* FileName)
 
     const rapidjson::Value& objArray = d["OBJ"];
     size = objArray.Size();
-    mData.CurrentObjs.reserve(size);
+    mData.InitObjs.reserve(size);
     for (int i = 0; i < size; i++)
     {
         const rapidjson::Value& obj = objArray[i];
         FRoomObjectData objData;
         objData.ID = obj["ID"].GetInt();
         objData.Coord = FVector2(static_cast<float>(obj["CoordX"].GetInt()), static_cast<float>(obj["CoordY"].GetInt()));
-        mData.CurrentObjs.push_back(objData);
+        mData.InitObjs.push_back(objData);
     }
     
     return true;
@@ -106,14 +106,14 @@ bool CRoomGData::Read(const rapidjson::Value& Val)
 
     const rapidjson::Value& objArray = Val["OBJ"];
     size = objArray.Size();
-    mData.CurrentObjs.reserve(size);
+    mData.InitObjs.reserve(size);
     for (int i = 0; i < size; i++)
     {
         const rapidjson::Value& obj = objArray[i];
         FRoomObjectData objData;
         objData.ID = obj["ID"].GetInt();
         objData.Coord = FVector2(static_cast<float>(obj["CoordX"].GetInt()), static_cast<float>(obj["CoordY"].GetInt()));
-        mData.CurrentObjs.push_back(objData);
+        mData.InitObjs.push_back(objData);
     }
     return true;
 }

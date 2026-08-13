@@ -10,7 +10,7 @@ enum class EUnitImmune
 	End,
 };
 
-enum class EUnitStatus
+enum class EUnitEffect
 {
 	Fear,
 	Charm,
@@ -28,7 +28,7 @@ struct FUnitAttribute
 {
 	//Unit
 	float ShotTerm = 0.f;
-	float Speed = 10.f;
+	float Speed = 0.f;
 	float Luck = 0.f;
 	
 	//Attack
@@ -36,10 +36,75 @@ struct FUnitAttribute
 	float ShotSpeed = 0.f;
 	float Range = 0.f;
 	float Height = 0.f;
-	float knockback = 10.f;
+	float knockback = 0.f;
+
+	FUnitAttribute operator+(const FUnitAttribute& other)
+	{
+		FUnitAttribute ret;
+		ret = *this;
+		ret.ShotTerm += other.ShotTerm;
+		ret.Speed += other.Speed;
+		ret.Luck += other.Luck;
+
+		ret.Damage += other.Damage;
+		ret.ShotSpeed += other.ShotSpeed;
+		ret.Range += other.Range;
+		ret.Height += other.Height;
+		ret.knockback += other.knockback;
+		return ret;
+	}
+
+	FUnitAttribute operator-(const FUnitAttribute& other)
+	{
+		FUnitAttribute ret;
+		ret = *this;
+		ret.ShotTerm -= other.ShotTerm;
+		ret.Speed -= other.Speed;
+		ret.Luck -= other.Luck;
+
+		ret.Damage -= other.Damage;
+		ret.ShotSpeed -= other.ShotSpeed;
+		ret.Range -= other.Range;
+		ret.Height -= other.Height;
+		ret.knockback -= other.knockback;
+		return ret;
+	}
+
+	FUnitAttribute operator*(const FUnitAttribute& other)
+	{
+		FUnitAttribute ret;
+		ret = *this;
+		ret.ShotTerm *= other.ShotTerm;
+		ret.Speed *= other.Speed;
+		ret.Luck *= other.Luck;
+
+		ret.Damage *= other.Damage;
+		ret.ShotSpeed *= other.ShotSpeed;
+		ret.Range *= other.Range;
+		ret.Height *= other.Height;
+		ret.knockback *= other.knockback;
+		return ret;
+	}
 };
+
 //공격시 효과들도 그냥 다 집어넣기
 //독이나 석화나 화상이나 상관없음
+
+namespace ETearEffect
+{
+	enum Effect
+	{
+		None = 0,
+		Homing = 1,
+		Piercing = 2,
+		Spectral = 4,
+		Orbiting = 8,
+		Boomerang = 16,
+		Shield = 32,
+		Bouncing = 64,
+		Split = 128,
+	};
+}
 
 struct FTearAttribute
 {
@@ -82,4 +147,10 @@ enum class EPlayerHeartState
 	Empty,
 	Half,
 	Full,
+};
+
+struct FPlayerHeartData
+{
+	EPlayerHeartType Type;
+	EPlayerHeartState State;
 };

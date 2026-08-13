@@ -15,7 +15,7 @@
 
 #include "../Component/TearShooter.h"
 
-REGISTER_GAMECLASS(CTear, "Tear", EObjectType::Tear)
+REGISTER_GAMEOBJCLASS(CTear, "Tear", EObjectType::Tear)
 
 CTear::CTear()
 	:CGameObject(EObjectType::Tear)

@@ -18,6 +18,8 @@ private:
 
     bool mGravityOn = true;
 
+    bool mSetMoveRoot = true;
+
 public:
     virtual bool Init();
     virtual void Update(float DeltaTime);
@@ -34,5 +36,6 @@ public:
     void SetMass(float Mass) { mMass = Mass; }
     void SetGravity(float Gravity) { mGravity = Gravity; }
     void SetUseGravity(bool val) { mGravityOn = val; }
+    void SetMoveRoot(bool val) { mSetMoveRoot = val; }
 };
 

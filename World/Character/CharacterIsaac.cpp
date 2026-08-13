@@ -9,7 +9,7 @@
 
 #include "../Component/TearShooter.h"
 
-REGISTER_GAMECLASS(CCharacterIsaac, "Isaac", EObjectType::PlayerCharacter);
+REGISTER_GAMEOBJCLASS(CCharacterIsaac, "Isaac", EObjectType::PlayerCharacter);
 
 CCharacterIsaac::CCharacterIsaac()
 {
@@ -40,7 +40,6 @@ bool CCharacterIsaac::Init()
 
     mHurtBox.lock()->SetRadius(20.f);
     mHurtBox.lock()->SetDebugDraw(true);
-    mHurtBox.lock()->SetRenderLayer("Debug");
 
     SetBodyDirection(FVector2(0, -1));
 

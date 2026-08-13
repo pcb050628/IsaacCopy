@@ -10,7 +10,7 @@
 #include "../Base/Roombase.h"
 #include "../Component/RigidBodyComponent.h"
 
-REGISTER_GAMECLASS(CGaper, "Gaper", EObjectType::Monster);
+REGISTER_GAMEOBJCLASS(CGaper, "Gaper", EObjectType::Monster);
 
 CGaper::CGaper()
 {
@@ -61,7 +61,6 @@ bool CGaper::Init()
 
 	mHurtBox.lock()->SetRadius(20.f);
 	mHurtBox.lock()->SetDebugDraw(true);
-	mHurtBox.lock()->SetRenderLayer("Debug");
 
 	mRigidBody.lock()->SetLimit(100.f);
 
@@ -75,46 +74,78 @@ bool CGaper::Init()
 
 void CGaper::Update(float DeltaTime)
 {
-	if (mTarget.expired())
-	{
-		std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
-		if (!chptr)
-		{
-			assert("월드 없이 생성된 객체가 있습니다.");
-			return;
-		}
-		//유닛 가져오기
-		mTarget = std::dynamic_pointer_cast<CUnitbase>(chptr->GetPlayerCharacter().lock());
-	}
-	else
-	{
-		if (mRoomOwner.expired())
-		{
-			assert("방 없이 존재하는 유닛이 업데이트를 받고 있음");
-			return;
-		}
+	//if (mTarget.expired())
+	//{
+	//	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	//	if (!chptr)
+	//	{
+	//		assert("월드 없이 생성된 객체가 있습니다.");
+	//		return;
+	//	}
+	//	//유닛 가져오기
+	//	mTarget = std::dynamic_pointer_cast<CUnitbase>(chptr->GetPlayerCharacter().lock());
+	//}
+	//else
+	//{
+	//	if (mRoomOwner.expired())
+	//	{
+	//		assert("방 없이 존재하는 유닛이 업데이트를 받고 있음");
+	//		return;
+	//	}
+	//
+	//	if (mRoomOwner.lock()->CanGetToPlayerCharacter(GetWorldPos()))
+	//	{
+	//		//플레이어에게 가기
+	//		//1. 플레이어 방향 구하기
+	//		//2. 해당 방향에 장애물이 있는지 확인하기
+	//		// 방향에 뭔가 있는지 확인할때 좋은 방법은 
+	//		// 여기서는 해당 좌표의 셀을 얻어오는 것이고
+	//		// 범용성있게는 raycast 를 사용하는 것
+	//		//3. 장애물이 있다면 다른 두번째로 가까운 방향으로 가기
+	//		
+	//		//일단 그냥 방향으로만 가게 해놨는데 이건 나중에 고치기
+	//
+	//		FVector3 dir = mTarget.lock()->GetWorldPos() - GetWorldPos();
+	//		dir.Normalize();
+	//		mRigidBody.lock()->AddForce(dir * 100.f);
+	//	}
+	//	else
+	//	{
+	//		mHead.lock()->Clear();
+	//		mBody.lock()->Clear();
+	//	}
+	//}
 
-		if (mRoomOwner.lock()->CanGetToPlayerCharacter(GetWorldPos()))
+	auto rb = mRigidBody.lock();
+	//if (UpdateNextMove())
+	//{
+	//	rb->AddForce(mNextMoveDir * mMoveSpeed);
+	//}
+	//else
+	//{
+	//	mNextMoveDir = FVector3::Zero;
+	//	rb->SetVelocity(FVector3::Zero);
+	//}
+	MakeRoute();
+	if (!mRoute.empty())
+	{
+		if (mRoute.size() < 3)
 		{
-			//플레이어에게 가기
-			//1. 플레이어 방향 구하기
-			//2. 해당 방향에 장애물이 있는지 확인하기
-			// 방향에 뭔가 있는지 확인할때 좋은 방법은 
-			// 여기서는 해당 좌표의 셀을 얻어오는 것이고
-			// 범용성있게는 raycast 를 사용하는 것
-			//3. 장애물이 있다면 다른 두번째로 가까운 방향으로 가기
-			
-			//일단 그냥 방향으로만 가게 해놨는데 이건 나중에 고치기
-
-			FVector3 dir = mTarget.lock()->GetWorldPos() - GetWorldPos();
-			dir.Normalize();
-			mRigidBody.lock()->AddForce(dir * 100.f);
+			MoveToTarget();
 		}
 		else
 		{
-			mHead.lock()->Clear();
-			mBody.lock()->Clear();
+			FVector2 coord = mRoute.front();
+			FVector3 pos = mRoomOwner.lock()->CoordToWorldPos(coord);
+			FVector3 dir = pos - GetWorldPos();
+			dir.Normalize();
+			rb->AddForce(dir * mMoveSpeed);
 		}
+	}
+	else
+	{
+		mNextMoveDir = FVector3::Zero;
+		rb->SetVelocity(FVector3::Zero);
 	}
 
 	CWalker::Update(DeltaTime);
@@ -122,6 +153,7 @@ void CGaper::Update(float DeltaTime)
 
 void CGaper::Destory()
 {
+	CWalker::Destory();
 }
 
 void CGaper::Dead()
@@ -159,4 +191,18 @@ void CGaper::PlayHeadHorizontalAnim()
 
 void CGaper::MoveToTarget()
 {
+	if (mTarget.expired())
+	{
+		std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+		if (!chptr)
+		{
+			assert("월드 없이 생성된 객체가 있습니다.");
+			return;
+		}
+		mTarget = std::dynamic_pointer_cast<CUnitbase>(chptr->GetPlayerCharacter().lock());
+	}
+
+	FVector3 dir = mTarget.lock()->GetWorldPos() - GetWorldPos();
+	dir.Normalize();
+	mRigidBody.lock()->AddForce(dir * 100.f);
 }
