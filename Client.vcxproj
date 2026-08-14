@@ -158,6 +158,7 @@
     <ClCompile Include="World\Base\Item.cpp" />
     <ClCompile Include="World\Base\Monster.cpp" />
     <ClCompile Include="World\Base\Obstaclebase.cpp" />
+    <ClCompile Include="World\Base\Pickup.cpp" />
     <ClCompile Include="World\Base\Roombase.cpp" />
     <ClCompile Include="World\Base\GameObject.cpp" />
     <ClCompile Include="World\Base\Tear.cpp" />
@@ -184,6 +185,7 @@
     <ClCompile Include="World\Monster\Gaper.cpp" />
     <ClCompile Include="World\Monster\Walker.cpp" />
     <ClCompile Include="World\Obstacle\RockObstacle.cpp" />
+    <ClCompile Include="World\Pickup\PickupRedHeart.cpp" />
     <ClCompile Include="World\Room\DefaultRoom.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +197,7 @@
     <ClInclude Include="World\Base\Item.h" />
     <ClInclude Include="World\Base\Monster.h" />
     <ClInclude Include="World\Base\Obstaclebase.h" />
+    <ClInclude Include="World\Base\Pickup.h" />
     <ClInclude Include="World\Base\Roombase.h" />
     <ClInclude Include="World\Base\GameObject.h" />
     <ClInclude Include="World\Base\Tear.h" />
@@ -222,6 +225,7 @@
     <ClInclude Include="World\Monster\Gaper.h" />
     <ClInclude Include="World\Monster\Walker.h" />
     <ClInclude Include="World\Obstacle\RockObstacle.h" />
+    <ClInclude Include="World\Pickup\PickupRedHeart.h" />
     <ClInclude Include="World\Room\DefaultRoom.h" />
     <ClInclude Include="World\UnitData.h" />
   </ItemGroup>

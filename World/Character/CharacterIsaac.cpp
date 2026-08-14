@@ -1,5 +1,6 @@
 #include "CharacterIsaac.h"
 
+#include "World/Input.h"
 #include "World/Animation2DComponent.h"
 
 #include "../Manager/GameClassContainer.h"
@@ -8,6 +9,7 @@
 #include "World/ColliderSphere2D.h"
 
 #include "../Component/TearShooter.h"
+#include "../Component/ItemContainer.h"
 
 REGISTER_GAMEOBJCLASS(CCharacterIsaac, "Isaac", EObjectType::PlayerCharacter);
 
@@ -38,6 +40,12 @@ bool CCharacterIsaac::Init()
     if (!AddAnim("Isaac_Body_Walk_H", TEXT("Isaac_Body_Walk_H"), false, 0.7f, 1.f, true))
         return false;
 
+    mDefaultHeadAnimName = "Isaac_Head";
+    mDefaultBodyAnimName = "Isaac_Body_Walk";
+
+    mHeadAnimName = mDefaultHeadAnimName;
+    mBodyAnimName = mDefaultBodyAnimName;
+
     mHurtBox.lock()->SetRadius(20.f);
     mHurtBox.lock()->SetDebugDraw(true);
 
@@ -46,8 +54,13 @@ bool CCharacterIsaac::Init()
     mAttribute.Range = 85.f * 5.f;
     mAttribute.ShotSpeed = 7.f; //이게 힘이고
     mAttribute.ShotTerm = 1.f;
+    mAttribute.Speed = 10.f;
 
     mShooter.lock()->UpdateUnitAttributeData(false, mAttribute);
+
+    auto input = mWorld.lock()->GetInput().lock();
+    input->AddBindKey("TestFunc", 'J');
+    input->SetBindFunction("TestFunc", EInputType::Press, this, &CCharacterIsaac::TestFuncForItemContainer);
 
     return true;
 }
@@ -62,60 +75,7 @@ void CCharacterIsaac::Destroy()
     CCharacter::Destroy();
 }
 
-void CCharacterIsaac::PlayBodyVerticalAnim()
+void CCharacterIsaac::TestFuncForItemContainer()
 {
-    mBody.lock()->ChangeAnimation("Isaac_Body_Walk_V");
-    bool symmetry = mBodyDirection.y > 0 ? true : false;
-    mBody.lock()->SetSymmetry("Isaac_Body_Walk_V", symmetry);
-    mBody.lock()->Play();
-    if (!mbIsFiring)
-        SetHeadDirection(mBodyDirection);
-}
-
-void CCharacterIsaac::PlayBodyHorizontalAnim()
-{
-    mBody.lock()->ChangeAnimation("Isaac_Body_Walk_H");
-    bool symmetry = mBodyDirection.x > 0 ? false : true;
-	mBody.lock()->SetSymmetry("Isaac_Body_Walk_H", symmetry);
-    mBody.lock()->Play();
-    if(!mbIsFiring)
-        SetHeadDirection(mBodyDirection);
-}
-
-void CCharacterIsaac::PlayHeadVerticalAnim()
-{
-    bool isUp = mHeadDirection.y > 0 ? false : true;
-    if(isUp)
-        mHead.lock()->ChangeAnimation("Isaac_Head_Back");
-    else
-        mHead.lock()->ChangeAnimation("Isaac_Head_Front");
-
-    if (mbIsFiring)
-    {
-        mHead.lock()->SetFrame(1);
-        mHead.lock()->Play();
-    }
-    else
-    {
-        mHead.lock()->Stop(true);
-    }
-}
-
-void CCharacterIsaac::PlayHeadHorizontalAnim()
-{
-    bool isRight = mHeadDirection.x > 0 ? false : true;
-    if (isRight)
-        mHead.lock()->ChangeAnimation("Isaac_Head_Left");
-    else
-        mHead.lock()->ChangeAnimation("Isaac_Head_Right");
-
-    if (mbIsFiring)
-    {
-        mHead.lock()->SetFrame(1);
-        mHead.lock()->Play();
-    }
-    else
-    {
-        mHead.lock()->Stop(true);
-    }
+    mItemContainer.lock()->ContainItem(91);
 }

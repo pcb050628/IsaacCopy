@@ -56,18 +56,19 @@ bool CDebugChapter::Init()
 	{
 		if (!CChapter::Init())
 			return false;
-		//CGameClassContainer::GetInst()->Instantiate(20, FVector2(5, 3));
-		//CGameClassContainer::GetInst()->Instantiate(31, FVector2(7, 3));
-		//
-		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(6, 3));
-		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(2, 2));
-		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(3, 4));
-		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(8, 5));
-		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(7, 1));
-		//
-		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(3, 4));
-		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(4, 2));
-		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(9, 2));
+		CGameClassContainer::GetInst()->Instantiate(20, FVector2(5, 3));
+		CGameClassContainer::GetInst()->Instantiate(31, FVector2(7, 3));
+		CGameClassContainer::GetInst()->Instantiate(81, FVector2(4, 3));
+		
+		CGameClassContainer::GetInst()->Instantiate(41, FVector2(6, 3));
+		CGameClassContainer::GetInst()->Instantiate(41, FVector2(2, 2));
+		CGameClassContainer::GetInst()->Instantiate(41, FVector2(3, 4));
+		CGameClassContainer::GetInst()->Instantiate(41, FVector2(8, 5));
+		CGameClassContainer::GetInst()->Instantiate(41, FVector2(7, 1));
+		
+		CGameClassContainer::GetInst()->Instantiate(41, FVector2(3, 4));
+		CGameClassContainer::GetInst()->Instantiate(41, FVector2(4, 2));
+		CGameClassContainer::GetInst()->Instantiate(41, FVector2(9, 2));
 		//20 gaper | 31 isaac
 		//for (int y = 0; y < 7; ++y)
 		//{
@@ -77,7 +78,6 @@ bool CDebugChapter::Init()
 		//	}
 		//}
 
-		//mChapterManagementActor.lock()->AddWorldPos(FVector2(650.f, 0.f));
 		InitialSetting();
 
 		CTimeManager::SetTimer(3.f, true, this, &CDebugChapter::CheckPlayerPos);

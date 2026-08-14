@@ -25,8 +25,8 @@ protected:
 	//layer 아이템을 얻으면 외형적인게 추가되는데 이걸 layer 마냥 쌓아간다.
 	//아무리 많아봐야 20개를 넘기도 힘들겠지만
 	//좀 불안하긴함
-	std::weak_ptr<class CMeshComponent> mHeadMesh;
-	std::weak_ptr<class CMeshComponent> mBodyMesh;
+	std::vector<std::weak_ptr<class CMeshComponent>> mHeadMesh;
+	std::vector<std::weak_ptr<class CMeshComponent>> mBodyMesh;
 
 	std::vector<std::weak_ptr<class CAnimation2DComponent>> mHeadAnim;
 	std::vector<std::weak_ptr<class CAnimation2DComponent>> mBodyAnim;
@@ -55,7 +55,6 @@ public:
 	void SetHeadDirection(FVector2 Dir);
 	void SetBodyDirection(FVector2 Dir);
 
-	void SetMeshComponent(const std::weak_ptr<class CMeshComponent>& Head, const std::weak_ptr<class CMeshComponent>& Body);
 
 private:
 

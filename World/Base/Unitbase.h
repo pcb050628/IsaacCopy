@@ -28,7 +28,8 @@ protected:
     FVector2 mBodyDirection;
     FVector2 mHeadDirection;
 
-    FUnitAttribute mAttribute;
+    FUnitAttribute mAttribute; //능력치
+    FUnitAttribute mMagnification; // 능력치 배율
     std::vector<std::pair<EUnitEffect, float>> mStatusQueue; //상태와 유지시간
 
     bool mbIsDead = false;
@@ -82,5 +83,7 @@ public:
 
     FUnitAttribute GetAttribute() { return mAttribute; }
     void SetAttribute(FUnitAttribute attribute) { mAttribute = attribute; }
+    FUnitAttribute GetMagnification() { return mMagnification; }
+    void SetMagnification(FUnitAttribute magnification) { mMagnification = magnification; }
 };                                              
 

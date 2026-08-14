@@ -29,6 +29,7 @@ protected:
 	std::string mItemAnimDataPath; //<-나중에 필요하지 않다면 제거하기
 	//참인 경우 이미지를 추가 렌더하는 것이 아니라 렌더 이미지를 변경한다.
 	bool mbIsHeadAnimOverride = false;
+	bool mbIsBodyAnimOverride = false;
 	std::string mHeadAnimDataFileName;
 	std::string mHeadAnimDataFilePath;
 	std::string mHeadAnimName;
@@ -72,8 +73,10 @@ public: //발동 조건들
 	virtual void OnKillEnemy();
 
 public:
-	FUnitAttribute GetStatus() const { return mUnitAdditionalAttribute; }
+	const bool GetIsMagnification() const { return mbIsAttributeMagnification; }
+	FUnitAttribute GetAttribute() const { return mUnitAdditionalAttribute; }
 	const bool GetIsHeadAnimOverride() const { return mbIsHeadAnimOverride; }
+	const bool GetIsBodyAnimOverride() const { return mbIsBodyAnimOverride; }
 	const std::string& GetHeadAnimName() { return mHeadAnimName; }
 	const std::string& GetBodyAnimName() { return mBodyAnimName; }
 

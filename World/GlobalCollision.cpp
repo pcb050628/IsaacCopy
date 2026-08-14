@@ -27,9 +27,13 @@ void CGlobalCollision::SetGlobalCollision()
 		InfoManager->CreateChannel("PickUp");
 		InfoManager->CreateProfile("PickUp", "PickUp", true);
 		InfoManager->SetProfileInteraction("Door", "PickUp", ECollisionInteraction::Block);
-		InfoManager->SetProfileInteraction("Obstacle", "PickUp", ECollisionInteraction::Block);
-		InfoManager->SetProfileInteraction("Monster", "PickUp", ECollisionInteraction::Ignore);
+		InfoManager->SetProfileInteraction("PickUp", "Door", ECollisionInteraction::Block);
+
+		InfoManager->SetProfileInteraction("Monster", "PickUp", ECollisionInteraction::Overlap);
+		InfoManager->SetProfileInteraction("PickUp", "Monster", ECollisionInteraction::Overlap);
+
 		InfoManager->SetProfileInteraction("ContactHit", "PickUp", ECollisionInteraction::Ignore);
+		InfoManager->SetProfileInteraction("PickUp", "ContactHit", ECollisionInteraction::Ignore);
 
 		//장애물
 		InfoManager->CreateChannel("Obstacle");
@@ -41,6 +45,9 @@ void CGlobalCollision::SetGlobalCollision()
 		InfoManager->SetProfileInteraction("Monster", "Obstacle", ECollisionInteraction::Block);
 		InfoManager->SetProfileInteraction("Obstacle", "Monster", ECollisionInteraction::Block);
 
+		InfoManager->SetProfileInteraction("Obstacle", "PickUp", ECollisionInteraction::Block);
+		InfoManager->SetProfileInteraction("PickUp", "Obstacle", ECollisionInteraction::Block);
+
 		//장애물 히트박스
 		InfoManager->CreateChannel("ContactHit_Obstacle");
 		InfoManager->CreateProfile("ContactHit_Obstacle", "ContactHit_Obstacle", true);
@@ -48,6 +55,8 @@ void CGlobalCollision::SetGlobalCollision()
 		InfoManager->SetProfileInteraction("ContactHit", "ContactHit_Obstacle", ECollisionInteraction::Ignore);
 		InfoManager->SetProfileInteraction("ContactHit_Monster", "ContactHit_Obstacle", ECollisionInteraction::Ignore);
 		InfoManager->SetProfileInteraction("ContactHit_Obstacle", "ContactHit_Obstacle", ECollisionInteraction::Ignore);
+		InfoManager->SetProfileInteraction("PickUp", "ContactHit_Obstacle", ECollisionInteraction::Ignore);
+		InfoManager->SetProfileInteraction("ContactHit_Obstacle", "PickUp", ECollisionInteraction::Ignore);
 
 		//폭파
 		InfoManager->CreateChannel("Blasting");
@@ -57,9 +66,16 @@ void CGlobalCollision::SetGlobalCollision()
 		//눈물
 		InfoManager->CreateChannel("Tear");
 		InfoManager->CreateProfile("Tear", "Tear", true);
-		InfoManager->SetProfileInteraction("Pickup", "Tear", ECollisionInteraction::Ignore);
+		InfoManager->SetProfileInteraction("PickUp", "Tear", ECollisionInteraction::Ignore);
+		InfoManager->SetProfileInteraction("Tear", "PickUp", ECollisionInteraction::Ignore);
+
+		InfoManager->SetProfileInteraction("Tear", "ContactHit_Monster", ECollisionInteraction::Ignore);
 		InfoManager->SetProfileInteraction("ContactHit_Monster", "Tear", ECollisionInteraction::Ignore);
+
 		InfoManager->SetProfileInteraction("ContactHit_Obstacle", "Tear", ECollisionInteraction::Ignore);
+		InfoManager->SetProfileInteraction("Tear", "ContactHit_Obstacle", ECollisionInteraction::Ignore);
+
+		InfoManager->SetProfileInteraction("Tear", "Blasting", ECollisionInteraction::Ignore);
 		InfoManager->SetProfileInteraction("Blasting", "Tear", ECollisionInteraction::Ignore);
 
 		//문
@@ -89,5 +105,8 @@ void CGlobalCollision::SetGlobalCollision()
 
 		InfoManager->SetProfileInteraction("Monster", "Wall", ECollisionInteraction::Block);
 		InfoManager->SetProfileInteraction("Wall", "Monster", ECollisionInteraction::Block);
+
+		InfoManager->SetProfileInteraction("Wall", "PickUp", ECollisionInteraction::Block);
+		InfoManager->SetProfileInteraction("PickUp", "Wall", ECollisionInteraction::Block);
 	}
 }

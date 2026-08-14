@@ -41,38 +41,24 @@ protected:
     //인접한 방들 / 여러 모양의 방에서 사용가능하게 벡터방향으로 접근(좌상단은 -1, 1 / 좌는 -1, 0) 나올 수 있는 문의 개수는 최대 8개
     //              문의 위치 계산기준은 항상 아래쪽 0, 위 1이다
     //해당 멤버변수는 초기화 단계에서 설정해줘야함
-    std::list<std::pair<FVector2, std::weak_ptr<CRoombase>>> mNearRooms;
-
-    //아래의 객체들은 모두 월드에서 생성
-    //CreateActor를 사용하지 않고 각각 객체를 따로 생성함
-    //CreateDoor, CreateObstacle, CreateMonster, CreatePickup
-    //이렇게 하는 이유는 월드에서 객체들을 등록해둬야 관리하기에 편함
-    //몬스터가 죽었다고 해서 메모리를 해제하는게 아니라 비활성화 시키기 때문
-    //그래도 처음 생성 단계에서는 서로 다른 방끼리 하나의 객체를 참조하지 않게 방마다 각각 객체들을 생성할것임
-    //만약 최적화가 필요하다고 생각되는 정도로 느려지면 모든 방에서 최소한의 객체를 같이 참조하도록 변경하기
-    //방은 내부 객체에게 능동적으로 뭔가 하는게 없다.
-    //리셋을 해주긴 해야하는데
-    //리셋도 그냥 다 반납하고 다 받아오고 하면ㄷ ㅚ는거 아닌가?
-    //비용 차이는 얼마나 있지?
-    //  현재 O(n)
-    //  변경 O(n) <- 챕터의 저장 방식을 해시+리스트로 해서 접근 및 할당이 굉장히 빠름
-    //그럼 바꾼다고 치고
-    //장애물은 필요한가?
-    //플레이어에게 갈 수 있나를 알기위해서는
-    //방의 장애물들의 위치를 알아야하는데
-    //구멍이 난 곳도 있을 수 있고 벽으로 막힌 경우도 있을 수 있고
-    //음 그건 그리드 맵으로 충분하지 않나? 
-    //변경사항은 그게 변할때인데
-    //그건 뭐 사라지거나 할때 일테니까
-    //등록을 해제하는 과정이 필요할테고 
-    //따라서 그 과정에서 되겠네
-    std::unordered_map<int, EObstacleType> mObstacleGridMap;
-    std::list<std::pair<int, bool>> mMonsters;
+    std::list<std::pair<FVector2, std::weak_ptr<CRoombase>>> mNearRooms;    
+    //픽업이 방에 있는데 방을 나온 경우 픽업이 사라지면 안되기 때문에 저장을 해줘야함
     //벽이 필요한데, 벽의 경우 나올 수 있는 모양들이 몇가지 없어고 비활성화될 일도 없어서 월드에 올려두고 돌려쓰는 형식으로 쓸 것
     //따라서 벽을 세팅하는 함수를 작성하거나 Reset 함수 내부에 작성해야한다
-    
     FVector2 mRedFlag = FVector2(-1, -1); //넘을 수 없는 위치 / 사용하는 방은 L모양 하나뿐이지만 일단 만들어둠
-    std::vector<std::pair<int, FVector2>> mMonsterInit;
+    //초기화 데이터 | 아이디, 좌표
+    std::vector<std::pair<int, FVector2>> mInitData;
+    
+    //실제로 등록된 객체들 관리용
+    std::list<std::weak_ptr<CGameObject>> mMonsterList;
+    std::list<std::weak_ptr<CGameObject>> mObstacleList;
+    std::list<std::weak_ptr<CGameObject>> mPickupList;
+    //길찾기 알고리즘을 위한 장애물 위치 저장용 | Coord, Type
+    std::unordered_map<int, EObstacleType> mObstacleGridMap;
+    //객체 저장 및 생성용 | 좌표, 아이디
+    std::unordered_map<int, int> mMonsterData;
+    std::unordered_map<int, int> mObstacleData;
+    std::unordered_map<int, int> mPickupData;
 
     bool mbIsRoomWin = false;
     //보상 / 해당 클래스는 아직 작성하지 않았으므로 나중에 작성 후 적용하기
@@ -98,6 +84,10 @@ public:
     virtual bool WinCheck() = 0;
 
     void AdjustRoomPos();
+protected:
+    void RoomSetting();
+    void RoomDisenable();
+
 public:
     void SetCoord(FVector2 Coord) { mCoord = Coord; }
     FVector2 GetCoord() { return mCoord; }
@@ -108,7 +98,7 @@ public:
     void DisregisterGObj(const std::weak_ptr<class CGameObject>& GObj, const FVector2& Coord);
   
     const FVector3 CoordToWorldPos(FVector2 Coord);
-    const virtual FVector2 GetUnitCoordInGrid(FVector3 WorldPos);
+    const virtual FVector2 WorldPosToCoord(FVector3 WorldPos);
     const FVector2 GetPlayerCoordInGrid();
     const bool CanGetToPlayerCharacter(FVector3 FromWorldPos);
     bool CheckNearCell(FVector2 Coord);

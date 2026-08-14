@@ -11,6 +11,8 @@
 #include "World/DebugChapter.h"
 #include "World/WorldManager.h"
 
+#include "World/Manager/GameRuleManager.h"
+#include "World/Manager/GameClassContainer.h"
 #include "World/GlobalCollision.h"
 #include "World/Data/GameDataManager.h"
 
@@ -41,10 +43,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return 0;
 	}
 
-	CRenderManager::GetInst()->CreateLayer("Tear", 6, ERenderSortType::None);
+	CRenderManager::GetInst()->CreateLayer("Tear", 7, ERenderSortType::None);
 	CRenderManager::GetInst()->CreateLayer("Item", 5, ERenderSortType::None);
 	CRenderManager::GetInst()->CreateLayer("Head", 4, ERenderSortType::Y);
 	CRenderManager::GetInst()->CreateLayer("Body", 3, ERenderSortType::Y);
+	CRenderManager::GetInst()->CreateLayer("Pickup", 6, ERenderSortType::Y);
 	CRenderManager::GetInst()->CreateLayer("Obstacle", 2, ERenderSortType::None);
 
 	CGlobalCollision::SetGlobalCollision();
@@ -64,6 +67,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	int Ret = CEngine::GetInst()->Run();
 
 	CEngine::GetInst()->DestroyInst();
+	CGameClassContainer::GetInst()->DestroyInst();
+	CGameRuleManager::GetInst()->DestroyInst();
 
 	return Ret;
 }

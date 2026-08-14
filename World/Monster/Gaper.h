@@ -4,7 +4,7 @@
 class CGaper :
     public CWalker
 {
-    GAMECLASS(CGaper, 20);
+    GAMEOBJCLASS(CGaper, 20);
 public:
     CGaper();
     CGaper(const CGaper& src);

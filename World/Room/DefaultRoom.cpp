@@ -90,5 +90,5 @@ void CDefaultRoom::OnExitRoom()
 bool CDefaultRoom::WinCheck()
 {
 	bool flag = false;
-	return mMonsters.empty();
+	return mMonsterList.empty();
 }

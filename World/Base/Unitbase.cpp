@@ -78,6 +78,15 @@ bool CUnitbase::Init()
 
 	//히트 박스 크기 조정
 
+	mMagnification.ShotTerm = 1.f;
+	mMagnification.Speed = 1.f;
+	mMagnification.Luck = 1.f;
+	mMagnification.Damage = 1.f;
+	mMagnification.ShotSpeed = 1.f;
+	mMagnification.Range = 1.f;
+	mMagnification.Height = 1.f;
+	mMagnification.knockback = 1.f;
+	
 	mActorTag = "Unit";
 	return true;
 }

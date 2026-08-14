@@ -62,3 +62,14 @@ enum class EItemType
     Active,
     Passive,
 };
+
+enum class EPickupType
+{
+    Heart,
+    Key,
+    Bomb,
+    Coin,
+    Card,
+    Pill,
+    None,
+};

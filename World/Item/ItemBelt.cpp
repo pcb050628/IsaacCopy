@@ -1,6 +1,8 @@
 #include "ItemBelt.h"
 #include "../Base/Character.h"
 
+#include "LogManager.h"
+
 #include "Asset/AssetManager.h";
 #include "../Data/GameDataManager.h"
 #include "../Data/AnimGData.h"
@@ -23,7 +25,8 @@ bool CItemBelt::Init()
     if (!CItem::Init())
         return false;
 
-    mUnitAdditionalAttribute.Speed = 50.f;
+    mbIsBodyAnimOverride = true;
+    mUnitAdditionalAttribute.Speed = 20.f;
 
     auto mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
     if (!mgr->LoadDataFile<CAnimGData>("Item_Belt_Walk_V", TEXT("Anim\\Item_Belt_Walk_V")))

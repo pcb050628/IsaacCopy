@@ -5,7 +5,7 @@
 class CTear :
     public CGameObject
 {
-	GAMECLASS(CTear, 6)
+	GAMEOBJCLASS(CTear, 6)
 public:
 	CTear();
 	virtual ~CTear();

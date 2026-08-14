@@ -4,7 +4,7 @@
 class CRockObstacle :
     public CObstaclebase
 {
-    GAMECLASS(CRockObstacle, 41);
+    GAMEOBJCLASS(CRockObstacle, 41);
 public:
     CRockObstacle();
     virtual ~CRockObstacle();

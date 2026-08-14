@@ -172,6 +172,112 @@ void CCharacter::ExitHitOverlaps(std::weak_ptr<CCollider> Collider)
 {
 }
 
+void CCharacter::OverrideHeadAnim(const std::string& Name)
+{
+	mHead.lock()->AddAnimation(Name + "_Front", 1.f, 1.f, true);
+	mHead.lock()->AddAnimation(Name + "_Back", 1.f, 1.f, true);
+	mHead.lock()->AddAnimation(Name + "_Right", 1.f, 1.f, true);
+	mHead.lock()->AddAnimation(Name + "_Left", 1.f, 1.f, true);
+
+	mHeadAnimName = Name;
+}
+
+void CCharacter::OverrideBodyAnim(const std::string& Name)
+{
+	mBody.lock()->AddAnimation(Name + "_V", 0.7f, 0.7f, true);
+	mBody.lock()->AddAnimation(Name + "_H", 0.7f, 0.7f, true);
+
+	mBodyAnimName = Name;
+}
+
+void CCharacter::OnGetPickup(EPickupType Type, int Count)
+{
+
+}
+
+void CCharacter::OnLosePickup(EPickupType Type, int Count)
+{
+}
+
+void CCharacter::OnAttributeChanged(FUnitAttribute Attribute, bool IsMagnification)
+{
+	//여ㅑ기서 능력치 변동 해주기
+}
+
+void CCharacter::PlayBodyVerticalAnim()
+{
+	mBody.lock()->ChangeAnimation(mBodyAnimName + "_V");
+	bool symmetry = mBodyDirection.y > 0 ? true : false;
+	mBody.lock()->SetSymmetry(mBodyAnimName + "_V", symmetry);
+	mBody.lock()->Play();
+	if (!mbIsFiring)
+		SetHeadDirection(mBodyDirection);
+
+	if (mItemContainer.expired())
+		return;
+	mItemContainer.lock()->SetBodyDirection(mBodyDirection);
+}
+
+void CCharacter::PlayBodyHorizontalAnim()
+{
+	mBody.lock()->ChangeAnimation(mBodyAnimName + "_H");
+	bool symmetry = mBodyDirection.x > 0 ? false : true;
+	mBody.lock()->SetSymmetry(mBodyAnimName + "_H", symmetry);
+	mBody.lock()->Play();
+	if (!mbIsFiring)
+		SetHeadDirection(mBodyDirection);
+
+	if (mItemContainer.expired())
+		return;
+	mItemContainer.lock()->SetBodyDirection(mBodyDirection);
+}
+
+void CCharacter::PlayHeadVerticalAnim()
+{
+	bool isUp = mHeadDirection.y > 0 ? false : true;
+	if (isUp)
+		mHead.lock()->ChangeAnimation(mHeadAnimName + "_Back");
+	else
+		mHead.lock()->ChangeAnimation(mHeadAnimName + "_Front");
+
+	if (mbIsFiring)
+	{
+		mHead.lock()->SetFrame(1);
+		mHead.lock()->Play();
+	}
+	else
+	{
+		mHead.lock()->Stop(true);
+	}
+
+	if (mItemContainer.expired())
+		return;
+	mItemContainer.lock()->SetHeadDirection(mHeadDirection);
+}
+
+void CCharacter::PlayHeadHorizontalAnim()
+{
+	bool isRight = mHeadDirection.x > 0 ? false : true;
+	if (isRight)
+		mHead.lock()->ChangeAnimation(mHeadAnimName + "_Left");
+	else
+		mHead.lock()->ChangeAnimation(mHeadAnimName + "_Right");
+
+	if (mbIsFiring)
+	{
+		mHead.lock()->SetFrame(1);
+		mHead.lock()->Play();
+	}
+	else
+	{
+		mHead.lock()->Stop(true);
+	}
+
+	if (mItemContainer.expired())
+		return;
+	mItemContainer.lock()->SetHeadDirection(mHeadDirection);
+}
+
 void CCharacter::MoveUp()
 {
 	mMoveDirection.y += 1;

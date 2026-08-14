@@ -4,6 +4,7 @@
 #include "Base/Unitbase.h"
 #include "Base/Obstaclebase.h"
 #include "Base/Tear.h"
+#include "Base/Pickup.h"
 
 enum class ERoomType;
 enum class ERoomShape;
@@ -36,6 +37,8 @@ protected:
 	std::unordered_map<int, std::list<std::weak_ptr<CUnitbase>>> mUnitsDeactivate;
 	std::unordered_map<int, std::list<std::weak_ptr<CObstaclebase>>> mObstaclesActivate;
 	std::unordered_map<int, std::list<std::weak_ptr<CObstaclebase>>> mObstaclesDeactivate;
+	std::unordered_map<int, std::list<std::weak_ptr<CPickup>>> mPickupsActivate;
+	std::unordered_map<int, std::list<std::weak_ptr<CPickup>>> mPickupsDeactivate;
 	std::unordered_map<int, std::weak_ptr<CTear>> mTearsActivate;
 	std::unordered_map<int, std::weak_ptr<CTear>> mTearsDeactivate;
 
@@ -183,7 +186,7 @@ public:
 		return unit;
 	}
 	template<typename T>
-	std::weak_ptr<T> CreateMonster(const std::string& Name, const int GObjID, FVector2 Coord)
+	std::weak_ptr<T> CreateMonster(const std::string& Name, const int GObjID, FVector2 Coord, bool OnFocus)
 	{
 		if (!mUnitsDeactivate[GObjID].empty())
 		{
@@ -193,9 +196,12 @@ public:
 			mUnitsActivate[GObjID].push_back(unit);
 
 			unit->Reset(true);
-			unit->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
-			unit->SetRoom(mRoomMap[mFocusedRoomHash].lock());
-			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(unit, Coord);
+			if (OnFocus)
+			{
+				unit->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
+				unit->SetRoom(mRoomMap[mFocusedRoomHash].lock());
+				mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(unit, Coord);
+			}
 			return mon;
 		}
 
@@ -206,13 +212,16 @@ public:
 		std::shared_ptr<CUnitbase> ub = std::dynamic_pointer_cast<CUnitbase>(unit.lock());
 		mUnitsActivate[GObjID].push_back(ub);
 
-		ub->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
-		ub->SetRoom(mRoomMap[mFocusedRoomHash].lock());
-		mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(ub, Coord);
+		if (OnFocus)
+		{
+			ub->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
+			ub->SetRoom(mRoomMap[mFocusedRoomHash].lock());
+			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(ub, Coord);
+		}
 		return unit;
 	}
 	template<typename T>
-	std::weak_ptr<T> CreateObstacle(const std::string& Name, const int GObjID, FVector2 Coord)
+	std::weak_ptr<T> CreateObstacle(const std::string& Name, const int GObjID, FVector2 Coord, bool OnFocus)
 	{
 		if (!mObstaclesDeactivate[GObjID].empty())
 		{
@@ -222,9 +231,12 @@ public:
 			mObstaclesActivate[GObjID].push_back(obstacle);
 
 			obstacle->Reset(true);
-			obstacle->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
-			obstacle->SetRoom(mRoomMap[mFocusedRoomHash].lock());
-			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(obstacle, Coord);
+			if(OnFocus)
+			{
+				obstacle->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
+				obstacle->SetRoom(mRoomMap[mFocusedRoomHash].lock());
+				mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(obstacle, Coord);
+			}
 			return ob;
 		}
 
@@ -235,13 +247,50 @@ public:
 		std::shared_ptr<CObstaclebase> ob = std::dynamic_pointer_cast<CObstaclebase>(obstacle.lock());
 		mObstaclesActivate[GObjID].push_back(ob);
 
-		ob->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
-		ob->SetRoom(mRoomMap[mFocusedRoomHash].lock());
-		mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(ob, Coord);
+		if(OnFocus)
+		{
+			ob->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
+			ob->SetRoom(mRoomMap[mFocusedRoomHash].lock());
+			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(ob, Coord);
+		}
 		return obstacle;
 	}
 	template<typename T>
-	std::weak_ptr<CGameObject> MakeObject(const std::string& Name, enum class EObjectType Type, const int GObjID, FVector2 Coord)//좌표는 무조건 받아야 하고, 
+	std::weak_ptr<T> CreatePickup(const std::string& Name, const int GObjID, FVector2 Coord, bool OnFocus)
+	{
+		if (!mPickupsDeactivate[GObjID].empty())
+		{
+			std::shared_ptr<CPickup> pickup = mPickupsDeactivate[GObjID].front().lock();
+			std::shared_ptr<T> ob = std::dynamic_pointer_cast<T>(pickup);
+			mPickupsDeactivate[GObjID].pop_front();
+			mPickupsDeactivate[GObjID].push_back(pickup);
+
+			pickup->Reset(true);
+			if(OnFocus)
+			{
+				pickup->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
+				mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(pickup, Coord);
+			}
+			return ob;
+		}
+
+		std::weak_ptr<T> pickup = CreateActor<T>(Name);
+		if (pickup.expired())
+			return std::weak_ptr<T>();
+
+		std::shared_ptr<CPickup> pu = std::dynamic_pointer_cast<CPickup>(pickup.lock());
+		mPickupsActivate[GObjID].push_back(pu);
+
+		if(OnFocus)
+		{
+			pu->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
+			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(pu, Coord);
+		}
+		return pickup;
+	}
+
+	template<typename T>
+	std::weak_ptr<CGameObject> MakeObject(const std::string& Name, enum class EObjectType Type, const int GObjID, FVector2 Coord, bool OnFocus = true)//좌표는 무조건 받아야 하고, 
 	{
 		//함수에 챕터내의 방 좌표, 방 내부좌표 받기
 		//현재 생성되고 있는 객체들은 전부 포커싱된 방에 생성되게 만들어져 있으므로 여러방을 동시에 생성하는데에 부적합함
@@ -252,9 +301,11 @@ public:
 		case EObjectType::PlayerCharacter:
 			return CreateCharacter<T>(Name, Coord);
 		case EObjectType::Monster:
-			return CreateMonster<T>(Name, GObjID, Coord);
+			return CreateMonster<T>(Name, GObjID, Coord, OnFocus);
 		case EObjectType::Obstacle:
-			return CreateObstacle<T>(Name, GObjID, Coord);
+			return CreateObstacle<T>(Name, GObjID, Coord, OnFocus);
+		case EObjectType::Pickup:
+			return CreatePickup<T>(Name, GObjID, Coord, OnFocus);
 		}
 
 		return std::weak_ptr<CGameObject>();

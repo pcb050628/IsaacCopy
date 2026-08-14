@@ -156,7 +156,7 @@ bool CWalker::UpdateNextMove()
 	if (-FVector2::One == playerCoord)
 		return false;
 
-	FVector2 myCoord = room->GetUnitCoordInGrid(GetWorldPos());
+	FVector2 myCoord = room->WorldPosToCoord(GetWorldPos());
 
 	FVector2 dir = playerCoord - myCoord;
 	if (fabs(dir.x) > fabs(dir.y))
@@ -211,7 +211,7 @@ void CWalker::MakeRoute()
 	if (-FVector2::One == playerCoord)
 		return;
 
-	FVector2 myCoord = room->GetUnitCoordInGrid(GetWorldPos());
+	FVector2 myCoord = room->WorldPosToCoord(GetWorldPos());
 
 	FVector2 dist = playerCoord - myCoord;
 	if (dist.Length() <= 1)

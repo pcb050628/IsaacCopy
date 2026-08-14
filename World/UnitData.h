@@ -20,7 +20,7 @@ enum class EUnitEffect
 	Poision,
 	Slow,
 	Bleed,
-	Frozen,
+	Frozen,	
 	End,
 };
 
@@ -30,7 +30,7 @@ struct FUnitAttribute
 	float ShotTerm = 0.f;
 	float Speed = 0.f;
 	float Luck = 0.f;
-	
+
 	//Attack
 	float Damage = 0.f;
 	float ShotSpeed = 0.f;
@@ -90,21 +90,21 @@ struct FUnitAttribute
 //공격시 효과들도 그냥 다 집어넣기
 //독이나 석화나 화상이나 상관없음
 
-namespace ETearEffect
-{
-	enum Effect
-	{
-		None = 0,
-		Homing = 1,
-		Piercing = 2,
-		Spectral = 4,
-		Orbiting = 8,
-		Boomerang = 16,
-		Shield = 32,
-		Bouncing = 64,
-		Split = 128,
-	};
-}
+//namespace ETearEffect
+//{
+//	enum Effect
+//	{
+//		None = 0,
+//		Homing = 1,
+//		Piercing = 2,
+//		Spectral = 4,
+//		Orbiting = 8,
+//		Boomerang = 16,
+//		Shield = 32,
+//		Bouncing = 64,
+//		Split = 128,
+//	};
+//};
 
 struct FTearAttribute
 {
@@ -153,4 +153,50 @@ struct FPlayerHeartData
 {
 	EPlayerHeartType Type;
 	EPlayerHeartState State;
+};
+
+namespace CharacterEffect
+{
+	enum LimitType
+	{
+		Room = 1,
+		Time = 2,
+	};
+	enum EffectType
+	{
+		Attribute,
+		Blasting,
+		Fire,
+		Spike,
+		Knockback,
+		Slow,
+		Bleed,
+		Flight,
+	};
+	struct FPlayerEffect
+	{
+		bool Temporary = true;
+		int Range = LimitType::Room;
+		int Type = EffectType::Attribute;
+
+		int LimitCount = 1;
+		int CurrentCount = 0;
+
+		//0: 유닛 | 1: 눈물
+		int attributeType = 0;
+		FUnitAttribute unitAttribute;
+		FTearAttribute tearAttribute;
+
+		FPlayerEffect(int LimitMax)
+			:LimitCount(LimitMax)
+		{
+
+		}
+
+		FPlayerEffect(FPlayerEffect&& src) noexcept
+			:LimitCount(src.LimitCount)
+		{
+
+		}
+	};
 };

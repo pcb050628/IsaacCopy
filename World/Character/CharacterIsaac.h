@@ -4,7 +4,7 @@
 class CCharacterIsaac :
     public CCharacter
 {
-    GAMECLASS(CCharacterIsaac, 31)
+    GAMEOBJCLASS(CCharacterIsaac, 31)
 public:
     CCharacterIsaac();
     virtual ~CCharacterIsaac();
@@ -17,13 +17,8 @@ public:
     virtual void Update(float DeltaTime);
     virtual void Destroy();
 
-protected:
-    virtual void PlayBodyVerticalAnim();
-    virtual void PlayBodyHorizontalAnim();
-    virtual void PlayHeadVerticalAnim();
-    virtual void PlayHeadHorizontalAnim();
-
 private:
+    void TestFuncForItemContainer();
 
 
 };

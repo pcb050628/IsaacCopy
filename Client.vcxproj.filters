@@ -127,6 +127,9 @@
     <Filter Include="소스 파일\Debug\GameDataAsset\Data\Anim">
       <UniqueIdentifier>{c97bd0b8-3753-4e18-a942-26037a242571}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Room\Other\Pickup\Heart">
+      <UniqueIdentifier>{810224ec-619a-4397-95f6-8dc88b3bd21d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -227,6 +230,12 @@
     </ClCompile>
     <ClCompile Include="World\Component\ItemContainer.cpp">
       <Filter>소스 파일\Component\ActorComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Base\Pickup.cpp">
+      <Filter>소스 파일\Room\Other\Pickup</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Pickup\PickupRedHeart.cpp">
+      <Filter>소스 파일\Room\Other\Pickup\Heart</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -340,6 +349,12 @@
     </ClInclude>
     <ClInclude Include="World\Component\ItemContainer.h">
       <Filter>소스 파일\Component\ActorComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Base\Pickup.h">
+      <Filter>소스 파일\Room\Other\Pickup</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Pickup\PickupRedHeart.h">
+      <Filter>소스 파일\Room\Other\Pickup\Heart</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

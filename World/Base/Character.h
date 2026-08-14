@@ -21,6 +21,12 @@ protected:
     FVector3 mMoveDirection;
     bool mbIsFiring = false;
 
+    std::string mHeadAnimName;
+    std::string mBodyAnimName;
+
+    std::string mDefaultHeadAnimName;
+    std::string mDefaultBodyAnimName;
+
 public:
     virtual bool Init();//초기화 단계에서 첫번째 캐릭터인지 알아야함
     virtual void Update(float DeltaTime);
@@ -47,6 +53,31 @@ public:
     //아이템은 굳이 스마트 포인터로 들어야하나 | 포인터로 안들어도 될거같은데
     //아이템 만들때 가능하면 포인터로 안들고있어도 되게 만들자
 
+    void SetDefaultHeadAnim() { mHeadAnimName = mDefaultHeadAnimName; }
+    void OverrideHeadAnim(const std::string& Name);
+    const std::string& GetHeadAnimName() const { return mHeadAnimName; }
+
+    void SetDefaultBodyAnim() { mBodyAnimName = mDefaultBodyAnimName; }
+    void OverrideBodyAnim(const std::string& Name);
+    const std::string& GetBodyAnimName() const { return mBodyAnimName; }
+
+public:
+    void OnGetPickup(EPickupType Type, int Count);
+    void OnLosePickup(EPickupType Type, int Count);
+    void OnAttributeChanged(FUnitAttribute Attribute, bool IsMagnification = false);
+
+    //나중에 만들어야 하는 것
+    // 플레이어 이펙트라고 구조체는 만들어놨고
+    // 내용은 어떤 효과를 얼마나 지속되게 줄건지임
+    // 지속이라 맵이든 리스트는 배열이든 해서 들고 있다가 잘 확인하고 없애주면 됨
+    //void AddPlayerEffect();
+
+protected:
+    virtual void PlayBodyVerticalAnim();
+    virtual void PlayBodyHorizontalAnim();
+    virtual void PlayHeadVerticalAnim();
+    virtual void PlayHeadHorizontalAnim();
+
 private:
     void MoveUp();
     void MoveLeft();
@@ -65,6 +96,7 @@ private:
 
     void DropPickupPress();
     void DropPickupRelease();
+
 
     void Attack(const FVector3& Point, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
 };

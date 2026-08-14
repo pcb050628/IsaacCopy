@@ -271,7 +271,7 @@ bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 	} return true;
 	case EObjectType::Obstacle:
 		break;
-	case EObjectType::Pickup:
+	case EObjectType::Pickup: //애초에 등록을 안함 | 근데 해야됨 -> 나중에 수정하기
 		break;
 	}
 

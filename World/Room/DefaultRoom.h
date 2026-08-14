@@ -4,7 +4,7 @@
 class CDefaultRoom :
     public CRoombase
 {
-    GAMECLASS(CDefaultRoom, 10)
+    GAMEOBJCLASS(CDefaultRoom, 10)
 public:
     CDefaultRoom();
     virtual ~CDefaultRoom();

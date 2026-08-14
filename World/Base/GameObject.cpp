@@ -1,5 +1,7 @@
 #include "GameObject.h"
 
+#include "../Chapter.h"
+
 int CGameObject::GlobalID = 0;
 
 CGameObject::CGameObject(EObjectType Type)
@@ -19,4 +21,10 @@ CGameObject::CGameObject(CGameObject&& src) noexcept
 
 CGameObject::~CGameObject()
 {
+}
+
+void CGameObject::ReturnToChapter()
+{
+	auto chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	chptr->ReturnGObj(GetThisPtr<CGameObject>());
 }
