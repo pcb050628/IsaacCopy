@@ -5,17 +5,17 @@
 #include "World/Animation2DComponent.h"
 
 CObstaclebase::CObstaclebase(EObstacleType ObstacleType)
-	:CGameObject(EObjectType::Obstacle), mObstacleType(ObstacleType)
+	:CRoomMember(EObjectType::Obstacle), mObstacleType(ObstacleType)
 {
 }
 
 CObstaclebase::CObstaclebase(const CObstaclebase& src)
-	:CGameObject(src), mObstacleType(src.mObstacleType)
+	:CRoomMember(src), mObstacleType(src.mObstacleType)
 {
 }
 
 CObstaclebase::CObstaclebase(CObstaclebase&& src) noexcept
-	:CGameObject(std::move(src)), mObstacleType(src.mObstacleType)
+	:CRoomMember(std::move(src)), mObstacleType(src.mObstacleType)
 {
 }
 
@@ -25,6 +25,9 @@ CObstaclebase::~CObstaclebase()
 
 bool CObstaclebase::Init()
 {
+	if (!CRoomMember::Init())
+		return false;
+
 	mHitBox = CreateComponent<CColliderBox2D>("Root");
 	mMeshComp = CreateComponent<CMeshComponent>("Root");
 	mAnimator = CreateComponent<CAnimation2DComponent>("Root");

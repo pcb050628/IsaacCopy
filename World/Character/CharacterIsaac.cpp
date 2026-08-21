@@ -1,5 +1,7 @@
 #include "CharacterIsaac.h"
 
+#include "LogManager.h"
+
 #include "World/Input.h"
 #include "World/Animation2DComponent.h"
 
@@ -51,6 +53,7 @@ bool CCharacterIsaac::Init()
 
     SetBodyDirection(FVector2(0, -1));
 
+    mAttribute.Damage = 7.f;
     mAttribute.Range = 85.f * 5.f;
     mAttribute.ShotSpeed = 7.f; //이게 힘이고
     mAttribute.ShotTerm = 1.f;
@@ -61,6 +64,8 @@ bool CCharacterIsaac::Init()
     auto input = mWorld.lock()->GetInput().lock();
     input->AddBindKey("TestFunc", 'J');
     input->SetBindFunction("TestFunc", EInputType::Press, this, &CCharacterIsaac::TestFuncForItemContainer);
+
+    mActorTag = "Isaac";
 
     return true;
 }

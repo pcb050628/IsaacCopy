@@ -11,6 +11,7 @@ public:
     virtual ~CTearShooter();
 
 protected:
+    EObjectType mOwnerObjType;
     std::weak_ptr<class CUnitbase> mOwnerUnit;
     std::weak_ptr<class CSceneComponent> mOwnerUnitHead;
     std::weak_ptr<class CSceneComponent> mOwnerUnitBody;
@@ -40,7 +41,7 @@ public:
     void Fire();
     //IsSet - True: 위치 고정 | False: 오프셋 추가
     void Fire(FVector3 firePoint, bool IsSet = false);
-    void FireWithVelocityOffset(FVector2 vOffset);
+    bool FireWithVelocityOffset(FVector2 vOffset);
 
     void UpdateUnitAttributeData(const bool Synchronize, FUnitAttribute Attribute);
     void UpdateTearAttributeData(FTearAttribute Attribute);

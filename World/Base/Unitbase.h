@@ -1,10 +1,10 @@
 #pragma once
-#include "GameObject.h"
+#include "RoomMember.h"
 
 #include "../UnitData.h"
 
 class CUnitbase :
-    public CGameObject 
+    public CRoomMember 
 {
 public:
     CUnitbase(EObjectType Type);
@@ -13,7 +13,6 @@ public:
     virtual ~CUnitbase();
     
 protected:
-    std::weak_ptr<class CRoombase> mRoomOwner;
     std::weak_ptr<class CRigidBodyComponent> mRigidBody; //root
     std::weak_ptr<class CMeshComponent> mHeadMesh;
     std::weak_ptr<class CMeshComponent> mBodyMesh;
@@ -40,10 +39,8 @@ public:
     //virtual void UnitUpdate(float DeltaTime, float GameTimeScale) = 0;
     virtual void Destroy();
 
-    void SetRoom(std::weak_ptr<CRoombase> Room) { mRoomOwner = Room; }
-    std::weak_ptr<CRoombase> UnsetRoom() { mRoomOwner.reset(); return mRoomOwner; }
 
-    virtual void GetHit(std::weak_ptr<CUnitbase> From) = 0;
+    virtual void GetHit(std::weak_ptr<CGameObject> From) = 0;
 
     virtual void Reset(bool HardReset = false) = 0;
 protected:

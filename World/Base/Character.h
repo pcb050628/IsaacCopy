@@ -20,6 +20,7 @@ protected:
     std::weak_ptr<class CItemContainer> mItemContainer;
     FVector3 mMoveDirection;
     bool mbIsFiring = false;
+    bool mbIsJustFired = false;
 
     std::string mHeadAnimName;
     std::string mBodyAnimName;
@@ -32,7 +33,7 @@ public:
     virtual void Update(float DeltaTime);
     virtual void Destroy();
 
-    virtual void GetHit(std::weak_ptr<CUnitbase> From);
+    virtual void GetHit(std::weak_ptr<CGameObject> From);
     virtual void Reset(bool hard = false);
 
     virtual void OnHurtOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);

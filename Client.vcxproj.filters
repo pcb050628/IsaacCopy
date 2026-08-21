@@ -237,6 +237,12 @@
     <ClCompile Include="World\Pickup\PickupRedHeart.cpp">
       <Filter>소스 파일\Room\Other\Pickup\Heart</Filter>
     </ClCompile>
+    <ClCompile Include="Debug\ImGuiRoomMaker.cpp">
+      <Filter>소스 파일\Debug\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Base\RoomMember.cpp">
+      <Filter>소스 파일\Room\Other</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -355,6 +361,12 @@
     </ClInclude>
     <ClInclude Include="World\Pickup\PickupRedHeart.h">
       <Filter>소스 파일\Room\Other\Pickup\Heart</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug\ImGuiRoomMaker.h">
+      <Filter>소스 파일\Debug\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Base\RoomMember.h">
+      <Filter>소스 파일\Room\Other</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,7 @@
 #pragma once
 #include "World\World.h"
+#include "LogManager.h"
+
 #include "Base/Roombase.h"
 #include "Base/Unitbase.h"
 #include "Base/Obstaclebase.h"
@@ -32,6 +34,8 @@ protected:
 	std::unordered_map<int, std::weak_ptr<CRoombase>> mRoomMap;
 	//리스트 써서 맵->리스트 로 만들면 좋을거같은ㄷ
 	//접근은 클래스 아이디로 하고 해당 클래스 아이디 리스트 내부에서 하나 꺼내오면 되니까
+	//이거 그냥 통합해버릴까? 어짜피 전부 GameObject 상속받는데
+	//구분도 내부에서 클래스 아이디로 구분하면 그냥 해도 되는거 아닌가
 	std::weak_ptr<CUnitbase> mPlayerCharacter;
 	std::unordered_map<int, std::list<std::weak_ptr<CUnitbase>>> mUnitsActivate;
 	std::unordered_map<int, std::list<std::weak_ptr<CUnitbase>>> mUnitsDeactivate;
@@ -138,35 +142,11 @@ public:
 		std::shared_ptr<CRoombase> generatedRoom = std::dynamic_pointer_cast<CRoombase>(room.lock());
 		if (!generatedRoom)
 			return std::weak_ptr<CRoombase>();
-		std::vector<std::pair<int, FVector2>> GObjs; //<- 이건 파일 만들기 전 일단 테스트용
 		//generatedRoom->GetRoomType()
 		//현재 생성될 방의 타입을 보내서 해당 방에 맞는 파일 읽어오기
 		//SetInitRoom 에 방 모양도 입력해주기
-		if (-1 == mFocusedRoomHash)
-		{
-			mFocusedRoomHash = Coord2Hash(Coord);
-			mRoomMap[mFocusedRoomHash] = generatedRoom;
-		}
-		else
-		{
-			mRoomMap[Coord2Hash(Coord)] = generatedRoom;
-		}
 
 		generatedRoom->SetCoord(Coord);
-		for (int i = 0; i < 4; i++)
-		{
-			int dest = Coord2Hash(Coord + FourDirections[i]);
-			if (!mRoomMap[dest].expired())
-			{
-				generatedRoom->ConnectRoom(mRoomMap[dest]);
-				mRoomMap[dest].lock()->ConnectRoom(generatedRoom);
-			}
-		}
-		if (!generatedRoom->SetInitRoom(GObjs))
-		{
-			generatedRoom->Destroy();
-			return std::weak_ptr<CRoombase>();
-		}
 		return generatedRoom;
 	}
 	template<typename T>
@@ -180,9 +160,9 @@ public:
 		if (unit.expired())
 			return std::weak_ptr<T>();
 		mPlayerCharacter = std::dynamic_pointer_cast<CUnitbase>(unit.lock());
-		std::shared_ptr<CUnitbase> ub = std::dynamic_pointer_cast<CUnitbase>(unit.lock());
-		ub->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
-		ub->SetRoom(mRoomMap[mFocusedRoomHash].lock());
+		std::shared_ptr<CUnitbase> chara = mPlayerCharacter.lock();
+		chara->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
+		chara->SetRoom(mRoomMap[mFocusedRoomHash].lock());
 		return unit;
 	}
 	template<typename T>
@@ -258,6 +238,7 @@ public:
 	template<typename T>
 	std::weak_ptr<T> CreatePickup(const std::string& Name, const int GObjID, FVector2 Coord, bool OnFocus)
 	{
+
 		if (!mPickupsDeactivate[GObjID].empty())
 		{
 			std::shared_ptr<CPickup> pickup = mPickupsDeactivate[GObjID].front().lock();
@@ -269,6 +250,7 @@ public:
 			if(OnFocus)
 			{
 				pickup->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
+				pickup->SetRoom(mRoomMap[mFocusedRoomHash]);
 				mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(pickup, Coord);
 			}
 			return ob;
@@ -345,6 +327,8 @@ public:
 public:
 	void MoveRoom(FVector2 Dir);
 
+	void RegisterRoom(const std::shared_ptr<CRoombase>& room);
+	void RegisterGObjToRoom(const std::weak_ptr<CRoomMember>& rm, const FVector2& Coord, const FVector2& targetRoomCoord);
 
 public:
 	//좌표가 잘못됐으면 0 좌표에 방이 있으면 1 아무것도 없으면 2

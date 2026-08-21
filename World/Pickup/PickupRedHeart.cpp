@@ -1,5 +1,7 @@
 #include "PickupRedHeart.h"
 
+#include "LogManager.h"
+
 #include "World/ColliderSphere2D.h"
 #include "World/MeshComponent.h"
 #include "World/Animation2DComponent.h"

@@ -16,7 +16,7 @@ public:
     virtual void Destory();
     virtual void Dead() = 0;
 
-    virtual void GetHit(std::weak_ptr<CUnitbase> From);
+    virtual void GetHit(std::weak_ptr<CGameObject> From);
 protected:
     virtual void OnHurtOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
     virtual void ExitHurtOverlaps(std::weak_ptr<CCollider> Collider);
@@ -31,6 +31,8 @@ private:
     void CheckRoute(const FVector2& Target, int& focus, std::vector<std::pair<int, std::list<FVector2>>>& routes, bool& Complete);
     bool CheckCellValid(const FVector2& Coord);
     int CoordDistance(FVector2 a, FVector2 b);
+
+    void RouteCountCheck();
 
 protected:
     std::weak_ptr<CUnitbase> mTarget;

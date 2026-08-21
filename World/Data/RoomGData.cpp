@@ -24,21 +24,11 @@ bool CRoomGData::Write(rapidjson::Writer<rapidjson::StringBuffer>& Writer)
     Writer.Key("Clear");
     Writer.Bool(mData.Clear);
 
-    Writer.Key("Doors");
-    Writer.StartArray();
-    for (int i = 0; i < mData.Doors.size(); ++i)
-    {
-        Writer.Bool(mData.Doors[i]);
-    }
-    Writer.EndArray();
-
     Writer.Key("OBJS");
     Writer.StartArray();
     //여기에 오브젝트들 입력
     for (int i = 0; i < mData.InitObjs.size(); i++)
     {
-        std::string Name = "OBJ_" + std::to_string(i + 1);
-        Writer.Key(Name.c_str());
         Writer.StartObject();
         Writer.Key("ID");
         Writer.Int(mData.InitObjs[i].ID);
@@ -48,6 +38,7 @@ bool CRoomGData::Write(rapidjson::Writer<rapidjson::StringBuffer>& Writer)
         Writer.Int(static_cast<int>(mData.InitObjs[i].Coord.y));
         Writer.EndObject();
     }
+    Writer.EndArray();
 
     return true;
 }
@@ -65,24 +56,15 @@ bool CRoomGData::Read(const TCHAR* FileName)
     mData.Coord = FVector2(static_cast<float>(d["CoordX"].GetInt()), static_cast<float>(d["CoordY"].GetInt()));
     mData.Clear = d["Clear"].GetBool();
     
-    const rapidjson::Value& doorArray = d["Doors"];
-    int size = doorArray.Size();
-    mData.Doors.reserve(size);
-    for (int i = 0; i < size; ++i)
-    {
-        const rapidjson::Value& val = doorArray[i];
-        mData.Doors.push_back(val.GetBool());
-    }
-
-    const rapidjson::Value& objArray = d["OBJ"];
-    size = objArray.Size();
+    const rapidjson::Value& objArray = d["OBJS"];
+    int size = objArray.Size();
     mData.InitObjs.reserve(size);
-    for (int i = 0; i < size; i++)
+    for (const rapidjson::Value& item : d["OBJS"].GetArray())
     {
-        const rapidjson::Value& obj = objArray[i];
+        bool te = item.IsObject();
         FRoomObjectData objData;
-        objData.ID = obj["ID"].GetInt();
-        objData.Coord = FVector2(static_cast<float>(obj["CoordX"].GetInt()), static_cast<float>(obj["CoordY"].GetInt()));
+        objData.ID = item["ID"].GetInt();
+        objData.Coord = FVector2(static_cast<float>(item["CoordX"].GetInt()), static_cast<float>(item["CoordY"].GetInt()));
         mData.InitObjs.push_back(objData);
     }
     
@@ -95,17 +77,8 @@ bool CRoomGData::Read(const rapidjson::Value& Val)
     mData.Coord = FVector2(static_cast<float>(Val["CoordX"].GetInt()), static_cast<float>(Val["CoordY"].GetInt()));
     mData.Clear = Val["Clear"].GetBool();
 
-    const rapidjson::Value& doorArray = Val["Doors"];
-    int size = doorArray.Size();
-    mData.Doors.reserve(size);
-    for (int i = 0; i < size; ++i)
-    {
-        const rapidjson::Value& door = doorArray[i];
-        mData.Doors.push_back(door.GetBool());
-    }
-
     const rapidjson::Value& objArray = Val["OBJ"];
-    size = objArray.Size();
+    int size = objArray.Size();
     mData.InitObjs.reserve(size);
     for (int i = 0; i < size; i++)
     {

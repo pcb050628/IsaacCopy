@@ -11,10 +11,13 @@ public:
     virtual ~CMonster() = 0;
 
 protected:
-    float MaxHP = 10.f;
-    float CurrentHP = MaxHP;
+    float mMaxHP = 10.f;
+    float mCurrentHP = mMaxHP;
 
     std::unordered_map<std::string, std::string> mAnimMap; //애니메이션 이름, 애니메이션 파일이름
+
+public:
+    virtual void Reset(bool HardReset = false);
 
 protected:
     //공용으로 사용할만한 기능들 생각하기

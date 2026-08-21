@@ -1,9 +1,9 @@
 #pragma once
-#include "GameObject.h"
+#include "RoomMember.h"
 #include "../UnitData.h"
 
 class CPickup :
-    public CGameObject
+    public CRoomMember
 {
 public:
     CPickup(EPickupType Type, bool IsAboutCharacter = false, bool IsAboutPickup = false, int AffectPickupCount = 1, bool IsAboutInstantiate = false);

@@ -20,7 +20,7 @@
                                     else\
                                         return std::dynamic_pointer_cast<CChapter>(CWorldManager::GetInst()->GetWorld().lock())->MakeObject<GAMEOBJ>(NAME, TYPE, GObjID, Coord, OnFocus);\
                                     }\
-                           const bool GAMEOBJ::IsRegister = CGameClassContainer::GetInst()->RegisterGameClass<GAMEOBJ>(GAMEOBJ::GObjID, &GAMEOBJ::InstanceGObj);
+                                    const bool GAMEOBJ::IsRegister = CGameClassContainer::GetInst()->RegisterGameClass<GAMEOBJ>(GAMEOBJ::GObjID, &GAMEOBJ::InstanceGObj) ? []() -> bool {LOG_DEBUG(GAMEOBJ::GObjID, " - ", NAME); return true;}() : false;
 
 #define REGISTER_GAMEDEFCLASS(GAMEDEF, NAME, TYPE)const int GAMEDEF::GetGObjID() { return GAMEDEF::GObjID; }\
                                         std::shared_ptr<CGameObject> GAMEDEF::InstanceGObj() {\
@@ -54,16 +54,19 @@ protected:
 
     bool mbIsTemporary = false;
 
+    std::weak_ptr<class CChapter> mChapter;
+
 public:
     const int GetID() const { return mID; }
     const EObjectType GetObjType() const { return mObjType; }
 
+    virtual bool Init();
     virtual void Reset(bool HardReset = false) = 0; //상태를 초기화
 
     void SetTemporary(const bool Val) { mbIsTemporary = Val; }
     const bool GetIsTemporary() const { return mbIsTemporary; }
 
-    void ReturnToChapter();
+    virtual void ReturnToChapter();
 private:
     static int GlobalID;
 };

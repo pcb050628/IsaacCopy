@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Debug\ImGuiAnimationMaker.cpp" />
+    <ClCompile Include="Debug\ImGuiRoomMaker.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="World\Base\Character.cpp" />
     <ClCompile Include="World\Base\Item.cpp" />
@@ -161,6 +162,7 @@
     <ClCompile Include="World\Base\Pickup.cpp" />
     <ClCompile Include="World\Base\Roombase.cpp" />
     <ClCompile Include="World\Base\GameObject.cpp" />
+    <ClCompile Include="World\Base\RoomMember.cpp" />
     <ClCompile Include="World\Base\Tear.cpp" />
     <ClCompile Include="World\Base\Unitbase.cpp" />
     <ClCompile Include="World\Chapter.cpp" />
@@ -190,6 +192,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Debug\ImGuiAnimationMaker.h" />
+    <ClInclude Include="Debug\ImGuiRoomMaker.h" />
     <ClInclude Include="GameObjectEnums.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rooms.h" />
@@ -200,6 +203,7 @@
     <ClInclude Include="World\Base\Pickup.h" />
     <ClInclude Include="World\Base\Roombase.h" />
     <ClInclude Include="World\Base\GameObject.h" />
+    <ClInclude Include="World\Base\RoomMember.h" />
     <ClInclude Include="World\Base\Tear.h" />
     <ClInclude Include="World\Base\Unitbase.h" />
     <ClInclude Include="World\Chapter.h" />

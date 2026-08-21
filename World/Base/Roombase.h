@@ -50,15 +50,15 @@ protected:
     std::vector<std::pair<int, FVector2>> mInitData;
     
     //실제로 등록된 객체들 관리용
-    std::list<std::weak_ptr<CGameObject>> mMonsterList;
-    std::list<std::weak_ptr<CGameObject>> mObstacleList;
-    std::list<std::weak_ptr<CGameObject>> mPickupList;
+    std::map<int, std::weak_ptr<class CRoomMember>> mMonsterMap;
+    std::map<int, std::weak_ptr<class CRoomMember>> mObstacleMap;
+    std::map<int, std::weak_ptr<class CRoomMember>> mPickupMap;
     //길찾기 알고리즘을 위한 장애물 위치 저장용 | Coord, Type
     std::unordered_map<int, EObstacleType> mObstacleGridMap;
     //객체 저장 및 생성용 | 좌표, 아이디
-    std::unordered_map<int, int> mMonsterData;
-    std::unordered_map<int, int> mObstacleData;
-    std::unordered_map<int, int> mPickupData;
+    std::unordered_map<int, std::list<FVector2>> mMonsterData;
+    std::unordered_map<int, std::list<FVector2>> mObstacleData;
+    std::unordered_map<int, std::list<FVector2>> mPickupData;
 
     bool mbIsRoomWin = false;
     //보상 / 해당 클래스는 아직 작성하지 않았으므로 나중에 작성 후 적용하기
@@ -80,13 +80,23 @@ protected:
 
     void CalculateSize();
 public:
-
     virtual bool WinCheck() = 0;
 
     void AdjustRoomPos();
+
+    void EnterRoom();
+    void ExitRoom();
+    
+    void PauseRoom();
+    
 protected:
     void RoomSetting();
     void RoomDisenable();
+
+private:
+    void ContainMonsterData();
+    void ContainObstacleData();
+    void ContainPickupData();
 
 public:
     void SetCoord(FVector2 Coord) { mCoord = Coord; }
@@ -94,8 +104,8 @@ public:
     bool SetInitRoom(const std::vector<std::pair<int, FVector2>>& Objs);//여기에 정보를 넣어서 방 초기화하기 / 지금은 방의 좌표 정보만 들어가지만 나중에는 방 내부의 정보들도 포함되어야 함
     virtual void Reset(bool HardReset = false) override; //방 초기화(클리어 상태는 초기화 x) / 하드 리셋시 클리어도 초기화 몬스터 전부 생성
 
-    void RegisterGObj(const std::weak_ptr<class CGameObject>& GObj, const FVector2& Coord);
-    void DisregisterGObj(const std::weak_ptr<class CGameObject>& GObj, const FVector2& Coord);
+    void RegisterGObj(const std::weak_ptr<class CRoomMember>& GObj, const FVector2& Coord);
+    void DisregisterGObj(const std::weak_ptr<class CRoomMember>& GObj);
   
     const FVector3 CoordToWorldPos(FVector2 Coord);
     const virtual FVector2 WorldPosToCoord(FVector3 WorldPos);

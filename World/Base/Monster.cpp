@@ -19,6 +19,11 @@ CMonster::~CMonster()
 {
 }
 
+void CMonster::Reset(bool HardReset)
+{
+	mCurrentHP = mMaxHP;
+}
+
 void CMonster::FindRouteToPlayerCharacter()
 {
 	//내 좌표 찾기

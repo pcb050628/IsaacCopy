@@ -2,6 +2,7 @@
 #include "Chapter.h"
 
 #include "../Debug/ImGuiAnimationMaker.h"
+#include "../Debug/ImGuiRoomMaker.h"
 
 class CDebugChapter :
     public CChapter
@@ -16,6 +17,7 @@ public:
 
 private:
 	CImGuiAnimationMaker animMaker;
+	CImGuiRoomMaker roomMaker;
 	bool debugMode = true;
 
 	void CheckPlayerPos();

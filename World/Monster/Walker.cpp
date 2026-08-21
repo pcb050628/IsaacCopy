@@ -86,16 +86,52 @@ void CWalker::Destory()
 	CMonster::Destroy();
 }
 
-void CWalker::GetHit(std::weak_ptr<CUnitbase> From)
+void CWalker::GetHit(std::weak_ptr<CGameObject> From)
 {
+	if (From.expired()) 
+		return;
 
+	std::shared_ptr<CGameObject> obj = From.lock();
+	EObjectType t = obj->GetObjType();
+	if (EObjectType::PlayerCharacter == t || EObjectType::Monster == t)
+	{
+		std::shared_ptr<CUnitbase> unit = std::static_pointer_cast<CUnitbase>(obj);
+		FUnitAttribute atrbt = unit->GetAttribute();
+		mCurrentHP -= atrbt.Damage;
+		LOG_DEBUG(GetName(), "유닛이 ", From.lock()->GetActorTag(), " 에게 공격받았습니다\n 피해량: ", atrbt.Damage);
+		if (mCurrentHP <= 0)
+			ReturnToChapter(); //이 부분 나중에 수정하기 -> 애니메이션 같은거 출력하고 리턴하기 | 일단 비활성화는 해야함
+	}
+	else if (EObjectType::Obstacle == t)
+	{
+
+	}
 }
 
 //피격
 void CWalker::OnHurtOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
 {
 	std::shared_ptr<CActor> actor = Collider.lock()->GetOwner().lock();
-	LOG_DEBUG(GetName(), "유닛이 ", actor->GetName(), " 에게 공격받았습니다");
+
+	std::shared_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
+	if (!obj) 
+		return;
+
+	EObjectType t = obj->GetObjType();	
+	if (t == EObjectType::Tear)
+	{
+		std::shared_ptr<CTear> tear = std::static_pointer_cast<CTear>(obj);
+		std::shared_ptr<CGameObject> owner = tear->GetShooterOwner().lock();
+		if (!owner)
+			return;
+		EObjectType onwerT = owner->GetObjType();
+		if(onwerT == EObjectType::PlayerCharacter || onwerT == EObjectType::Monster)
+			GetHit(std::dynamic_pointer_cast<CUnitbase>(owner));
+	}
+	else if (t == EObjectType::Obstacle)
+	{
+
+	}
 }
 
 void CWalker::ExitHurtOverlaps(std::weak_ptr<CCollider> Collider)
@@ -115,7 +151,7 @@ void CWalker::OnHitOverlaps(const FVector3& HitPoint, const FVector3& Normal, st
 	switch (gobj->GetObjType())
 	{
 	case EObjectType::PlayerCharacter: {
-		std::shared_ptr<CUnitbase> unit = std::dynamic_pointer_cast<CUnitbase>(gobj);
+		std::shared_ptr<CUnitbase> unit = std::static_pointer_cast<CUnitbase>(gobj);
 		if (!unit)
 		{
 			LOG_DEBUG(GetName(), ":", "충돌체에 유닛이 없습니다. 충돌 프로파일을 수정하세요");
@@ -143,7 +179,7 @@ void CWalker::ExitHitOverlaps(std::weak_ptr<CCollider> Collider)
 
 bool CWalker::UpdateNextMove()
 {
-	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	std::shared_ptr<CChapter> chptr = mChapter.lock();
 	if (mRoomOwner.expired() || !chptr)
 		return false;
 
@@ -197,9 +233,10 @@ bool CWalker::UpdateNextMove()
 	return false;
 }
 
+int routeCount = 0;
 void CWalker::MakeRoute()
 {
-	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	std::shared_ptr<CChapter> chptr = mChapter.lock();
 	if (mRoomOwner.expired() || !chptr)
 		return;
 
@@ -211,6 +248,7 @@ void CWalker::MakeRoute()
 	if (-FVector2::One == playerCoord)
 		return;
 
+	routeCount = 0;
 	FVector2 myCoord = room->WorldPosToCoord(GetWorldPos());
 
 	FVector2 dist = playerCoord - myCoord;
@@ -256,7 +294,7 @@ void CWalker::MakeRoute()
 
 bool CWalker::NextMoveSet(FVector2 Coord)
 {
-	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	std::shared_ptr<CChapter> chptr = mChapter.lock();
 	if (mRoomOwner.expired() || !chptr)
 		return false;
 
@@ -274,7 +312,7 @@ void CWalker::CheckRoute(const FVector2& Target, int& focus, std::vector<std::pa
 	if (Complete)
 		return;
 
-	int count = 0;
+	int count = 0; ++routeCount;
 	for (int i = 0; i < 4; i++)
 	{
 		if (-1 == routes[i].first)
@@ -378,7 +416,7 @@ void CWalker::CheckRoute(const FVector2& Target, int& focus, std::vector<std::pa
 
 bool CWalker::CheckCellValid(const FVector2& Coord)
 {
-	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	std::shared_ptr<CChapter> chptr = mChapter.lock();
 	if (mRoomOwner.expired() || !chptr)
 		return false;
 
@@ -391,4 +429,9 @@ bool CWalker::CheckCellValid(const FVector2& Coord)
 int CWalker::CoordDistance(FVector2 to, FVector2 from)
 {
 	return abs(to.x - from.x) + abs(to.y - from.y);
+}
+
+void CWalker::RouteCountCheck()
+{
+	LOG_DEBUG(mName, "-", mID, " : ", routeCount);
 }

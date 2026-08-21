@@ -15,17 +15,17 @@
 #include "../Component/TearShooter.h"
 
 CUnitbase::CUnitbase(EObjectType Type)
-	:CGameObject(Type)
+	:CRoomMember(Type)
 {
 }
 
 CUnitbase::CUnitbase(const CUnitbase& src)
-	:CGameObject(src)
+	:CRoomMember(src)
 {
 }
 
 CUnitbase::CUnitbase(CUnitbase&& src) noexcept
-	:CGameObject(std::move(src))
+	:CRoomMember(std::move(src))
 {
 }
 
@@ -35,6 +35,9 @@ CUnitbase::~CUnitbase()
 
 bool CUnitbase::Init()
 {
+	if (!CGameObject::Init())
+		return false;
+
 	mRigidBody = CreateComponent<CRigidBodyComponent>("Root");
 	if (mRigidBody.expired())
 		return false;

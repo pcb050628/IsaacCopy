@@ -5,6 +5,12 @@
 #include "World/Input.h"
 #include "Manager/GameRuleManager.h"
 
+#include "Asset/AssetManager.h"
+
+#include "Data/GameDataManager.h"
+#include "Data/GameObjectStructure.h"
+#include "Data/RoomGData.h"
+
 #include "LogManager.h"
 
 #include "GameSystemActor.h"
@@ -141,6 +147,14 @@ void CChapter::GenerateRoom()
 		LOG_DEBUG("방 생성 실패");
 		return;
 	}
+	RegisterRoom(room);
+	
+	auto mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
+	if (!mgr->LoadDataFile<CRoomGData>("RoomDefault1", TEXT("Room\\RoomDefault_1")))
+	{
+		LOG_DEBUG("방 데이터 로드 실패");
+		return;
+	}
 
 	int min = mChapterLevel * 5;
 	int max = static_cast<int>(mChapterLevel * 5.5f + 3);
@@ -197,14 +211,14 @@ void CChapter::InitialSetting()
 	}
 
 	//우-좌-상-하
-	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[0].lock()->GetRootComponent().lock())->SetBoxSize(WALLSIZE, 250.f);
-	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[1].lock()->GetRootComponent().lock())->SetBoxSize(WALLSIZE, 250.f);
-	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[2].lock()->GetRootComponent().lock())->SetBoxSize(WALLSIZE, 250.f);
-	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(WALLSIZE, 250.f);
-	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[4].lock()->GetRootComponent().lock())->SetBoxSize(550.f, WALLSIZE);
-	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[5].lock()->GetRootComponent().lock())->SetBoxSize(550.f, WALLSIZE);
-	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[6].lock()->GetRootComponent().lock())->SetBoxSize(550.f, WALLSIZE);
-	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[7].lock()->GetRootComponent().lock())->SetBoxSize(550.f, WALLSIZE);
+	std::static_pointer_cast<CColliderBox2D>(mWalls[0].lock()->GetRootComponent().lock())->SetBoxSize(WALLSIZE, 250.f);
+	std::static_pointer_cast<CColliderBox2D>(mWalls[1].lock()->GetRootComponent().lock())->SetBoxSize(WALLSIZE, 250.f);
+	std::static_pointer_cast<CColliderBox2D>(mWalls[2].lock()->GetRootComponent().lock())->SetBoxSize(WALLSIZE, 250.f);
+	std::static_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(WALLSIZE, 250.f);
+	std::static_pointer_cast<CColliderBox2D>(mWalls[4].lock()->GetRootComponent().lock())->SetBoxSize(550.f, WALLSIZE);
+	std::static_pointer_cast<CColliderBox2D>(mWalls[5].lock()->GetRootComponent().lock())->SetBoxSize(550.f, WALLSIZE);
+	std::static_pointer_cast<CColliderBox2D>(mWalls[6].lock()->GetRootComponent().lock())->SetBoxSize(550.f, WALLSIZE);
+	std::static_pointer_cast<CColliderBox2D>(mWalls[7].lock()->GetRootComponent().lock())->SetBoxSize(550.f, WALLSIZE);
 
 	//문에 방 이동 연결해야하는데
 	//방 이동은? 챕터에서 해야겠지
@@ -212,11 +226,14 @@ void CChapter::InitialSetting()
 	//1. 현재 방 즉시 Enable false 해주고
 	//2. 다음방으로 카메라 이동(set 말고 add로 이동 | 이걸 위해서 Rigidbody 달아주기 | addforce 로 가속주고 limit 달아서 너무 빨라지지않게)
 	//3. 플레이어 위치 셋 해주고 몇 초 후 enable true
+	room->EnterRoom();
+	LOG_DEBUG("현재 위치: ", mFocusedRoomHash);
 
 	mChapterManagementActor.lock()->SetWorldPos(center);
 }
 void CChapter::SettingFocus() //지금은 벽만 설정하지만 이 함수를 포커스 이동시 초기 설정 함수로 만들기(벽, 문 모두 이동 설정하기)
 {
+	mRoomMap[mPrevRoomHash].lock()->ExitRoom();
 	InitialSetting();
 	//플레이어 위치 옮겨주기
 	//그리고 타이머 넣어서 enable 넣어주기
@@ -241,21 +258,21 @@ bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 
 	Obj.lock()->SetEnable(false);
 	Obj.lock()->SetRenderEnable(false);
+	const int classID = Obj.lock()->GetGObjID();
 	EObjectType t = Obj.lock()->GetObjType();
 	switch (t)
 	{
 	case EObjectType::Room:
 		break;
 	case EObjectType::Door:
-		break;
+		break; 
 	case EObjectType::Tear: {
-		std::shared_ptr<CTear> tear = std::dynamic_pointer_cast<CTear>(Obj.lock());
+		std::shared_ptr<CTear> tear = std::static_pointer_cast<CTear>(Obj.lock());
 		mTearsActivate.erase(tear->GetID());
 		mTearsDeactivate[tear->GetID()] = tear;
 	} return true;
 	case EObjectType::Monster: {
-		const int classID = Obj.lock()->GetGObjID();
-		std::shared_ptr<CUnitbase> unit = std::dynamic_pointer_cast<CUnitbase>(Obj.lock());
+		std::shared_ptr<CUnitbase> unit = std::static_pointer_cast<CUnitbase>(Obj.lock());
 		std::list<std::weak_ptr<CUnitbase>>::iterator iter = mUnitsActivate[classID].begin();
 		std::list<std::weak_ptr<CUnitbase>>::iterator iterEnd = mUnitsActivate[classID].end();
 		for (; iter != iterEnd; ++iter)
@@ -266,13 +283,40 @@ bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 				break;
 			}
 		}
-		unit->UnsetRoom().lock()->DisregisterGObj(unit, FVector2());
+		unit->UnsetRoom().lock()->DisregisterGObj(unit);
 		mUnitsDeactivate[classID].push_back(unit);
 	} return true;
-	case EObjectType::Obstacle:
-		break;
+	case EObjectType::Obstacle: {
+		std::shared_ptr<CObstaclebase> obs = std::static_pointer_cast<CObstaclebase>(Obj.lock());
+		std::list<std::weak_ptr<CObstaclebase>>::iterator iter = mObstaclesActivate[classID].begin();
+		std::list<std::weak_ptr<CObstaclebase>>::iterator iterEnd = mObstaclesActivate[classID].end();
+		for (; iter != iterEnd; ++iter)
+		{
+			if (iter->lock()->GetID() == obs->GetID())
+			{
+				mObstaclesActivate[classID].erase(iter);
+				break;
+			}
+		}
+		obs->UnsetRoom().lock()->DisregisterGObj(obs);
+		mObstaclesDeactivate[classID].push_back(obs);
+	} return true;
 	case EObjectType::Pickup: //애초에 등록을 안함 | 근데 해야됨 -> 나중에 수정하기
-		break;
+	{
+		std::shared_ptr<CPickup> pku = std::static_pointer_cast<CPickup>(Obj.lock());
+		std::list<std::weak_ptr<CPickup>>::iterator iter = mPickupsActivate[classID].begin();
+		std::list<std::weak_ptr<CPickup>>::iterator iterEnd = mPickupsActivate[classID].end();
+		for (; iter != iterEnd; ++iter)
+		{
+			if (iter->lock()->GetID() == pku->GetID())
+			{
+				mPickupsActivate[classID].erase(iter);
+				break;
+			}
+		}
+		pku->UnsetRoom().lock()->DisregisterGObj(pku);
+		mPickupsDeactivate[classID].push_back(pku);
+	} return true;
 	}
 
 	return false;
@@ -290,7 +334,58 @@ void CChapter::MoveRoom(FVector2 Dir)
 	LOG_DEBUG("다음 좌표는: ", std::to_string(coord.x), ", ", std::to_string(coord.y));
 	mFocusedRoomHash = Coord2Hash(coord);
 	mInput->SetEnable(false);
+	mRoomMap[mPrevRoomHash].lock()->PauseRoom();
+	mRoomMap[mFocusedRoomHash].lock()->PauseRoom();
 }
+void CChapter::RegisterRoom(const std::shared_ptr<CRoombase>& room)
+{
+	if (!room)
+		return;
+
+	FVector2 Coord = room->GetCoord();
+	if (mRoomMap.contains(Coord2Hash(Coord)) && !mRoomMap[Coord2Hash(Coord)].expired())
+		return;
+
+	if (-1 == mFocusedRoomHash)
+	{
+		mFocusedRoomHash = Coord2Hash(Coord);
+		mRoomMap[mFocusedRoomHash] = room;
+	}
+	else
+	{
+		mRoomMap[Coord2Hash(Coord)] = room;
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		int dest = Coord2Hash(Coord + FourDirections[i]);
+		if (!mRoomMap[dest].expired())
+		{
+			room->ConnectRoom(mRoomMap[dest]);
+			mRoomMap[dest].lock()->ConnectRoom(room);
+		}
+	}
+	room->PauseRoom();
+}
+
+void CChapter::RegisterGObjToRoom(const std::weak_ptr<CRoomMember>& rm, const FVector2& Coord, const FVector2& targetRoomCoord)
+{
+	if (rm.expired() || !GetIsValidCoord(targetRoomCoord))
+		return;
+
+	std::shared_ptr<CRoombase> room = mRoomMap[Coord2Hash(targetRoomCoord)].lock();
+	if (!room)
+		return;
+
+	room->RegisterGObj(rm, Coord);
+	std::weak_ptr<CRoombase> prevRoom = rm.lock()->UnsetRoom();
+	if (!prevRoom.expired())
+	{
+		prevRoom.lock()->DisregisterGObj(rm);
+	}
+	rm.lock()->SetRoom(room);
+}
+
 const int CChapter::GetIsValidCoord(const FVector2& Coord)
 {
 	if (Coord.x >= mRoomRowMax || Coord.x < 0 || Coord.y >= mRoomColMax || Coord.y < 0)

@@ -1,5 +1,7 @@
 #include "RockObstacle.h"
 
+#include "LogManager.h"
+
 #include "Asset/AssetManager.h"
 
 #include "World/Animation2DComponent.h"

@@ -6,7 +6,7 @@
 #include "../Base/Character.h"
 
 CPickup::CPickup(EPickupType Type, bool IsAboutCharacter, bool IsAboutPickup, int AffectPickupCount, bool IsAboutInstantiate)
-    :CGameObject(EObjectType::Pickup), mPickupType(Type), mEffect(0)
+    :CRoomMember(EObjectType::Pickup), mPickupType(Type), mEffect(0)
     ,mbIsAboutCharacter(IsAboutCharacter), mbIsAboutPickup(IsAboutPickup), mAffectPickupCount(AffectPickupCount), mbIsAboutInstantiate(IsAboutInstantiate)
 {
 }
@@ -17,6 +17,9 @@ CPickup::~CPickup()
 
 bool CPickup::Init()
 {
+    if (!CRoomMember::Init())
+        return false;
+
     mRigidbody = CreateComponent<CRigidBodyComponent>("Root");
     mCollider = CreateComponent<CColliderSphere2D>("Collider");
     if (mRigidbody.expired() || mCollider.expired())

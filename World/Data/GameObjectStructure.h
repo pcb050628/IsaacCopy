@@ -1,5 +1,5 @@
 #pragma once
-#include "Math/Vector2.h"
+#include "EngineInfo.h"
 
 struct FFrameData
 {
@@ -64,8 +64,6 @@ struct FRoomData
 	FVector2 Coord = -FVector2::One;
 	//클리어 상태
 	bool Clear;
-	//문들의 상태 / 항상 좌상단에서 시계방향 / L모양의 경우 TL->RT->TR->R->RB...
-	std::vector<bool> Doors;
 	//내부 오브젝트들의 위치와 아이디 FRoomObjectData
 	//초기 상태 내부 오브젝트들의 위치와 아이디
 	//일단은 사용안하는 중

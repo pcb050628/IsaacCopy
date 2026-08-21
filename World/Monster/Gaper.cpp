@@ -1,5 +1,7 @@
 #include "Gaper.h"
 
+#include "LogManager.h"
+
 #include "World/Animation2DComponent.h"
 #include "World/ColliderBox2D.h"
 #include "World/ColliderSphere2D.h"
@@ -162,7 +164,7 @@ void CGaper::Dead()
 
 void CGaper::Reset(bool HardReset)
 {
-
+	CWalker::Reset(HardReset);
 }
 
 void CGaper::PlayBodyVerticalAnim()

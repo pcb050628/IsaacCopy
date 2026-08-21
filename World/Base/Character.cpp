@@ -4,6 +4,10 @@
 
 #include "LogManager.h"
 
+#include "Asset/AssetManager.h"
+#include "Asset/AnimationManager.h"
+#include "Asset/Animation2D.h"
+
 #include "World/Collider.h"
 #include "World/ColliderSphere2D.h"
 #include "World/Animation2DComponent.h"
@@ -88,6 +92,7 @@ bool CCharacter::Init()
 	input->SetBindFunction("FireLeft", EInputType::Hold, this, &CCharacter::FireLeft);
 	input->SetBindFunction("FireRight", EInputType::Hold, this, &CCharacter::FireRight);
 
+	OnAttributeChanged(mAttribute);
 
 	return true;
 }
@@ -138,9 +143,11 @@ void CCharacter::Update(float DeltaTime)
 		mHead.lock()->Stop(true);
 	}
 
-	mbIsFiring = false;
 	mMoveDirection = FVector3::Zero;
 	CUnitbase::Update(DeltaTime);
+
+	mbIsFiring = false;
+	mbIsJustFired = false;
 }
 
 void CCharacter::Destroy()
@@ -148,7 +155,7 @@ void CCharacter::Destroy()
 	CUnitbase::Destroy();
 }
 
-void CCharacter::GetHit(std::weak_ptr<CUnitbase> From)
+void CCharacter::GetHit(std::weak_ptr<CGameObject> From)
 {
 }
 
@@ -174,10 +181,10 @@ void CCharacter::ExitHitOverlaps(std::weak_ptr<CCollider> Collider)
 
 void CCharacter::OverrideHeadAnim(const std::string& Name)
 {
-	mHead.lock()->AddAnimation(Name + "_Front", 1.f, 1.f, true);
-	mHead.lock()->AddAnimation(Name + "_Back", 1.f, 1.f, true);
-	mHead.lock()->AddAnimation(Name + "_Right", 1.f, 1.f, true);
-	mHead.lock()->AddAnimation(Name + "_Left", 1.f, 1.f, true);
+	mHead.lock()->AddAnimation(Name + "_Front", 1.f, mAttribute.ShotTerm, true);
+	mHead.lock()->AddAnimation(Name + "_Back", 1.f, mAttribute.ShotTerm, true);
+	mHead.lock()->AddAnimation(Name + "_Right", 1.f, mAttribute.ShotTerm, true);
+	mHead.lock()->AddAnimation(Name + "_Left", 1.f, mAttribute.ShotTerm, true);
 
 	mHeadAnimName = Name;
 }
@@ -202,6 +209,12 @@ void CCharacter::OnLosePickup(EPickupType Type, int Count)
 void CCharacter::OnAttributeChanged(FUnitAttribute Attribute, bool IsMagnification)
 {
 	//여ㅑ기서 능력치 변동 해주기
+	mAttribute = Attribute;
+
+	mHead.lock()->SetPlayTime(mHeadAnimName + "_Front", mAttribute.ShotTerm);
+	mHead.lock()->SetPlayTime(mHeadAnimName + "_Back", mAttribute.ShotTerm);
+	mHead.lock()->SetPlayTime(mHeadAnimName + "_Left", mAttribute.ShotTerm);
+	mHead.lock()->SetPlayTime(mHeadAnimName + "_Right", mAttribute.ShotTerm);
 }
 
 void CCharacter::PlayBodyVerticalAnim()
@@ -240,12 +253,7 @@ void CCharacter::PlayHeadVerticalAnim()
 	else
 		mHead.lock()->ChangeAnimation(mHeadAnimName + "_Front");
 
-	if (mbIsFiring)
-	{
-		mHead.lock()->SetFrame(1);
-		mHead.lock()->Play();
-	}
-	else
+	if (!mbIsFiring)
 	{
 		mHead.lock()->Stop(true);
 	}
@@ -263,12 +271,7 @@ void CCharacter::PlayHeadHorizontalAnim()
 	else
 		mHead.lock()->ChangeAnimation(mHeadAnimName + "_Right");
 
-	if (mbIsFiring)
-	{
-		mHead.lock()->SetFrame(1);
-		mHead.lock()->Play();
-	}
-	else
+	if (!mbIsFiring)
 	{
 		mHead.lock()->Stop(true);
 	}
@@ -315,7 +318,13 @@ void CCharacter::Fire()
 	//아닌거같긴한데 아닌거같은데
 	FVector3 dir = mRigidBody.lock()->GetVelocity();
 	dir.Normalize();
-	shooter->FireWithVelocityOffset(FVector2(dir.x, dir.y));
+	if (shooter->FireWithVelocityOffset(FVector2(dir.x, dir.y)))
+	{
+		mbIsJustFired = true;
+
+		mHead.lock()->Play(true);
+		mHead.lock()->SetFrame(1);
+	}
 }
 
 void CCharacter::FireUp()

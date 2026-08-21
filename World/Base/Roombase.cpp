@@ -3,12 +3,19 @@
 #include "Device.h"
 #include "LogManager.h"
 
+#include "Asset/AssetManager.h"
+
 #include "../Manager/GameRuleManager.h"
 #include "../Manager/GameClassContainer.h"
+
+#include "../Data/GameDataManager.h"
+#include "../Data/GameObjectStructure.h"
+#include "../Data/RoomGData.h"
 
 #include "../Chapter.h"
 #include "World/MeshComponent.h"
 
+#include "RoomMember.h"
 #include "Unitbase.h"
 #include "Obstaclebase.h"
 #include "Pickup.h"
@@ -36,6 +43,9 @@ CRoombase::~CRoombase()
 
 bool CRoombase::Init()
 {
+	if (!CGameObject::Init())
+		return false;
+
 	mShadeMesh1 = CreateComponent<CMeshComponent>("Root");
 
 	if (mShadeMesh1.expired())
@@ -78,10 +88,10 @@ void CRoombase::CalculateSize()
 
 void CRoombase::AdjustRoomPos()
 {
-	std::shared_ptr<CChapter> chapter = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
-	if (mNearRooms.empty() || !chapter)
+	if (mNearRooms.empty() || mChapter.expired())
 		return;
 
+	std::shared_ptr<CChapter> chapter = mChapter.lock();
 	FVector2 center = chapter->GetStartRoomCoord();
 	int dist = INT_MAX;
 	std::weak_ptr<CRoombase> targetRoom;
@@ -102,6 +112,64 @@ void CRoombase::AdjustRoomPos()
 		+ FVector3(dir.x * mRoomCellMax.x * mRoomCellSize.x * 1.5f, dir.y * mRoomCellMax.y * mRoomCellSize.y * 1.5f, 0));
 }
 
+void CRoombase::EnterRoom()
+{
+	RoomSetting();
+
+	mMonsterData.clear();
+	mObstacleData.clear();
+	mPickupData.clear();
+
+	SetEnable(true);
+	for (std::pair<int, std::weak_ptr<CGameObject>> pair : mMonsterMap)
+	{
+		auto obj = pair.second.lock();
+		obj->SetEnable(true);
+		obj->SetRenderEnable(true);
+	}
+	for (std::pair<int, std::weak_ptr<CGameObject>> pair : mObstacleMap)
+	{
+		auto obj = pair.second.lock();
+		obj->SetEnable(true);
+		obj->SetRenderEnable(true);
+	}
+	for (std::pair<int, std::weak_ptr<CGameObject>> pair : mPickupMap)
+	{
+		auto obj = pair.second.lock();
+		obj->SetEnable(true);
+		obj->SetRenderEnable(true);
+	}
+}
+
+void CRoombase::ExitRoom()
+{
+	RoomDisenable();
+}
+
+void CRoombase::PauseRoom()
+{
+	for (std::pair<int, std::weak_ptr<CGameObject>> pair : mMonsterMap)
+	{
+		auto obj = pair.second.lock();
+		obj->SetEnable(false);
+		obj->SetRenderEnable(true);
+	}
+	for (std::pair<int, std::weak_ptr<CGameObject>> pair : mObstacleMap)
+	{
+		auto obj = pair.second.lock();
+		obj->SetEnable(false);
+		obj->SetRenderEnable(true);
+	}
+	for (std::pair<int, std::weak_ptr<CGameObject>> pair : mPickupMap)
+	{
+		auto obj = pair.second.lock();
+		obj->SetEnable(false);
+		obj->SetRenderEnable(true);
+	}
+	SetEnable(false);
+	SetRenderEnable(true);
+}
+
 void CRoombase::RoomSetting()
 {
 	Reset(!mbIsRoomWin);
@@ -109,71 +177,93 @@ void CRoombase::RoomSetting()
 
 void CRoombase::RoomDisenable() //방 비활성화 시 아직 등록되어있는 오브젝트들의 아이디와 좌표를 저장
 {
-	for (std::weak_ptr<CGameObject> obj : mMonsterList)
-	{
-		if (obj.expired())
-			continue;
-
-		if (!obj.lock()->GetIsTemporary())
-		{
-			mMonsterData[CChapter::Coord2Hash(WorldPosToCoord(obj.lock()->GetWorldPos()))] = obj.lock()->GetGObjID();
-		}
-
-		obj.lock()->ReturnToChapter();
-	}
-	mMonsterList.clear();
-
-	for (std::weak_ptr<CGameObject> obj : mObstacleList)
-	{
-		if (obj.expired())
-			continue;
-
-		if (!obj.lock()->GetIsTemporary())
-		{
-			mObstacleData[CChapter::Coord2Hash(WorldPosToCoord(obj.lock()->GetWorldPos()))] = obj.lock()->GetGObjID();
-		}
-
-		obj.lock()->ReturnToChapter();
-	}
-	mObstacleList.clear();
-
-	for (std::weak_ptr<CGameObject> obj : mPickupList)
-	{
-		if (obj.expired())
-			continue;
-
-		if (!obj.lock()->GetIsTemporary())
-		{
-			mPickupData[CChapter::Coord2Hash(WorldPosToCoord(obj.lock()->GetWorldPos()))] = obj.lock()->GetGObjID();
-		}
-
-		obj.lock()->ReturnToChapter();
-	}
-	mPickupList.clear();
+	ContainMonsterData();
+	ContainObstacleData();
+	ContainPickupData();
 
 	SetEnable(false);
 	SetRenderEnable(false);
 }
 
-bool CRoombase::SetInitRoom(const std::vector<std::pair<int, FVector2>>& InitData) //모양도 여기서 받아서 초기화 하기
+void CRoombase::ContainMonsterData()
 {
-	std::shared_ptr<CChapter> chapter = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
-	if (!chapter)
-		return false;
+	std::map<int, std::weak_ptr<CRoomMember>>::iterator iter = mMonsterMap.begin();
+	std::map<int, std::weak_ptr<CRoomMember>>::iterator iterEnd = mMonsterMap.end();
+	for (; iter != iterEnd; )
+	{
+		if (iter->second.expired())
+		{
+			++iter;
+			continue;
+		}
 
+		std::shared_ptr<CRoomMember> m = iter->second.lock();
+		if (!iter->second.lock()->GetIsTemporary())
+		{
+			mMonsterData[m->GetGObjID()].push_back(WorldPosToCoord(m->GetWorldPos()));
+		}
+
+		m->ReturnToChapter();
+		iter = mMonsterMap.begin();
+	}
+	mMonsterMap.clear();
+}
+
+void CRoombase::ContainObstacleData()
+{
+	std::map<int, std::weak_ptr<CRoomMember>>::iterator iter = mObstacleMap.begin();
+	std::map<int, std::weak_ptr<CRoomMember>>::iterator iterEnd = mObstacleMap.end();
+	for (; iter != iterEnd; )
+	{
+		if (iter->second.expired())
+			continue;
+
+		std::shared_ptr<CRoomMember> m = iter->second.lock();
+		if (!iter->second.lock()->GetIsTemporary())
+		{
+			mObstacleData[m->GetGObjID()].push_back(WorldPosToCoord(m->GetWorldPos()));
+		}
+
+		iter->second.lock()->ReturnToChapter();
+		iter = mObstacleMap.begin();
+	}
+	mObstacleMap.clear();
+}
+
+void CRoombase::ContainPickupData()
+{
+	std::map<int, std::weak_ptr<CRoomMember>>::iterator iter = mPickupMap.begin();
+	std::map<int, std::weak_ptr<CRoomMember>>::iterator iterEnd = mPickupMap.end();
+	for (; iter != iterEnd; )
+	{
+		if (iter->second.expired())
+			continue;
+
+		std::shared_ptr<CRoomMember> m = iter->second.lock();
+		if (!iter->second.lock()->GetIsTemporary())
+		{
+			mPickupData[m->GetGObjID()].push_back(WorldPosToCoord(m->GetWorldPos()));
+		}
+
+		iter->second.lock()->ReturnToChapter();
+		iter = mPickupMap.begin();
+	}
+	mPickupMap.clear();
+}
+
+bool CRoombase::SetInitRoom(const std::vector<std::pair<int, FVector2>>& InitData) //모양도 여기서 받아서 초기화 하기	
+{
 	mInitData = InitData;
 
 	//여기서 클리어 시 보상 설정하기
 	mbIsRoomWin = false;
-
-	AdjustRoomPos();
 
 	return true;
 }
 
 void CRoombase::Reset(bool HardReset)
 {
-	std::shared_ptr<CChapter> chapter = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	std::shared_ptr<CChapter> chapter = mChapter.lock();
 	if (!chapter)
 		return;
 
@@ -190,122 +280,97 @@ void CRoombase::Reset(bool HardReset)
 				}
 			}
 
-			std::shared_ptr<CGameObject> gobj = CGameClassContainer::GetInst()->Instantiate(pair.first, pair.second, false, chapter->GetLevel()).lock();
+			std::shared_ptr<CRoomMember> gobj = std::dynamic_pointer_cast<CRoomMember>(CGameClassContainer::GetInst()->Instantiate(pair.first, pair.second, false, chapter->GetLevel()).lock());
 			if (!gobj)
 			{
 				//LOG_DEBUG("객체 생성 실패 | 객체 ID: ", pair.first);
 				continue;
 			}
 
-			auto t = gobj->GetObjType();
-			switch (t)
-			{
-			case EObjectType::Monster:{
-				std::shared_ptr<CUnitbase> unit = std::dynamic_pointer_cast<CUnitbase>(gobj);
-				unit->SetRoom(GetThisPtr<CRoombase>());
-				RegisterGObj(gobj, pair.second);
-				unit->SetWorldPos(CoordToWorldPos(pair.second));
-			}break;
-			case EObjectType::Obstacle:{
-				std::shared_ptr<CObstaclebase> obst = std::dynamic_pointer_cast<CObstaclebase>(gobj);
-				obst->SetRoom(GetThisPtr<CRoombase>());
-				RegisterGObj(gobj, pair.second);
-				obst->SetWorldPos(CoordToWorldPos(pair.second));
-			}break;
-			case EObjectType::Pickup:{
-				std::shared_ptr<CPickup> pickup = std::dynamic_pointer_cast<CPickup>(gobj);
-				RegisterGObj(gobj, pair.second);
-				pickup->SetWorldPos(CoordToWorldPos(pair.second));
-			}break;
-			default:
-				break;
-			}
-
+			chapter->RegisterGObjToRoom(gobj, pair.second, mCoord);
 		}
 		mbIsRoomWin = false;
 	}
 	else
 	{
 		//장애물
-		for (std::pair<int, int> pair : mObstacleData)
+		for (std::pair<int, std::list<FVector2>> pair : mObstacleData)
 		{
-			FVector2 Coord = CChapter::Hash2Coord(pair.second);
-			if (mRedFlag != FVector2(-1, -1))
+			for (FVector2 coord : pair.second)
 			{
-				if (Coord >= mRedFlag)
+				if (mRedFlag != FVector2(-1, -1))
 				{
-					//LOG_DEBUG("객체 생성 취소 | 좌표가 잘못되었습니다.: ", pair.second);
+					if (coord >= mRedFlag)
+					{
+						//LOG_DEBUG("객체 생성 취소 | 좌표가 잘못되었습니다.: ", pair.second);
+						continue;
+					}
+				}
+
+				std::shared_ptr<CRoomMember> gobj = std::dynamic_pointer_cast<CRoomMember>(CGameClassContainer::GetInst()->Instantiate(pair.first, coord, false, chapter->GetLevel()).lock());
+				if (!gobj)
+				{
+					//LOG_DEBUG("객체 생성 실패 | 객체 ID: ", pair.first);
 					continue;
 				}
-			}
 
-			std::shared_ptr<CGameObject> gobj = CGameClassContainer::GetInst()->Instantiate(pair.first, Coord, false, chapter->GetLevel()).lock();
-			if (!gobj)
-			{
-				//LOG_DEBUG("객체 생성 실패 | 객체 ID: ", pair.first);
-				continue;
+				chapter->RegisterGObjToRoom(gobj, coord, mCoord);
 			}
-
-			std::shared_ptr<CObstaclebase> obst = std::dynamic_pointer_cast<CObstaclebase>(gobj);
-			obst->SetRoom(GetThisPtr<CRoombase>());
-			RegisterGObj(gobj, Coord);
-			obst->SetWorldPos(CoordToWorldPos(Coord));
 		}
 
 		//몬스터
-		for (std::pair<int, int> pair : mMonsterData)
+		for (std::pair<int, std::list<FVector2>> pair : mMonsterData)
 		{
-			FVector2 Coord = CChapter::Hash2Coord(pair.second);
-			if (mRedFlag != FVector2(-1, -1))
+			for (FVector2 coord : pair.second)
 			{
-				if (Coord >= mRedFlag)
+				if (mRedFlag != FVector2(-1, -1))
 				{
-					//LOG_DEBUG("객체 생성 취소 | 좌표가 잘못되었습니다.: ", pair.second);
+					if (coord >= mRedFlag)
+					{
+						//LOG_DEBUG("객체 생성 취소 | 좌표가 잘못되었습니다.: ", pair.second);
+						continue;
+					}
+				}
+
+				std::shared_ptr<CRoomMember> gobj = std::dynamic_pointer_cast<CRoomMember>(CGameClassContainer::GetInst()->Instantiate(pair.first, coord, false, chapter->GetLevel()).lock());
+				if (!gobj)
+				{
+					//LOG_DEBUG("객체 생성 실패 | 객체 ID: ", pair.first);
 					continue;
 				}
-			}
 
-			std::shared_ptr<CGameObject> gobj = CGameClassContainer::GetInst()->Instantiate(pair.first, Coord, false, chapter->GetLevel()).lock();
-			if (!gobj)
-			{
-				//LOG_DEBUG("객체 생성 실패 | 객체 ID: ", pair.first);
-				continue;
+				chapter->RegisterGObjToRoom(gobj, coord, mCoord);
 			}
-
-			std::shared_ptr<CUnitbase> unit = std::dynamic_pointer_cast<CUnitbase>(gobj);
-			unit->SetRoom(GetThisPtr<CRoombase>());
-			RegisterGObj(gobj, Coord);
-			unit->SetWorldPos(CoordToWorldPos(Coord));
 		}
 
 		//픽업
-		for (std::pair<int, int> pair : mPickupData)
+		for (std::pair<int, std::list<FVector2>> pair : mPickupData)
 		{
-			FVector2 Coord = CChapter::Hash2Coord(pair.second);
-			if (mRedFlag != FVector2(-1, -1))
+			for (FVector2 coord : pair.second)
 			{
-				if (Coord >= mRedFlag)
+				if (mRedFlag != FVector2(-1, -1))
 				{
-					//LOG_DEBUG("객체 생성 취소 | 좌표가 잘못되었습니다.: ", pair.second);
+					if (coord >= mRedFlag)
+					{
+						//LOG_DEBUG("객체 생성 취소 | 좌표가 잘못되었습니다.: ", pair.second);
+						continue;
+					}
+				}
+
+				std::shared_ptr<CRoomMember> gobj = std::dynamic_pointer_cast<CRoomMember>(CGameClassContainer::GetInst()->Instantiate(pair.first, coord, false, chapter->GetLevel()).lock());
+				if (!gobj)
+				{
+					//LOG_DEBUG("객체 생성 실패 | 객체 ID: ", pair.first);
 					continue;
 				}
-			}
 
-			std::shared_ptr<CGameObject> gobj = CGameClassContainer::GetInst()->Instantiate(pair.first, Coord, false, chapter->GetLevel()).lock();
-			if (!gobj)
-			{
-				//LOG_DEBUG("객체 생성 실패 | 객체 ID: ", pair.first);
-				continue;
+				chapter->RegisterGObjToRoom(gobj, coord, mCoord);
 			}
-
-			std::shared_ptr<CPickup> pickup = std::dynamic_pointer_cast<CPickup>(gobj);
-			RegisterGObj(gobj, Coord);
-			pickup->SetWorldPos(CoordToWorldPos(Coord));
 		}
 	}
 }
 
-void CRoombase::RegisterGObj(const std::weak_ptr<class CGameObject>& GObj, const FVector2& Coord)
+void CRoombase::RegisterGObj(const std::weak_ptr<class CRoomMember>& GObj, const FVector2& Coord)
 {
 	auto obj = GObj.lock();
 	if (!obj)
@@ -316,24 +381,24 @@ void CRoombase::RegisterGObj(const std::weak_ptr<class CGameObject>& GObj, const
 	case EObjectType::PlayerCharacter:
 		break;
 	case EObjectType::Monster:
-		mMonsterList.push_back(obj);
+		mMonsterMap.insert(std::make_pair(obj->GetID(), obj));
 		break;
 	case EObjectType::Obstacle:
 		mObstacleGridMap[CChapter::Coord2Hash(Coord)] = std::dynamic_pointer_cast<CObstaclebase>(obj)->GetObstacleType();
-		mObstacleList.push_back(obj);
+		mObstacleMap.insert(std::make_pair(obj->GetID(), obj));
 		break;
 	case EObjectType::Pickup:
-		mPickupList.push_back(obj);
+		mPickupMap.insert(std::make_pair(obj->GetID(), obj));
 		break;
 	}
+	obj->SetWorldPos(CoordToWorldPos(Coord));
 }
 
-void CRoombase::DisregisterGObj(const std::weak_ptr<class CGameObject>& GObj, const FVector2& Coord)
+void CRoombase::DisregisterGObj(const std::weak_ptr<class CRoomMember>& GObj)
 {
 	auto obj = GObj.lock();
 	if (!obj)
 		return;
-
 	//Disregister 함수가 호출되는 부분들을 다시 확인해보자 | 분명 이상한곳에서 호출하고 있을것이 뻔하다
 	//그리고 호출 부분에서 뭘 하고 있는지도 중요함
 
@@ -341,43 +406,15 @@ void CRoombase::DisregisterGObj(const std::weak_ptr<class CGameObject>& GObj, co
 	{
 	case EObjectType::PlayerCharacter:
 		break;
-	case EObjectType::Monster: {
-		std::list<std::weak_ptr<CGameObject>>::iterator iter = mMonsterList.begin();
-		std::list<std::weak_ptr<CGameObject>>::iterator iterEnd = mMonsterList.end();
-		for (; iter != iterEnd; ++iter)
-		{
-			if (iter->lock()->GetID() == obj->GetID())
-			{
-				mMonsterList.erase(iter);
-				return;
-			}
-		}
-	} break;
-	case EObjectType::Obstacle: {
-		std::list<std::weak_ptr<CGameObject>>::iterator iter = mObstacleList.begin();
-		std::list<std::weak_ptr<CGameObject>>::iterator iterEnd = mObstacleList.end();
-		for (; iter != iterEnd; ++iter)
-		{
-			if (iter->lock()->GetID() == obj->GetID())
-			{
-				mObstacleList.erase(iter);
-				mObstacleGridMap[CChapter::Coord2Hash(Coord)] = EObstacleType::None;
-				return;
-			}
-		}
-	}break;
-	case EObjectType::Pickup: {
-		std::list<std::weak_ptr<CGameObject>>::iterator iter = mPickupList.begin();
-		std::list<std::weak_ptr<CGameObject>>::iterator iterEnd = mPickupList.end();
-		for (; iter != iterEnd; ++iter)
-		{
-			if (iter->lock()->GetID() == obj->GetID())
-			{
-				mPickupList.erase(iter);
-				return;
-			}
-		}
-	}break;
+	case EObjectType::Monster: 
+		mMonsterMap.erase(obj->GetID()); 
+		break;
+	case EObjectType::Obstacle:
+		mObstacleMap.erase(obj->GetID());
+		break;
+	case EObjectType::Pickup:
+		mPickupMap.erase(obj->GetID());
+		break;
 	}
 }
 
@@ -419,7 +456,7 @@ const FVector2 CRoombase::WorldPosToCoord(FVector3 WorldPos)
 
 const FVector2 CRoombase::GetPlayerCoordInGrid()
 {
-	std::shared_ptr<CChapter> chpter = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	std::shared_ptr<CChapter> chpter = mChapter.lock();
 	if (!chpter)
 		return -FVector2::One;
 	std::shared_ptr<CUnitbase> pUnit = std::dynamic_pointer_cast<CUnitbase>(chpter->GetPlayerCharacter().lock());
@@ -434,7 +471,7 @@ const FVector2 CRoombase::GetPlayerCoordInGrid()
 //2. 날아다니는 유닛은 항상 장애물이 없음으로 판단
 const bool CRoombase::CanGetToPlayerCharacter(FVector3 FromWorldPos)
 {
-	std::shared_ptr<CChapter> chpter = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	std::shared_ptr<CChapter> chpter = mChapter.lock();
 	if (!chpter)
 		return false;
 
@@ -508,7 +545,12 @@ void CRoombase::GenerateRoom(FVector2 Direction, int Min, int Max, int& Current)
 	//방 모양에 따라서 진행하는 방향의 개수가 다르고 좌표 오프셋이 다르기 때문
 	//
 
-	std::shared_ptr<CChapter> chapter = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	std::shared_ptr<CChapter> chapter = mChapter.lock();
+	if (!chapter)
+	{
+		assert(false && "Chapter Doesn't allocated");
+		return;
+	}
 
 	FVector2 dest = mCoord + Direction;
 	if (1 == chapter->GetIsValidCoord(dest)) //진행 방향에 이미 방이 있다면 그대로 이어간다.
@@ -534,6 +576,29 @@ void CRoombase::GenerateRoom(FVector2 Direction, int Min, int Max, int& Current)
 	std::shared_ptr<CRoombase> room = generatedRoom.lock();
 	if (!room)
 		return;
+
+	//자 지금 방 리소스를 만들엇으니 이제 테스트를 해야하는데
+	//아마 읽어오는 코드도 제대로 안되어있을거라 그거 먼저 수정하고
+	//리소스에 포함된 정보가 방 프리셋(아이디) - 방 좌표(챕터내의 좌표) - 오브젝트들(아이디 + 좌표)
+	//그냥 그대로 적용하면 됨
+	//나중엔 어떻게 만들까
+	//방 리소스를 전부 만들고 나면 그 개수 구해오기
+	auto mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
+	std::shared_ptr<CRoomGData> rd = std::dynamic_pointer_cast<CRoomGData>(mgr->FindData("RoomDefault1").lock());
+	FRoomData d = rd->GetData();
+	//d.ID //어떤 방 프리셋을 사용할건지에 대한 정보
+	//d.Coord //방의 좌표를 설정해줄건지에 대한 정보
+	std::vector<std::pair<int, FVector2>> data;
+	for (FRoomObjectData obj : d.InitObjs)
+	{
+		data.push_back(std::make_pair(obj.ID, obj.Coord));
+	}
+	if (!room->SetInitRoom(data))
+	{
+		LOG_DEBUG("방 생성 실패");
+	}
+	chapter->RegisterRoom(GetThisPtr<CRoombase>());
+	AdjustRoomPos();
 
 	//방 위치 오프셋 줘야함
 	//어디서 주지

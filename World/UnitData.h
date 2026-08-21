@@ -108,7 +108,7 @@ struct FUnitAttribute
 
 struct FTearAttribute
 {
-	FVector2 Direction;
+	FVector2 Direction = FVector2::Zero;
 	float Size = 10.f;
 	float Damage = 0.f;
 	float Speed = 0.f;

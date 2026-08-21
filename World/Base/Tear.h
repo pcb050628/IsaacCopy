@@ -20,6 +20,7 @@ public:
 	//2. 여러 기능들 내장해야함(충돌시 분열하는 등)
 
 protected:
+	bool mbIsDying = false;
 	std::weak_ptr<class CRigidBodyComponent> mRigidBody;
 	std::weak_ptr<class CColliderSphere2D> mHitBox;
 
@@ -56,6 +57,8 @@ public:
 		, int SplitStack = 0, int SplitCount = 0);
 	void Set(bool IsPlayer, FVector3 StartPos, FTearAttribute Attribute, std::weak_ptr<CTearShooter> Shooter);
 
+	virtual void ReturnToChapter() override;
+
 private:
 	//눈물 궤적 함수들
 	void BasicUpdate(float DeltaTime);
@@ -72,6 +75,11 @@ private:
 	//6. 나선
 	void SpiralUpdate(float DeltaTime);
 
+	//눈물 파괴시
+	void TearDying();
+
+	//충돌시
+	void OnCollision(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
 public:
 	FTearAttribute GetTearAttribute() { return mTearAttribute; }
 
@@ -90,5 +98,7 @@ public:
 	void SetBoomerang(const bool Val) { mTearAttribute.Boomerang = Val; }
 	void SetShield(const bool Val) { mTearAttribute.Shield = Val; }
 	void SetBouncing(const bool Val) { mTearAttribute.Bouncing = Val; }
+
+	std::weak_ptr<CGameObject> GetShooterOwner();
 };
 

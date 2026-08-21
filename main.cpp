@@ -3,6 +3,8 @@
 #include "Engine.h"
 #include "resource.h"
 
+#include "LogManager.h"
+
 #include "RenderManager.h"
 #include "Asset/AssetManager.h"
 
@@ -42,6 +44,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		CEngine::GetInst()->DestroyInst();
 		return 0;
 	}
+	CLogManager::GetInst()->FlushLog();
 
 	CRenderManager::GetInst()->CreateLayer("Tear", 7, ERenderSortType::None);
 	CRenderManager::GetInst()->CreateLayer("Item", 5, ERenderSortType::None);

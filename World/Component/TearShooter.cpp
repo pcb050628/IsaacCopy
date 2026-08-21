@@ -31,6 +31,8 @@ bool CTearShooter::Init()
 	if (mOwnerUnitHead.expired() || mOwnerUnitBody.expired())
 		return false;
 
+	mOwnerObjType = mOwnerUnit.lock()->GetObjType();
+
 	return true;
 }
 
@@ -136,10 +138,10 @@ void CTearShooter::Fire(FVector3 firePoint, bool IsSet)
 	}
 }
 
-void CTearShooter::FireWithVelocityOffset(FVector2 vOffset)
+bool CTearShooter::FireWithVelocityOffset(FVector2 vOffset)
 {
 	if (static_cast<float>(CTimeManager::GetTime()) - mLastFireTime < mUnitAttribute.ShotTerm)
-		return;
+		return false;
 
 	mLastFireTime = static_cast<float>(CTimeManager::GetTime());
 
@@ -157,8 +159,8 @@ void CTearShooter::FireWithVelocityOffset(FVector2 vOffset)
 			std::shared_ptr<CTear> tear = chptr->GetTear().lock();
 			if (!tear)
 			{
-				assert("ERROR: TEAR IS EMPTY");
-				return;
+				assert(false && "ERROR: TEAR IS EMPTY");
+				return false;
 			}
 			tear->Set(mbIsOwnerPlayer, FVector3(startPos.x, startPos.y, 0), mTearAttribute, GetThisPtr<CTearShooter>());
 		}
@@ -168,12 +170,14 @@ void CTearShooter::FireWithVelocityOffset(FVector2 vOffset)
 		std::shared_ptr<CTear> tear = chptr->GetTear().lock();
 		if (!tear)
 		{
-			assert("ERROR: TEAR IS EMPTY");
-			return;
+			assert(false && "ERROR: TEAR IS EMPTY");
+			return false;
 		}
 		tear->Set(mbIsOwnerPlayer, mOwnerUnitHead.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>());
 		mFirePointIndex = (mFirePointIndex + 1) % mFirePoints.size();
 	}
+
+	return true;
 }
 
 void CTearShooter::UpdateUnitAttributeData(const bool Synchronize, FUnitAttribute Attribute)

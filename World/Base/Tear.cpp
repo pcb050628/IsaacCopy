@@ -1,5 +1,7 @@
 #include "Tear.h"
 
+#include "LogManager.h"
+
 #include "Asset/AssetManager.h"
 #include "World/MeshComponent.h"
 #include "World/ColliderSphere2D.h"
@@ -48,6 +50,8 @@ bool CTear::Init()
 	std::shared_ptr<CGameDataManager> mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
 	if(!mgr->LoadDataFile<CAnimGData>("Tear_Default", TEXT("Anim/Tear_Default")))
 		return false;
+	if (!mgr->LoadDataFile<CAnimGData>("Tear_Default_Pop", TEXT("Anim/Tear_Default_Pop")))
+		return false;
 	std::shared_ptr<CAnimGData> animData = std::dynamic_pointer_cast<CAnimGData>(mgr->FindData("Tear_Default").lock());
 	animData->MakeAnim();
 
@@ -56,14 +60,20 @@ bool CTear::Init()
 	animator->AddAnimation(animData->GetData().Name);
 	animator->Stop();
 	animator->SetFrame(3);
+
+	animData = std::dynamic_pointer_cast<CAnimGData>(mgr->FindData("Tear_Default_Pop").lock());
+	animData->MakeAnim();
+	animator->AddAnimation(animData->GetData().Name);
+	mAnimator.lock()->SetFinishFunction(animData->GetData().Name, this, &CTear::ReturnToChapter);
 	
 	mMesh.lock()->SetWorldScale(100.f, 100.f);
 	mMesh.lock()->SetRenderLayer("Tear");
 	//mHitBox.lock()->SetBeginOverlapFunc()
 
 	mHitBox.lock()->SetCollisionProfile("Tear");
-	mHitBox.lock()->SetRadius(25.f);
+	mHitBox.lock()->SetRadius(15.f);
 	mHitBox.lock()->SetDebugDraw(true);
+	mHitBox.lock()->SetBeginOverlapFunc(this, &CTear::OnCollision);
 
 	//히트 박스 스케일(radius) 조정
 	//메시 스케일 조정
@@ -74,32 +84,42 @@ bool CTear::Init()
 
 void CTear::Update(float DeltaTime)
 {
-	//수명측정 방법
-	//보니까 사거리가 6.5여도 속도가 0.1이면 한칸도 안가서 멈추더라
-	//느리게 꾸역꾸역 사거리 만큼 가는게 아니라 시간누적해서 가는거
+	if (!mbIsDying)
+	{
+		//수명측정 방법
+		//보니까 사거리가 6.5여도 속도가 0.1이면 한칸도 안가서 멈추더라
+		//느리게 꾸역꾸역 사거리 만큼 가는게 아니라 시간누적해서 가는거
 
-	
-	if (mTearAttribute.Homing)
-	{
-		HomingUpdate(DeltaTime);
-	}
-	if (mTearAttribute.Orbiting)
-	{
-		OrbitUpdate(DeltaTime);
-	}
-	if (mTearAttribute.Boomerang)
-	{
-		BoomerangUpdate(DeltaTime);
-	}
+		//이부분도 전부 수정해야함 | 아닌가
+		if (mTearAttribute.Homing)
+		{
+			HomingUpdate(DeltaTime);
+		}
+		if (mTearAttribute.Orbiting)
+		{
+			OrbitUpdate(DeltaTime);
+		}
+		if (mTearAttribute.Boomerang)
+		{
+			BoomerangUpdate(DeltaTime);
+		}
 
-	//그럼 시간누적은 어떻게 할까
-	//mMoveDistance = DeltaTime * speed * RoomCellSize(85.f);
-	//if(mMoveDistance > mUnitOwnerAttribute.Range) Destroy();
-	mMovedDistance += DeltaTime * mRigidBody.lock()->GetVelocity().Length();
-	if (mMovedDistance >= mTearAttribute.Range)
+		//그럼 시간누적은 어떻게 할까
+		//mMoveDistance = DeltaTime * speed * RoomCellSize(85.f);
+		//if(mMoveDistance > mUnitOwnerAttribute.Range) Destroy();
+		mMovedDistance += DeltaTime * mRigidBody.lock()->GetVelocity().Length();
+		if (mMovedDistance >= mTearAttribute.Range)
+		{
+			TearDying();
+		}
+	}
+	else
 	{
-		std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
-		chptr->ReturnGObj(GetThisPtr<CTear>());
+		if (mAnimator.lock()->GetCurrentAnimationName() != "Tear_Default_Pop")
+		{
+			mAnimator.lock()->ChangeAnimation("Tear_Default_Pop");
+			mAnimator.lock()->Play();
+		}
 	}
 
 	CGameObject::Update(DeltaTime);
@@ -107,8 +127,6 @@ void CTear::Update(float DeltaTime)
 
 void CTear::Destroy()
 {
-	//여기서 파괴시 호출
-	//충돌시와 중첩되지않게 만들것
 	if (!mShooter.expired())
 		mShooter.lock()->OnDestroy(GetWorldPos());
 	CGameObject::Destroy();
@@ -117,6 +135,7 @@ void CTear::Destroy()
 void CTear::Reset(bool HardReset)
 {
 	mIsOwnerCharacter = false;
+	mbIsDying = false;
 
 	mMovedDistance = 0.f;
 	mTearAttribute = FTearAttribute();
@@ -124,6 +143,8 @@ void CTear::Reset(bool HardReset)
 
 	SetEnable(true);
 	SetRenderEnable(true);
+	mAnimator.lock()->ChangeAnimation("Tear_Default");
+	mAnimator.lock()->SetFrame(3);
 }
 
 //생각해보니까 텍스쳐도 골라줘야함
@@ -175,6 +196,11 @@ void CTear::Set(bool IsPlayer, FVector3 StartPos, FTearAttribute Attribute, std:
 	mShooter = Shooter;
 }
 
+void CTear::ReturnToChapter()
+{
+	CGameObject::ReturnToChapter();
+}
+
 //할게 있나?
 void CTear::BasicUpdate(float DeltaTime)
 {
@@ -203,4 +229,29 @@ void CTear::SquareWaveUpdate(float DeltaTime)
 
 void CTear::SpiralUpdate(float DeltaTime)
 {
+}
+
+void CTear::TearDying()
+{
+	mbIsDying = true;
+	//애니메이션 플레이하기
+	//애니메이션 끝나는데 콜백걸어놓고 Destroy 하기
+	mAnimator.lock()->ChangeAnimation("Tear_Default_Pop");
+	mAnimator.lock()->Play(true);
+	mRigidBody.lock()->SetVelocity(FVector3::Zero);
+	mHitBox.lock()->SetEnable(false);
+}
+
+void CTear::OnCollision(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
+{
+	if (Collider.lock()->GetOwner().lock() == mShooter.lock()->GetOwner().lock())
+		return;
+
+	TearDying();
+}
+
+std::weak_ptr<CGameObject> CTear::GetShooterOwner()
+{
+	std::shared_ptr<CActor> act = mShooter.lock()->GetOwner().lock();
+	return std::dynamic_pointer_cast<CGameObject>(act);
 }

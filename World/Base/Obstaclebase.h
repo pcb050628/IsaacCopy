@@ -1,8 +1,8 @@
 #pragma once
-#include "GameObject.h"
+#include "RoomMember.h"
 
 class CObstaclebase :
-    public CGameObject
+    public CRoomMember
 {
 public:
     CObstaclebase(EObstacleType ObstacleType);
@@ -12,7 +12,6 @@ public:
 
 protected:
     const EObstacleType mObstacleType;
-    std::weak_ptr<class CRoombase> mRoomOwner;
 
     std::weak_ptr<class CColliderBox2D> mHitBox;
     std::weak_ptr<class CMeshComponent> mMeshComp;
@@ -27,10 +26,6 @@ protected:
 
 public:
     virtual bool Init();
-
-public:
-    void SetRoom(std::weak_ptr<CRoombase> Room) { mRoomOwner = Room; }
-    void UnsetRoom() { mRoomOwner.reset(); }
 
     const EObstacleType GetObstacleType() const { return mObstacleType; }
 };

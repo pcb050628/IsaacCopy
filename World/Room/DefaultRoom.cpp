@@ -1,6 +1,7 @@
 #include "DefaultRoom.h"
 #include "../Base/Unitbase.h"
 
+#include "LogManager.h"
 #include "../Manager/GameClassContainer.h"
 
 #include "Asset/PathManager.h"
@@ -90,5 +91,5 @@ void CDefaultRoom::OnExitRoom()
 bool CDefaultRoom::WinCheck()
 {
 	bool flag = false;
-	return mMonsterList.empty();
+	return mMonsterMap.empty();
 }
