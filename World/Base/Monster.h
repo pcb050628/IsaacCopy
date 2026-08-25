@@ -1,5 +1,6 @@
 #pragma once
 #include "Unitbase.h"
+#include "TimeManager.h"
 
 class CMonster :
     public CUnitbase
@@ -16,16 +17,19 @@ protected:
 
     std::unordered_map<std::string, std::string> mAnimMap; //애니메이션 이름, 애니메이션 파일이름
 
+    std::weak_ptr<class CSound> mMumblingSound;
+    FTimerHandle mMumblingTimer;
+
 public:
     virtual void Reset(bool HardReset = false);
 
+    virtual void SetEnable(bool Enable) override;
+
+    virtual void GetHit(std::weak_ptr<CGameObject> From);
+
 protected:
-    //공용으로 사용할만한 기능들 생각하기
-    //1. 플레이어 캐릭터 찾기 <- 이거는 월드가 제공할 수 있음
-    //2. 플레이어 캐릭터 에게 가는 길 찾기 <- 이건 월드에서 받아서 멤버 변수로 저장
-    void FindRouteToPlayerCharacter();
-    //3. 플레이어 캐릭터 에게 갈 수 있는지 확인하기 <- 월드에서 받기
-    bool CanGetToPlayerCharacter();
+    void SetMumblingSound(const std::string& soundName, float Time, bool loop = false);
+    void SetMumblingSound(float Time, bool loop = false);
+    void PlayerMumbling();
 
 };
-

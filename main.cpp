@@ -13,6 +13,7 @@
 #include "World/DebugChapter.h"
 #include "World/WorldManager.h"
 
+#include "World/Manager/GameStarter.h"
 #include "World/Manager/GameRuleManager.h"
 #include "World/Manager/GameClassContainer.h"
 #include "World/GlobalCollision.h"
@@ -56,7 +57,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	CGlobalCollision::SetGlobalCollision();
 	if (!CAssetManager::GetInst()->AddSubManager<CGameDataManager>(EAssetType::GameData))
 	{
-		return 0;
+		assert(false && "데이터 파일 로드 실패");
+	}
+	if (!CGameStarter::Start())
+	{
+		assert(false && "게임 스타터 초기화 실패");
 	}
 
 	//만들어야하는 레벨

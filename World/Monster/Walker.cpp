@@ -3,11 +3,13 @@
 #include "LogManager.h"
 
 #include "World/ColliderSphere2D.h"
+#include "World/SoundComponent.h"
 #include "World/Animation2DComponent.h"
 
 #include "../Chapter.h"
 #include "../Base/Roombase.h"
 #include "../Component/RigidBodyComponent.h"
+#include "../Component/RouteMaker.h"
 
 CWalker::CWalker()
 {
@@ -41,6 +43,13 @@ bool CWalker::Init()
 
 	std::shared_ptr<CColliderSphere2D> hit = mHitBox.lock();
 	hit->SetCollisionProfile("ContactHit_Monster");
+
+	mRouteMaker = CreateComponent<CRouteMaker>("RouteMaker");
+	if (mRouteMaker.expired())
+		return false;
+
+	mRouteMaker.lock()->SetRoom(mRoomOwner);
+	mRouteMaker.lock()->SetChapter(mChapter);
 
 	return true;
 }
@@ -86,26 +95,10 @@ void CWalker::Destory()
 	CMonster::Destroy();
 }
 
-void CWalker::GetHit(std::weak_ptr<CGameObject> From)
+void CWalker::Reset(bool HardReset)
 {
-	if (From.expired()) 
-		return;
-
-	std::shared_ptr<CGameObject> obj = From.lock();
-	EObjectType t = obj->GetObjType();
-	if (EObjectType::PlayerCharacter == t || EObjectType::Monster == t)
-	{
-		std::shared_ptr<CUnitbase> unit = std::static_pointer_cast<CUnitbase>(obj);
-		FUnitAttribute atrbt = unit->GetAttribute();
-		mCurrentHP -= atrbt.Damage;
-		LOG_DEBUG(GetName(), "유닛이 ", From.lock()->GetActorTag(), " 에게 공격받았습니다\n 피해량: ", atrbt.Damage);
-		if (mCurrentHP <= 0)
-			ReturnToChapter(); //이 부분 나중에 수정하기 -> 애니메이션 같은거 출력하고 리턴하기 | 일단 비활성화는 해야함
-	}
-	else if (EObjectType::Obstacle == t)
-	{
-
-	}
+	CMonster::Reset(HardReset);
+	mRouteMaker.lock()->SetRoom(mRoomOwner);
 }
 
 //피격
@@ -236,6 +229,10 @@ bool CWalker::UpdateNextMove()
 int routeCount = 0;
 void CWalker::MakeRoute()
 {
+}
+
+void CWalker::MakeRouteBFS()
+{
 	std::shared_ptr<CChapter> chptr = mChapter.lock();
 	if (mRoomOwner.expired() || !chptr)
 		return;
@@ -248,47 +245,35 @@ void CWalker::MakeRoute()
 	if (-FVector2::One == playerCoord)
 		return;
 
-	routeCount = 0;
+	mRoute.clear();
 	FVector2 myCoord = room->WorldPosToCoord(GetWorldPos());
-
-	FVector2 dist = playerCoord - myCoord;
-	if (dist.Length() <= 1)
+	if (CoordDistance(playerCoord, myCoord) <= 1.5f)
 	{
-		mRoute.clear();
-		mRoute.push_back(playerCoord);
+		mRoute.push_back(FVector2(playerCoord));
 		return;
 	}
 
-	int focus = 0;
-	bool check = false;
-	std::vector<std::pair<int, std::list<FVector2>>> routes;
-	routes.resize(4);
+
+	routeCount = 0;
+	std::list<FRoute> routes;
+	std::map<int, int> visited;
 	for (int i = 0; i < 4; ++i)
 	{
-		FVector2 start = myCoord + CChapter::FourDirections[i];
-		if (!room->CheckCell(start))
-		{
-			routes[i].first = 100;
+		FVector2 dest = myCoord + CChapter::FourDirections[i];
+		if (!CheckCellValid(dest))
 			continue;
-		}
-		routes[i].first = CoordDistance(playerCoord, start);
-		routes[i].second.push_back(start);
-		focus = i;
+		routes.push_back(FRoute(nullptr, dest));
 	}
-
-	mRoute.clear();
-	CheckRoute(playerCoord, focus, routes, check);
-	if (!check)
+	visited[CChapter::Coord2Hash(myCoord)] = 1;
+	CheckRouteBFS(routes, visited, playerCoord);
+	if (routes.size() > 0)
 	{
-		return;
-	}
-	for (std::pair<int, std::list<FVector2>> route : routes)
-	{
-		if (-1 == route.first)
+		FRoute route = routes.back();
+		while (nullptr != route.Parent)
 		{
-			mRoute = std::move(route.second);
-			break;
+			route = *route.Parent;
 		}
+		mRoute.push_back(route.Coord);
 	}
 }
 
@@ -307,123 +292,43 @@ bool CWalker::NextMoveSet(FVector2 Coord)
 	return false;
 }
 
-void CWalker::CheckRoute(const FVector2& Target, int& focus, std::vector<std::pair<int, std::list<FVector2>>>& routes, bool& Complete)
+void CWalker::CheckRouteBFS(std::list<FRoute>& route, std::map<int, int>& visited, const FVector2& target)
 {
-	if (Complete)
+	if (route.empty())
 		return;
 
-	int count = 0; ++routeCount;
-	for (int i = 0; i < 4; i++)
-	{
-		if (-1 == routes[i].first)
-			return;
+	FRoute check = route.front();
+	route.pop_front();
 
-		if (100 == routes[i].first)
+	for (int i = 0; i < 4; ++i)
+	{
+		FVector2 dest = check.Coord + CChapter::FourDirections[i];
+		int dHash = CChapter::Coord2Hash(dest);
+		if (target == dest)
 		{
-			++count;
+			route.push_back(FRoute(&check, dest));
+			return;
+		}
+
+		if (visited.find(dHash) != visited.end() || (nullptr != check.Parent && check.Parent->Coord == dest))
 			continue;
-		}
 
-		routes[i].first = CoordDistance(Target, routes[i].second.back()) + routes[i].second.size();
-		if (routes[focus].first > routes[i].first)
+		if (CheckCellValid(dest))
 		{
-			CheckRoute(Target, i, routes, Complete);
+			route.push_back(FRoute(&check, dest));
+			visited[dHash] = 5;
 		}
 	}
-
-	if (count > 3)
-		return;
-
-	FVector2 current = routes[focus].second.back();
-	FVector2 dir = Target - current;
-	if (fabs(dir.x) > fabs(dir.y))
-		dir.y = 0;
-	else
-		dir.x = 0;
-	dir.Normalize();
-	FVector2 next = current + dir;
-	if (routes[focus].second.size() > 2)
-	{
-		auto iter = routes[focus].second.end();
-		--iter;	--iter;
-		if (next == *iter)
-			return;
-	}
-
-	if (CheckCellValid(next))
-	{
-		routes[focus].second.push_back(next);
-		if (Target == next)
-		{
-			Complete = true;
-			routes[focus].first = -1;
-			return;
-		}
-		else
-		{
-			CheckRoute(Target, focus, routes, Complete);
-			return;
-		}
-	}
-	else
-	{
-		FVector2 ndir = Target - current;
-		if (fabs(dir.x) > fabs(dir.y))
-		{
-			ndir.x = 0;
-			if (0 == ndir.y)
-				ndir.y = -1;
-			else
-				ndir.y = FVector2(Target - current).y;
-		}
-		else
-		{
-			ndir.y = 0;
-			if (0 == ndir.x)
-				ndir.x = -1;
-			else
-				ndir.x = FVector2(Target - current).x;
-		}
-		ndir.Normalize();
-		
-		next = current + ndir;
-		if (CheckCellValid(next))
-		{
-			routes[focus].second.push_back(next);
-			CheckRoute(Target, focus, routes, Complete);
-			return;
-		}
-
-		next = current + -ndir;
-		if (CheckCellValid(next))
-		{
-			routes[focus].second.push_back(next);
-			CheckRoute(Target, focus, routes, Complete);
-			return;
-		}
-
-		next = current + -dir;
-		if (CheckCellValid(next))
-		{
-			routes[focus].second.push_back(next);
-			CheckRoute(Target, focus, routes, Complete);
-			return;
-		}
-
-		routes[focus].first = 100;
-	}
+	CheckRouteBFS(route, visited, target);
 }
 
 bool CWalker::CheckCellValid(const FVector2& Coord)
 {
-	std::shared_ptr<CChapter> chptr = mChapter.lock();
-	if (mRoomOwner.expired() || !chptr)
+	if (mRoomOwner.expired())
 		return false;
 
 	std::shared_ptr<CRoombase> room = mRoomOwner.lock();
-	if (room->CheckCell(Coord))
-		return true;
-	return false;
+	return room->CheckCell(Coord);
 }
 
 int CWalker::CoordDistance(FVector2 to, FVector2 from)

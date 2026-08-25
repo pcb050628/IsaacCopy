@@ -156,6 +156,8 @@
     <ClCompile Include="Debug\ImGuiRoomMaker.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="World\Base\Character.cpp" />
+    <ClCompile Include="World\Base\GameClass.cpp" />
+    <ClCompile Include="World\Base\GameDefinition.cpp" />
     <ClCompile Include="World\Base\Item.cpp" />
     <ClCompile Include="World\Base\Monster.cpp" />
     <ClCompile Include="World\Base\Obstaclebase.cpp" />
@@ -169,6 +171,7 @@
     <ClCompile Include="World\Character\CharacterIsaac.cpp" />
     <ClCompile Include="World\Component\ItemContainer.cpp" />
     <ClCompile Include="World\Component\RigidBodyComponent.cpp" />
+    <ClCompile Include="World\Component\RouteMaker.cpp" />
     <ClCompile Include="World\Component\SpriteComponent.cpp" />
     <ClCompile Include="World\Component\TearShooter.cpp" />
     <ClCompile Include="World\Data\AnimGData.cpp" />
@@ -181,9 +184,11 @@
     <ClCompile Include="World\GameSystemActor.cpp" />
     <ClCompile Include="World\GlobalCollision.cpp" />
     <ClCompile Include="World\Item\ItemBelt.cpp" />
+    <ClCompile Include="World\Item\ItemSpoonBender.cpp" />
     <ClCompile Include="World\MainWorld.cpp" />
     <ClCompile Include="World\Manager\GameClassContainer.cpp" />
     <ClCompile Include="World\Manager\GameRuleManager.cpp" />
+    <ClCompile Include="World\Manager\GameStarter.cpp" />
     <ClCompile Include="World\Monster\Gaper.cpp" />
     <ClCompile Include="World\Monster\Walker.cpp" />
     <ClCompile Include="World\Obstacle\RockObstacle.cpp" />
@@ -197,6 +202,8 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rooms.h" />
     <ClInclude Include="World\Base\Character.h" />
+    <ClInclude Include="World\Base\GameClass.h" />
+    <ClInclude Include="World\Base\GameDefinition.h" />
     <ClInclude Include="World\Base\Item.h" />
     <ClInclude Include="World\Base\Monster.h" />
     <ClInclude Include="World\Base\Obstaclebase.h" />
@@ -210,6 +217,7 @@
     <ClInclude Include="World\Character\CharacterIsaac.h" />
     <ClInclude Include="World\Component\ItemContainer.h" />
     <ClInclude Include="World\Component\RigidBodyComponent.h" />
+    <ClInclude Include="World\Component\RouteMaker.h" />
     <ClInclude Include="World\Component\SpriteComponent.h" />
     <ClInclude Include="World\Component\TearShooter.h" />
     <ClInclude Include="World\Data\AnimGData.h" />
@@ -223,9 +231,11 @@
     <ClInclude Include="World\GameSystemActor.h" />
     <ClInclude Include="World\GlobalCollision.h" />
     <ClInclude Include="World\Item\ItemBelt.h" />
+    <ClInclude Include="World\Item\ItemSpoonBender.h" />
     <ClInclude Include="World\MainWorld.h" />
     <ClInclude Include="World\Manager\GameClassContainer.h" />
     <ClInclude Include="World\Manager\GameRuleManager.h" />
+    <ClInclude Include="World\Manager\GameStarter.h" />
     <ClInclude Include="World\Monster\Gaper.h" />
     <ClInclude Include="World\Monster\Walker.h" />
     <ClInclude Include="World\Obstacle\RockObstacle.h" />

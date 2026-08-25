@@ -28,7 +28,8 @@ public:
 	bool Init();
 
 	void SetRandomSeed(unsigned int Seed = 1);
-	float GenerateRandom() { return mfDistribution(mGen); }
+	float GenerateRandomF() { return mfDistribution(mGen); }
+	float GenerateRandomI() { return static_cast<int>(mfDistribution(mGen) * 100); }
 
 	const int GetItemWeightStack() const { return PlayerItemWeightStack; }
 

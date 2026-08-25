@@ -21,12 +21,16 @@ protected:
     std::weak_ptr<class CColliderBox2D> mBoxColComp;
     std::weak_ptr<class CMeshComponent> mMesh; 
     std::weak_ptr<class CAnimation2DComponent> mAnimator; 
+    std::weak_ptr<class CSoundComponent> mSound;
 
     FVector2 mDirection;
     bool mbIsOpen = false;
     EOpenRequirement mRequirement = EOpenRequirement::Clear;
 
     std::weak_ptr<class CUnitbase> mPlayer; //? 이거 왜 들고 있지
+
+    std::weak_ptr<class CSound> mOpenSound;
+    std::weak_ptr<class CSound> mCloseSound;
 
 public:
     void SetDirection(FVector2 Dir) { mDirection = Dir; }

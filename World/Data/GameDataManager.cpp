@@ -1,15 +1,39 @@
 #include "GameDataManager.h"
 
+
+#include "Asset/PathManager.h"
+
+#include "AnimGData.h"
+#include "RoomGData.h"
+
 bool CGameDataManager::Init()
 {
+    //방 데이터 폴더 가져오기
+
+	if (!LoadAll())
+		return false;
+
     return true;
 }
 
-std::weak_ptr<CGameData> CGameDataManager::FindData(const std::string& Name)
+bool CGameDataManager::LoadAll()
 {
-    if(mMap.find(Name) == mMap.end())
-        return std::weak_ptr<CGameData>();
-    return mMap[Name];
+	//namespace fs = std::filesystem;
+	//
+	//std::wstring path = CPathManager::FindPath("Data");
+	//for (const fs::directory_entry& entry : fs::directory_iterator(path))
+	//{
+	//	if (entry.is_directory())
+	//	{
+	//	}
+	//}
+
+	if (!LoadFromDirectory<CAnimGData>(TEXT("Anim\\"), EGDataType::Anim))
+		return false;
+	if (!LoadFromDirectory<CRoomGData>(TEXT("Room\\"), EGDataType::Room))
+		return false;	
+
+	return true;
 }
 
 //bool GameDataManager::LoadDataFile(const TCHAR* FileName)

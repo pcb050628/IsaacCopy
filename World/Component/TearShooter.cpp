@@ -1,9 +1,13 @@
 #include "TearShooter.h"
 #include "TimeManager.h"
 
+#include "Asset/AssetManager.h"
+#include "Asset/SoundManager.h"
+
 #include "World/World.h"
 #include "World/Collider.h"
 #include "World/MeshComponent.h"
+#include "World/SoundComponent.h"
 
 #include "../Chapter.h"
 
@@ -33,6 +37,12 @@ bool CTearShooter::Init()
 
 	mOwnerObjType = mOwnerUnit.lock()->GetObjType();
 
+	mSounds.resize(2);
+
+	std::shared_ptr<CSoundManager> soundMgr = CAssetManager::GetInst()->GetSubManager<CSoundManager>(EAssetType::Sound);
+	mSounds[0] = soundMgr->FindSound("Character_tear_fire_1");
+	mSounds[1] = soundMgr->FindSound("Character_tear_fire_2");
+
 	return true;
 }
 
@@ -60,6 +70,7 @@ void CTearShooter::Fire()
 
 	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
 
+
 	if (mbIsSynchronized)
 	{
 		for (FVector2 startPos : mFirePoints)
@@ -70,7 +81,7 @@ void CTearShooter::Fire()
 				assert("ERROR: TEAR IS EMPTY");
 				return;
 			}
-			tear->Set(mbIsOwnerPlayer, FVector3(startPos.x, startPos.y, 0), mTearAttribute, GetThisPtr<CTearShooter>());
+			tear->Set(mbIsOwnerPlayer, FVector3(startPos.x, startPos.y, 0), mTearAttribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
 		}
 	}
 	else
@@ -81,7 +92,7 @@ void CTearShooter::Fire()
 			assert("ERROR: TEAR IS EMPTY");
 			return;
 		}
-		tear->Set(mbIsOwnerPlayer, mOwnerUnitHead.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>());
+		tear->Set(mbIsOwnerPlayer, mOwnerUnitHead.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
 		mFirePointIndex = (mFirePointIndex + 1) % mFirePoints.size();
 	}
 }
@@ -102,7 +113,7 @@ void CTearShooter::Fire(FVector3 firePoint, bool IsSet)
 			assert("ERROR: TEAR IS EMPTY");
 			return;
 		}
-		tear->Set(mbIsOwnerPlayer, firePoint, mTearAttribute, GetThisPtr<CTearShooter>());
+		tear->Set(mbIsOwnerPlayer, firePoint, mTearAttribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
 	}
 	else
 	{
@@ -121,7 +132,7 @@ void CTearShooter::Fire(FVector3 firePoint, bool IsSet)
 					assert("ERROR: TEAR IS EMPTY");
 					return;
 				}
-				tear->Set(mbIsOwnerPlayer, FVector3(startPos.x, startPos.y, 0), mTearAttribute, GetThisPtr<CTearShooter>());
+				tear->Set(mbIsOwnerPlayer, FVector3(startPos.x, startPos.y, 0), mTearAttribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
 			}
 		}
 		else
@@ -132,9 +143,9 @@ void CTearShooter::Fire(FVector3 firePoint, bool IsSet)
 				assert("ERROR: TEAR IS EMPTY");
 				return;
 			}
-			tear->Set(mbIsOwnerPlayer, firePoint + mOwnerUnitHead.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>());
-			mFirePointIndex = (mFirePointIndex + 1) % mFirePoints.size();
+			tear->Set(mbIsOwnerPlayer, firePoint + mOwnerUnitHead.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
 		}
+		mFirePointIndex = (mFirePointIndex + 1) % mFirePoints.size();
 	}
 }
 
@@ -162,7 +173,7 @@ bool CTearShooter::FireWithVelocityOffset(FVector2 vOffset)
 				assert(false && "ERROR: TEAR IS EMPTY");
 				return false;
 			}
-			tear->Set(mbIsOwnerPlayer, FVector3(startPos.x, startPos.y, 0), mTearAttribute, GetThisPtr<CTearShooter>());
+			tear->Set(mbIsOwnerPlayer, FVector3(startPos.x, startPos.y, 0), mTearAttribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
 		}
 	}
 	else
@@ -173,7 +184,7 @@ bool CTearShooter::FireWithVelocityOffset(FVector2 vOffset)
 			assert(false && "ERROR: TEAR IS EMPTY");
 			return false;
 		}
-		tear->Set(mbIsOwnerPlayer, mOwnerUnitHead.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>());
+		tear->Set(mbIsOwnerPlayer, mOwnerUnitHead.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
 		mFirePointIndex = (mFirePointIndex + 1) % mFirePoints.size();
 	}
 

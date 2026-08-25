@@ -29,16 +29,16 @@ bool CItemBelt::Init()
     mUnitAdditionalAttribute.Speed = 20.f;
 
     auto mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
-    if (!mgr->LoadDataFile<CAnimGData>("Item_Belt_Walk_V", TEXT("Anim\\Item_Belt_Walk_V")))
+    if (!mgr->LoadDataFile<CAnimGData>("Item_Belt_Walk_V", EGDataType::Anim, TEXT("Item_Belt_Walk_V")))
         return false;
-    if (!mgr->LoadDataFile<CAnimGData>("Item_Belt_Walk_H", TEXT("Anim\\Item_Belt_Walk_H")))
+    if (!mgr->LoadDataFile<CAnimGData>("Item_Belt_Walk_H", EGDataType::Anim, TEXT("Item_Belt_Walk_H")))
         return false;
 
-    std::shared_ptr<CAnimGData> animData = std::dynamic_pointer_cast<CAnimGData>(mgr->FindData("Item_Belt_Walk_V").lock());
+    std::shared_ptr<CAnimGData> animData = mgr->FindData<CAnimGData>("Item_Belt_Walk_V", EGDataType::Anim).lock();
     if (!animData || !animData->MakeAnim())
         return false;
 
-    animData = std::dynamic_pointer_cast<CAnimGData>(mgr->FindData("Item_Belt_Walk_H").lock());
+    animData = mgr->FindData<CAnimGData>("Item_Belt_Walk_H", EGDataType::Anim).lock();
     if (!animData || !animData->MakeAnim())
         return false;
 

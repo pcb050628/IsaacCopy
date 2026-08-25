@@ -92,15 +92,15 @@ protected:
 	void SetPlayerPos();
 
 public:
-	static int Coord2Hash(FVector2 Coord)
+	inline static int Coord2Hash(FVector2 Coord)
 	{
 		int x = static_cast<int>(Coord.x);
 		int y = static_cast<int>(Coord.y);
 
-		x = x > 9 ? x * 10 : x * 100;
+		x = x * 100;
 		return 10000 + x + y;
 	}
-	static FVector2 Hash2Coord(int Key)
+	inline static FVector2 Hash2Coord(int Key)
 	{
 		Key -= 10000;
 		if (Key < 1000)

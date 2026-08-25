@@ -3,8 +3,11 @@
 #include "LogManager.h"
 
 #include "Asset/AssetManager.h"
+#include "Asset/SoundManager.h"
+
 #include "World/MeshComponent.h"
 #include "World/ColliderSphere2D.h"
+#include "World/SoundComponent.h"
 #include "World/Animation2DComponent.h"
 
 #include "../Data/GameDataManager.h"
@@ -35,9 +38,10 @@ bool CTear::Init()
 
 	mRigidBody = CreateComponent<CRigidBodyComponent>("Root");
 	mHitBox = CreateComponent<CColliderSphere2D>("Hit");
+	mSoundPlayer = CreateComponent<CSoundComponent>("SoundPlayer");
 	mMesh = CreateComponent<CMeshComponent>("Mesh");
 	mAnimator = CreateComponent<CAnimation2DComponent>("Animator");
-	if (mRigidBody.expired() || mHitBox.expired() || mMesh.expired() || mAnimator.expired())
+	if (mRigidBody.expired() || mHitBox.expired() || mSoundPlayer .expired() || mMesh.expired() || mAnimator.expired())
 		return false;
 
 	mRigidBody.lock()->SetLimit(10000000.f);
@@ -48,11 +52,11 @@ bool CTear::Init()
 	mMesh.lock()->SetShader("Animation2D");
 
 	std::shared_ptr<CGameDataManager> mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
-	if(!mgr->LoadDataFile<CAnimGData>("Tear_Default", TEXT("Anim/Tear_Default")))
+	if(!mgr->LoadDataFile<CAnimGData>("Tear_Default", EGDataType::Anim, TEXT("Tear_Default")))
 		return false;
-	if (!mgr->LoadDataFile<CAnimGData>("Tear_Default_Pop", TEXT("Anim/Tear_Default_Pop")))
+	if (!mgr->LoadDataFile<CAnimGData>("Tear_Default_Pop", EGDataType::Anim, TEXT("Tear_Default_Pop")))
 		return false;
-	std::shared_ptr<CAnimGData> animData = std::dynamic_pointer_cast<CAnimGData>(mgr->FindData("Tear_Default").lock());
+	std::shared_ptr<CAnimGData> animData = mgr->FindData<CAnimGData>("Tear_Default", EGDataType::Anim).lock();
 	animData->MakeAnim();
 
 	std::shared_ptr<CAnimation2DComponent> animator = mAnimator.lock();
@@ -61,7 +65,7 @@ bool CTear::Init()
 	animator->Stop();
 	animator->SetFrame(3);
 
-	animData = std::dynamic_pointer_cast<CAnimGData>(mgr->FindData("Tear_Default_Pop").lock());
+	animData = mgr->FindData<CAnimGData>("Tear_Default_Pop", EGDataType::Anim).lock();
 	animData->MakeAnim();
 	animator->AddAnimation(animData->GetData().Name);
 	mAnimator.lock()->SetFinishFunction(animData->GetData().Name, this, &CTear::ReturnToChapter);
@@ -78,6 +82,7 @@ bool CTear::Init()
 	//히트 박스 스케일(radius) 조정
 	//메시 스케일 조정
 	//애니메이션 불러오고
+
 
 	return true;
 }
@@ -145,6 +150,8 @@ void CTear::Reset(bool HardReset)
 	SetRenderEnable(true);
 	mAnimator.lock()->ChangeAnimation("Tear_Default");
 	mAnimator.lock()->SetFrame(3);
+
+	
 }
 
 //생각해보니까 텍스쳐도 골라줘야함
@@ -183,7 +190,7 @@ void CTear::Set(bool IsPlayer, FVector3 StartPos, FVector2 Dir, FUnitAttribute A
 	mRigidBody.lock()->SetVelocity(FVector3(velocity.x, velocity.y, 0));
 }
 
-void CTear::Set(bool IsPlayer, FVector3 StartPos, FTearAttribute Attribute, std::weak_ptr<CTearShooter> Shooter)
+void CTear::Set(bool IsPlayer, FVector3 StartPos, FTearAttribute Attribute, std::weak_ptr<CTearShooter> Shooter, std::weak_ptr<class CSound> Sound)
 {
 	mIsOwnerCharacter = IsPlayer;
 	SetWorldPos(StartPos);
@@ -194,6 +201,9 @@ void CTear::Set(bool IsPlayer, FVector3 StartPos, FTearAttribute Attribute, std:
 	mRigidBody.lock()->SetVelocity(FVector3(velocity.x, velocity.y, 0));
 
 	mShooter = Shooter;
+
+	mSoundPlayer.lock()->mSound = Sound.lock();
+	mSoundPlayer.lock()->Play();
 }
 
 void CTear::ReturnToChapter()

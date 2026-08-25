@@ -15,6 +15,8 @@ private:
 	int SelectedIdx = -1;
 	int InputID = 0;
 
+	std::vector<std::string> NameVec;
+
 	std::weak_ptr<class CTexture> DrawingTex;
 
 	std::string ErrorPopupID = "error";

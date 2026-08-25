@@ -20,6 +20,7 @@ protected:
     std::weak_ptr<class CAnimation2DComponent> mBody;
     std::weak_ptr<class CColliderSphere2D> mHurtBox; //피격체 | 피격을 당하지 않는 경우에는 기본 충돌체로 사용됨
     std::weak_ptr<class CColliderSphere2D> mHitBox; //기본으로는 생성하지 않음, 필요한 경우에만 상속받은 객체에서 생성
+    std::weak_ptr<class CSoundComponent> mSoundPlayer;
 
     std::weak_ptr<class CTearShooter> mShooter; //기본으로는 생성하지않음, 필요한 경우에만 상속받은 객체에서 생성
 
@@ -32,6 +33,8 @@ protected:
     std::vector<std::pair<EUnitEffect, float>> mStatusQueue; //상태와 유지시간
 
     bool mbIsDead = false;
+
+    std::vector<std::weak_ptr<class CSound>> mHurtSound;
 
 public:
     virtual bool Init();

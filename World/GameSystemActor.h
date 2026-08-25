@@ -14,6 +14,7 @@ public:
 
 protected:
     std::weak_ptr<class CCameraComponent> mCam;
+    std::weak_ptr<class CSoundComponent> mSound;
     std::weak_ptr<class CRigidBodyComponent> mRb;
     //UI도 여기 넣을까 말까
     //넣을 생각이긴 헀는데

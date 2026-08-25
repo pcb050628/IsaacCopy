@@ -31,10 +31,10 @@ bool CRockObstacle::Init()
 
     //이미지 가져오기
     std::shared_ptr<CGameDataManager> dataMgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
-    if (!dataMgr->LoadDataFile<CAnimGData>("Rock_1", TEXT("Anim\\Rock_1")))
+    if (!dataMgr->LoadDataFile<CAnimGData>("Rock_1", EGDataType::Anim, TEXT("Rock_1")))
         return false;
 
-    std::shared_ptr<CAnimGData> animData = std::dynamic_pointer_cast<CAnimGData>(dataMgr->FindData("Rock_1").lock());
+    std::shared_ptr<CAnimGData> animData = dataMgr->FindData<CAnimGData>("Rock_1", EGDataType::Anim).lock();
     if (!animData || !animData->MakeAnim())
         return false;
     

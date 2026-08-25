@@ -2,20 +2,18 @@
 
 #include "../Chapter.h"
 
-int CGameObject::GlobalID = 0;
-
 CGameObject::CGameObject(EObjectType Type)
-	:mID(GlobalID++), mObjType(Type)
+	:CGameClass(Type)
 {
 }
 
 CGameObject::CGameObject(const CGameObject& src)
-	:CActor(src), mID(GlobalID++), mObjType(src.mObjType)
+	:CGameClass(src)
 {
 }
 
 CGameObject::CGameObject(CGameObject&& src) noexcept
-	:CActor(std::move(src)), mID(src.mID), mObjType(src.mObjType)
+	:CGameClass(std::move(src))
 {
 }
 

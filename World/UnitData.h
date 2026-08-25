@@ -200,3 +200,35 @@ namespace CharacterEffect
 		}
 	};
 };
+
+struct FRoute
+{
+	FVector2 Coord = -FVector2::One;
+	FRoute* Parent = nullptr;
+	int value = 0;
+	int Depth = 0;
+
+	FRoute()
+	{
+
+	}
+	FRoute(FRoute* p, FVector2 c)
+		:Coord(c), Parent(p)
+	{
+		if (nullptr != p)
+		{
+			Depth = p->Depth + 1;
+		}
+	}
+
+	void Set(FRoute* p, FVector2 c)
+	{
+		Parent = p;
+		Coord = c;
+		Depth = 0;
+		if (nullptr != p)
+		{
+			Depth = p->Depth + 1;
+		}
+	}
+};

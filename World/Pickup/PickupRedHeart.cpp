@@ -43,9 +43,9 @@ bool CPickupRedHeart::Init()
     animator->SetUpdateComponent(mMeshComp);
 
     std::shared_ptr<CGameDataManager> mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
-    if (!mgr->LoadDataFile<CAnimGData>("Heart_Red_Pickup", TEXT("Anim\\Heart_Red_Pickup")))
+    if (!mgr->LoadDataFile<CAnimGData>("Heart_Red_Pickup", EGDataType::Anim, TEXT("Heart_Red_Pickup")))
         return false;
-    std::shared_ptr<CAnimGData> data = std::dynamic_pointer_cast<CAnimGData>(mgr->FindData("Heart_Red_Pickup").lock());
+    std::shared_ptr<CAnimGData> data = mgr->FindData<CAnimGData>("Heart_Red_Pickup", EGDataType::Anim).lock();
     if (!data || !data->MakeAnim())
         return false;
 

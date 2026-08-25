@@ -5,11 +5,13 @@
 #include "LogManager.h"
 
 #include "Asset/AssetManager.h"
+#include "Asset/SoundManager.h"
 #include "Asset/AnimationManager.h"
 #include "Asset/Animation2D.h"
 
 #include "World/Collider.h"
 #include "World/ColliderSphere2D.h"
+#include "World/SoundComponent.h"
 #include "World/Animation2DComponent.h"
 
 #include "../Chapter.h"
@@ -93,6 +95,11 @@ bool CCharacter::Init()
 	input->SetBindFunction("FireRight", EInputType::Hold, this, &CCharacter::FireRight);
 
 	OnAttributeChanged(mAttribute);
+
+	std::shared_ptr<CSoundManager> soundMgr = CAssetManager::GetInst()->GetSubManager<CSoundManager>(EAssetType::Sound);
+	mHurtSound.push_back(soundMgr->FindSound("Character_hurt_grunt_1"));
+	mHurtSound.push_back(soundMgr->FindSound("Character_hurt_grunt_2"));
+	mHurtSound.push_back(soundMgr->FindSound("Character_hurt_grunt_3"));
 
 	return true;
 }

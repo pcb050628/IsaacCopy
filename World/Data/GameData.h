@@ -15,13 +15,13 @@
 
 enum class EGDataType
 {
-	Run,
+	Run = 0,
 	Chapter,
 	Room,
 	Player,
 	Item,
 	Anim,
-	End,
+	End = 100,
 };
 
 class CGameData : CAsset

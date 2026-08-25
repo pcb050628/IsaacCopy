@@ -1,15 +1,18 @@
 #pragma once
-#include "GameObject.h"
+#include "GameDefinition.h"
 #include "../UnitData.h"
 
 class CItem :
-	public CGameObject
+	public CGameDefinition
 {
 public:
 	CItem(EItemType Type, bool hit = false, bool shot = false, bool dead = false, bool kill = false
 		, bool enterRoom = false, bool winRoom = false, bool exitRoom = false, bool enterChapter = false
 		, bool disposable = false);
 	virtual ~CItem() = 0;
+
+public:
+	virtual bool Init();
 
 protected:
 	//아이템의 타입 - 패시브 | 액티브
@@ -71,6 +74,7 @@ public: //발동 조건들
 	virtual void OnExitRoom();
 	virtual void OnEnterChapter();
 	virtual void OnKillEnemy();
+	virtual void OnUpdatecShooter(const std::weak_ptr<class CCharacter>& character);
 
 public:
 	const bool GetIsMagnification() const { return mbIsAttributeMagnification; }

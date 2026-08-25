@@ -4,9 +4,10 @@
 #include "Asset/AnimationManager.h"
 #include "Asset/TextureManager.h"
 
-#include "World/Animation2DComponent.h"
 #include "World/MeshComponent.h"
 #include "World/ColliderSphere2D.h"
+#include "World/SoundComponent.h"
+#include "World/Animation2DComponent.h"
 
 #include "../Data/GameDataManager.h"
 #include "../Data/AnimGData.h"
@@ -40,6 +41,10 @@ bool CUnitbase::Init()
 
 	mRigidBody = CreateComponent<CRigidBodyComponent>("Root");
 	if (mRigidBody.expired())
+		return false;
+
+	mSoundPlayer = CreateComponent<CSoundComponent>("SoundPlayer");
+	if (mSoundPlayer.expired())
 		return false;
 
 	mHeadMesh = CreateComponent<CMeshComponent>("MHead");
@@ -107,14 +112,12 @@ void CUnitbase::Destroy()
 bool CUnitbase::AddAnim(const std::string& Name, const TCHAR* FilePath, bool Upper, float PlayTime, float PlayRate, bool Loop, bool Reverse, bool Symmetry)
 {
 	std::shared_ptr<CGameDataManager> dataMgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
-	std::weak_ptr<CGameData> data = dataMgr->FindData("Anim_" + Name);
+	std::weak_ptr<CGameData> data = dataMgr->FindData<CAnimGData>(Name, EGDataType::Anim);
 	if (data.expired())
 	{
-		std::wstring path = L"Anim\\";
-		path += FilePath;
-		if (!dataMgr->LoadDataFile<CAnimGData>("Anim_" + Name, path.c_str()))
+		if (!dataMgr->LoadDataFile<CAnimGData>(Name, EGDataType::Anim, FilePath))
 			return false;
-		data = dataMgr->FindData("Anim_" + Name);
+		data = dataMgr->FindData<CAnimGData>(Name, EGDataType::Anim);
 	}
 	std::shared_ptr<CAnimGData> d = std::dynamic_pointer_cast<CAnimGData>(data.lock());
 	d->MakeAnim();

@@ -32,6 +32,8 @@ protected:
     //눈물 파괴시 호출될 함수들
     std::unordered_map<int, std::function<void(const FVector3&)>> mOnDestroyFunc;
 
+    std::vector<std::weak_ptr<class CSound>> mSounds;
+
 public:
     virtual bool Init();
     virtual void Update(float DeltaTime);

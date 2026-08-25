@@ -10,119 +10,120 @@
 
 
 class CRoombase :
-    public CGameObject
+	public CGameObject
 {
 public:
-    CRoombase(ERoomType Type, ERoomShape Shape);
-    CRoombase(const CRoombase& src);
-    CRoombase(CRoombase&& src) noexcept;
-    virtual ~CRoombase();
+	CRoombase(ERoomType Type, ERoomShape Shape);
+	CRoombase(const CRoombase& src);
+	CRoombase(CRoombase&& src) noexcept;
+	virtual ~CRoombase();
 
 public:
-	virtual bool Init(); 
-    virtual void Update(float DeltaTime) = 0; //클리어 여부 검사 / 방 마다 다르지만 기본으로는 모든 적이 비활성화 상태시 클리어
+	virtual bool Init();
+	virtual void Update(float DeltaTime) = 0; //클리어 여부 검사 / 방 마다 다르지만 기본으로는 모든 적이 비활성화 상태시 클리어
 	virtual void Destroy() = 0;
 
 protected:
-    //내부 셀의 개수
-    FVector2 mRoomCellMax = FVector2(13, 7);
-    //방 이미지의 실제 픽셀 크기
-    FVector2 mRoomImageSize; 
-    //방 내부의 월드 크기
-    FVector2 mRoomSize;
-    //방 내부 셀의 크기
-    FVector2 mRoomCellSize;
+	//내부 셀의 개수
+	FVector2 mRoomCellMax = FVector2(13, 7);
+	//방 이미지의 실제 픽셀 크기
+	FVector2 mRoomImageSize;
+	//방 내부의 월드 크기
+	FVector2 mRoomSize;
+	//방 내부 셀의 크기
+	FVector2 mRoomCellSize;
 
 
-    ERoomShape mShape;
-    ERoomType mRoomType;
-    //현재 챕터에서 방의 좌표
-    FVector2 mCoord;
-    //인접한 방들 / 여러 모양의 방에서 사용가능하게 벡터방향으로 접근(좌상단은 -1, 1 / 좌는 -1, 0) 나올 수 있는 문의 개수는 최대 8개
-    //              문의 위치 계산기준은 항상 아래쪽 0, 위 1이다
-    //해당 멤버변수는 초기화 단계에서 설정해줘야함
-    std::list<std::pair<FVector2, std::weak_ptr<CRoombase>>> mNearRooms;    
-    //픽업이 방에 있는데 방을 나온 경우 픽업이 사라지면 안되기 때문에 저장을 해줘야함
-    //벽이 필요한데, 벽의 경우 나올 수 있는 모양들이 몇가지 없어고 비활성화될 일도 없어서 월드에 올려두고 돌려쓰는 형식으로 쓸 것
-    //따라서 벽을 세팅하는 함수를 작성하거나 Reset 함수 내부에 작성해야한다
-    FVector2 mRedFlag = FVector2(-1, -1); //넘을 수 없는 위치 / 사용하는 방은 L모양 하나뿐이지만 일단 만들어둠
-    //초기화 데이터 | 아이디, 좌표
-    std::vector<std::pair<int, FVector2>> mInitData;
-    
-    //실제로 등록된 객체들 관리용
-    std::map<int, std::weak_ptr<class CRoomMember>> mMonsterMap;
-    std::map<int, std::weak_ptr<class CRoomMember>> mObstacleMap;
-    std::map<int, std::weak_ptr<class CRoomMember>> mPickupMap;
-    //길찾기 알고리즘을 위한 장애물 위치 저장용 | Coord, Type
-    std::unordered_map<int, EObstacleType> mObstacleGridMap;
-    //객체 저장 및 생성용 | 좌표, 아이디
-    std::unordered_map<int, std::list<FVector2>> mMonsterData;
-    std::unordered_map<int, std::list<FVector2>> mObstacleData;
-    std::unordered_map<int, std::list<FVector2>> mPickupData;
+	ERoomShape mShape;
+	ERoomType mRoomType;
+	//현재 챕터에서 방의 좌표
+	FVector2 mCoord;
+	//인접한 방들 / 여러 모양의 방에서 사용가능하게 벡터방향으로 접근(좌상단은 -1, 1 / 좌는 -1, 0) 나올 수 있는 문의 개수는 최대 8개
+	//              문의 위치 계산기준은 항상 아래쪽 0, 위 1이다
+	//해당 멤버변수는 초기화 단계에서 설정해줘야함
+	std::list<std::pair<FVector2, std::weak_ptr<CRoombase>>> mNearRooms;
+	//픽업이 방에 있는데 방을 나온 경우 픽업이 사라지면 안되기 때문에 저장을 해줘야함
+	//벽이 필요한데, 벽의 경우 나올 수 있는 모양들이 몇가지 없어고 비활성화될 일도 없어서 월드에 올려두고 돌려쓰는 형식으로 쓸 것
+	//따라서 벽을 세팅하는 함수를 작성하거나 Reset 함수 내부에 작성해야한다
+	FVector2 mRedFlag = FVector2(-1, -1); //넘을 수 없는 위치 / 사용하는 방은 L모양 하나뿐이지만 일단 만들어둠
+	//초기화 데이터 | 아이디, 좌표
+	std::vector<std::pair<int, FVector2>> mInitData;
 
-    bool mbIsRoomWin = false;
-    //보상 / 해당 클래스는 아직 작성하지 않았으므로 나중에 작성 후 적용하기
-    // 추가로 이 변수는 기본 방 클래스로 넘기기 / 보상이 픽업이 아닌 경우도 있기 때문에
-    //std::weak_ptr<class CPickUp> mReward;
+	//실제로 등록된 객체들 관리용
+	std::map<int, std::weak_ptr<class CRoomMember>> mMonsterMap;
+	std::map<int, std::weak_ptr<class CRoomMember>> mObstacleMap;
+	std::map<int, std::weak_ptr<class CRoomMember>> mPickupMap;
+	//길찾기 알고리즘을 위한 장애물 위치 저장용 | Coord, Type
+	std::unordered_map<int, EObstacleType> mObstacleGridMap;
+	//객체 저장 및 생성용 | 좌표, 아이디
+	std::unordered_map<int, std::list<FVector2>> mMonsterData;
+	std::unordered_map<int, std::list<FVector2>> mObstacleData;
+	std::unordered_map<int, std::list<FVector2>> mPickupData;
+
+	bool mbIsRoomWin = false;
+	//보상 / 해당 클래스는 아직 작성하지 않았으므로 나중에 작성 후 적용하기
+	// 추가로 이 변수는 기본 방 클래스로 넘기기 / 보상이 픽업이 아닌 경우도 있기 때문에
+	//std::weak_ptr<class CPickUp> mReward;
 
 protected:
-    std::weak_ptr<class CMeshComponent> mShadeMesh1;               //방 음영
-    std::vector<std::weak_ptr<class CSpriteComponent>> mBackgroundSprite;
+	std::weak_ptr<class CMeshComponent> mShadeMesh1;               //방 음영
+	std::vector<std::weak_ptr<class CSpriteComponent>> mBackgroundSprite;
 
-    //방의 진입점(문의 위치)
-    //진입점이라고 쓴 이유는 문이 없을때도 항상 이 위치로만 입장해야하기 떄문
-    //그냥 방 크기(13, 7) / 2 가 진입점임
-    //1300 : 700 || 텍스쳐 크기 => 650 : 350 || 위치는 +-325 : +-175
+	//방의 진입점(문의 위치)
+	//진입점이라고 쓴 이유는 문이 없을때도 항상 이 위치로만 입장해야하기 떄문
+	//그냥 방 크기(13, 7) / 2 가 진입점임
+	//1300 : 700 || 텍스쳐 크기 => 650 : 350 || 위치는 +-325 : +-175
 
-    virtual void OnEnterRoom() = 0;
-    virtual void WinRoom() = 0; //여는데 조건이 있는 문을 제외하고 다 열기
-    virtual void OnExitRoom() = 0;
+	virtual void OnEnterRoom() = 0;
+	virtual void WinRoom() = 0; //여는데 조건이 있는 문을 제외하고 다 열기
+	virtual void OnExitRoom() = 0;
 
-    void CalculateSize();
+	void CalculateSize();
 public:
-    virtual bool WinCheck() = 0;
+	virtual bool WinCheck() = 0;
 
-    void AdjustRoomPos();
+	void AdjustRoomPos();
 
-    void EnterRoom();
-    void ExitRoom();
-    
-    void PauseRoom();
-    
+	void EnterRoom();
+	void ExitRoom();
+
+	void PauseRoom();
+
 protected:
-    void RoomSetting();
-    void RoomDisenable();
+	void RoomSetting();
+	void RoomDisenable();
 
 private:
-    void ContainMonsterData();
-    void ContainObstacleData();
-    void ContainPickupData();
+	void ContainMonsterData();
+	void ContainObstacleData();
+	void ContainPickupData();
 
 public:
-    void SetCoord(FVector2 Coord) { mCoord = Coord; }
-    FVector2 GetCoord() { return mCoord; }
-    bool SetInitRoom(const std::vector<std::pair<int, FVector2>>& Objs);//여기에 정보를 넣어서 방 초기화하기 / 지금은 방의 좌표 정보만 들어가지만 나중에는 방 내부의 정보들도 포함되어야 함
-    virtual void Reset(bool HardReset = false) override; //방 초기화(클리어 상태는 초기화 x) / 하드 리셋시 클리어도 초기화 몬스터 전부 생성
+	void SetCoord(FVector2 Coord) { mCoord = Coord; }
+	FVector2 GetCoord() { return mCoord; }
+	bool SetInitRoom(const std::vector<std::pair<int, FVector2>>& Objs);//여기에 정보를 넣어서 방 초기화하기 / 지금은 방의 좌표 정보만 들어가지만 나중에는 방 내부의 정보들도 포함되어야 함
+	virtual void Reset(bool HardReset = false) override; //방 초기화(클리어 상태는 초기화 x) / 하드 리셋시 클리어도 초기화 몬스터 전부 생성
 
-    void RegisterGObj(const std::weak_ptr<class CRoomMember>& GObj, const FVector2& Coord);
-    void DisregisterGObj(const std::weak_ptr<class CRoomMember>& GObj);
-  
-    const FVector3 CoordToWorldPos(FVector2 Coord);
-    const virtual FVector2 WorldPosToCoord(FVector3 WorldPos);
-    const FVector2 GetPlayerCoordInGrid();
-    const bool CanGetToPlayerCharacter(FVector3 FromWorldPos);
-    bool CheckNearCell(FVector2 Coord);
-    bool CheckCell(FVector2 Coord);
+	void RegisterGObj(const std::weak_ptr<class CRoomMember>& GObj, const FVector2& Coord);
+	void DisregisterGObj(const std::weak_ptr<class CRoomMember>& GObj);
 
+	const FVector3 CoordToWorldPos(FVector2 Coord);
+	const virtual FVector2 WorldPosToCoord(FVector3 WorldPos);
+	const FVector2 GetPlayerCoordInGrid();
+	const bool CanGetToPlayerCharacter(FVector3 FromWorldPos);
+	bool CheckNearCell(FVector2 Coord);
+	bool CheckCell(FVector2 Coord);
 
-    void ConnectRoom(std::weak_ptr<CRoombase> Room);
-    bool HasNearRoom(FVector2 Dir);
+	FVector2 GetRoomCellSize() { return mRoomCellSize; }
 
-    virtual void GenerateRoom(FVector2 Direction, int Min, int Max, int& Current);
+	void ConnectRoom(std::weak_ptr<CRoombase> Room);
+	bool HasNearRoom(FVector2 Dir);
+
+	virtual void GenerateRoom(FVector2 Direction, int Min, int Max, int& Current);
 
 public:
-    const ERoomType GetRoomType() const { return mRoomType; }
-    const ERoomShape GetRoomShape() const { return mShape; }
+	const ERoomType GetRoomType() const { return mRoomType; }
+	const ERoomShape GetRoomShape() const { return mShape; }
 
 private:
 };

@@ -148,13 +148,6 @@ void CChapter::GenerateRoom()
 		return;
 	}
 	RegisterRoom(room);
-	
-	auto mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
-	if (!mgr->LoadDataFile<CRoomGData>("RoomDefault1", TEXT("Room\\RoomDefault_1")))
-	{
-		LOG_DEBUG("방 데이터 로드 실패");
-		return;
-	}
 
 	int min = mChapterLevel * 5;
 	int max = static_cast<int>(mChapterLevel * 5.5f + 3);

@@ -14,6 +14,7 @@ protected:
     std::weak_ptr<class CRoombase> mRoomOwner;
 
 public:
+    std::weak_ptr<CRoombase> GetRoom() { return mRoomOwner; }
     void SetRoom(std::weak_ptr<CRoombase> Room) { mRoomOwner = Room; }
     std::weak_ptr<CRoombase> UnsetRoom()
     {

@@ -5,6 +5,8 @@
 
 #include "LogManager.h"
 
+#include "../World/Manager/GameClassContainer.h"
+
 #include "../World/Data/GameDataManager.h"
 
 void CImGuiRoomMaker::Init()
@@ -14,6 +16,7 @@ void CImGuiRoomMaker::Init()
 
 	Name.reserve(100);
 	RoomFilePath.reserve(100);
+	NameVec.resize(100);
 }
 
 void CImGuiRoomMaker::Update()
@@ -22,6 +25,12 @@ void CImGuiRoomMaker::Update()
 	{
 		IDInput();
 		SaveButton();
+
+		if (ImGui::BeginPopup(ErrorPopupID.c_str()))
+		{
+			ImGui::Text("Somethings wrong...");
+			ImGui::EndPopup();
+		}
 	}
 	ImGui::End();
 
@@ -42,16 +51,29 @@ void CImGuiRoomMaker::DrawGrid()
 	start.x += pos.x; start.y += pos.y - borderSize;
 	end.x += pos.x; end.y += pos.y - borderSize;
 
+	float ratioX = (end.x - start.x) / 13;
 	float ratioY = (end.y - start.y) / 7;
 	for (int i = 0; i < 7; i++)
 	{
 		ImGui::GetWindowDrawList()->AddLineH(start.x, end.x, pos.y + i * ratioY + 20, IM_COL32(0, 255, 0, 255), 1.f);
 	}
 
-	float ratioX = (end.x - start.x) / 13;
 	for (int i = 0; i < 13; i++)
 	{
 		ImGui::GetWindowDrawList()->AddLineV(pos.x + i * ratioX, start.y, end.y, IM_COL32(0, 255, 0, 255), 1.f);
+	}
+
+	for (int y = 0; y < 7; ++y)
+	{
+		for (int x = 0; x < 13; ++x)
+		{
+			int idx = y * 13 + x;
+			if (!NameVec[idx].empty())
+			{
+				ImGui::SetCursorPos(ImVec2(start.x + ratioX * x, start.y + ratioY * y));
+				ImGui::Text(NameVec[idx].c_str());
+			}
+		}
 	}
 
 	if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left))
@@ -84,6 +106,14 @@ void CImGuiRoomMaker::IDInput()
 		ImGui::InputInt("ID", &InputID);
 		if (ImGui::Button("Insert ID"))
 		{
+			std::string name = CGameClassContainer::GetInst()->GetName(InputID);
+			if (name.empty())
+			{
+				ImGui::OpenPopup(ErrorPopupID.c_str());
+				return;
+			}
+
+			NameVec[SelectedIdx] = name;
 			d->InitObjs.push_back(FRoomObjectData(InputID, coord));
 		}
 		ImGui::Spacing();
@@ -99,6 +129,7 @@ void CImGuiRoomMaker::IDInput()
 					break;
 				}
 			}
+			NameVec[SelectedIdx] = std::string();
 		}
 	}
 

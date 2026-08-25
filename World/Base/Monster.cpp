@@ -1,5 +1,14 @@
 #include "Monster.h"
 
+#include "LogManager.h"
+
+#include "Asset/AssetManager.h"
+#include "Asset/SoundManager.h"
+
+#include "World/SoundComponent.h"
+
+#include "../Manager/GameRuleManager.h"
+
 CMonster::CMonster()
 	:CUnitbase(EObjectType::Monster)
 {
@@ -24,22 +33,62 @@ void CMonster::Reset(bool HardReset)
 	mCurrentHP = mMaxHP;
 }
 
-void CMonster::FindRouteToPlayerCharacter()
+void CMonster::SetEnable(bool Enable)
 {
-	//내 좌표 찾기
-	//플레이어의 좌표 찾기
-	//내 좌표에서 플레이어 좌표로 가는 길 찾기
-	//1. 현재 위치에서 갈수있는 길들을 모두 펴놓는다.(4방향)
-	//		네 방향은 각각 코스트를 지닌다.(0으로 시작)
-	//2. 처음에는 가장 가까운 방향으로 진행한다.
-	//3. 진행중 진행 방향의 코스트보다 다른 방향의 코스트가 낮은 경우 해당 방향으로 바꿔서 진행한다.
-	//4. 반복
-	//코스트 계산- 진행한 칸당 1점, 남은 거리(그냥 목표좌표 - 진행좌표 의 거리), 만약 도달할 수 없다면 해당 길을 폐기
-	//실행함수 -> 길 진행함수 로 4방향 진행하고 누적점수는 실행함수에서 보내기
-	//FindRoute(Fvetor2 dir, int targetIdx, std::vector<int>& routePoint);
+	CUnitbase::SetEnable(Enable);
+	CTimeManager::ClearTimer(mMumblingTimer);
 }
 
-bool CMonster::CanGetToPlayerCharacter()
+void CMonster::GetHit(std::weak_ptr<CGameObject> From)
 {
-	return false;
+	if (From.expired())
+		return;
+	if (mHurtSound.size() > 1)
+	{
+		int rand = CGameRuleManager::GetInst()->GenerateRandomI();
+		mSoundPlayer.lock()->mSound = mHurtSound[rand % mHurtSound.size()].lock();
+	}
+	else if(!mHurtSound.empty())
+	{
+		mSoundPlayer.lock()->mSound = mHurtSound[0].lock();
+	}
+	mSoundPlayer.lock()->Play();
+
+	std::shared_ptr<CGameObject> obj = From.lock();
+	EObjectType t = obj->GetObjType();
+	if (EObjectType::PlayerCharacter == t || EObjectType::Monster == t)
+	{
+		std::shared_ptr<CUnitbase> unit = std::static_pointer_cast<CUnitbase>(obj);
+		FUnitAttribute atrbt = unit->GetAttribute();
+		mCurrentHP -= atrbt.Damage;
+		LOG_DEBUG(GetName(), "유닛이 ", From.lock()->GetActorTag(), " 에게 공격받았습니다\n 피해량: ", atrbt.Damage);
+		if (mCurrentHP <= 0)
+			ReturnToChapter(); //이 부분 나중에 수정하기 -> 애니메이션 같은거 출력하고 리턴하기 | 일단 비활성화는 해야함
+	}
+	else if (EObjectType::Obstacle == t)
+	{
+
+	}
+}
+
+void CMonster::SetMumblingSound(const std::string& soundName, float Time, bool loop)
+{
+	std::shared_ptr<CSoundManager> mgr = CAssetManager::GetInst()->GetSubManager<CSoundManager>(EAssetType::Sound);
+	std::weak_ptr<CSound> sound =  mgr->FindSound(soundName);
+	if (sound.expired())
+		return;
+
+	mMumblingSound = sound;
+	mMumblingTimer = CTimeManager::SetTimer(Time, loop, this, &CMonster::PlayerMumbling);
+}
+
+void CMonster::SetMumblingSound(float Time, bool loop)
+{
+	mMumblingTimer = CTimeManager::SetTimer(Time, loop, this, &CMonster::PlayerMumbling);
+}
+
+void CMonster::PlayerMumbling()
+{
+	mSoundPlayer.lock()->mSound = mMumblingSound.lock();
+	mSoundPlayer.lock()->Play();
 }

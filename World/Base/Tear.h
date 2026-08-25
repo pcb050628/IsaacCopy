@@ -23,6 +23,7 @@ protected:
 	bool mbIsDying = false;
 	std::weak_ptr<class CRigidBodyComponent> mRigidBody;
 	std::weak_ptr<class CColliderSphere2D> mHitBox;
+	std::weak_ptr<class CSoundComponent> mSoundPlayer;
 
 	std::weak_ptr<class CMeshComponent> mMesh;
 	std::weak_ptr<class CAnimation2DComponent> mAnimator;
@@ -55,7 +56,7 @@ public:
 		, bool Homing = false, bool Piercing = false, bool Spectral = false, bool Orbiting = false
 		, bool Boomerang = false, bool Shield = false, bool Bouncing = false, bool Sine = false, bool Square = false, bool Spiral = false
 		, int SplitStack = 0, int SplitCount = 0);
-	void Set(bool IsPlayer, FVector3 StartPos, FTearAttribute Attribute, std::weak_ptr<CTearShooter> Shooter);
+	void Set(bool IsPlayer, FVector3 StartPos, FTearAttribute Attribute, std::weak_ptr<CTearShooter> Shooter, std::weak_ptr<class CSound> Sound);
 
 	virtual void ReturnToChapter() override;
 

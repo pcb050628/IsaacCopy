@@ -1,8 +1,12 @@
 #include "GameSystemActor.h"
 #include "World/CameraComponent.h"
+#include "World/SoundComponent.h"
 
 #include "World/World.h"
 #include "World/Input.h"
+
+#include "Asset/AssetManager.h"
+#include "Asset/SoundManager.h"
 
 #include "Chapter.h"
 #include "Component/RigidBodyComponent.h"
@@ -18,13 +22,22 @@ CChapterSystemActor::~CChapterSystemActor()
 bool CChapterSystemActor::Init()
 {
     mRb = CreateComponent<CRigidBodyComponent>("Root");
+    mSound = CreateComponent<CSoundComponent>("SystemSound");
     mCam = CreateComponent<CCameraComponent>("SystemCam");
-    if (mCam.expired() || mRb.expired())
+    if (mCam.expired() || mSound.expired() || mRb.expired())
         return false;
 
     mRb.lock()->SetLimit(5000.f);
     mRb.lock()->SetUseGravity(false);
     mRb.lock()->SetMass(0.f);
+    
+    std::shared_ptr<CSoundManager> mgr = CAssetManager::GetInst()->GetSubManager<CSoundManager>(EAssetType::Sound);
+    if (!mgr)
+        return false;
+
+    //사운드 찾아서 연결하기
+    mSound.lock()->mSound = mgr->FindSound("BGM_Basic").lock();
+    mSound.lock()->Play();
 
     std::shared_ptr<CInput> input = mWorld.lock()->GetInput().lock();
     input->AddBindKey("SystemManagerUp", VK_NUMPAD8);

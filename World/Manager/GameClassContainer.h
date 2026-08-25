@@ -15,9 +15,11 @@ private:
 	std::unordered_map<int, std::function<std::weak_ptr<CGameObject>(const FVector2&, bool, int)>> mWorldObjMap;
 	std::unordered_map<int, std::function<std::shared_ptr<CGameObject>()>> mDefMap;
 
+	std::unordered_map<int, std::string> mNameMap;
+
 public:
 	template<typename T>
-	const bool RegisterGameClass(const int ID, std::weak_ptr<CGameObject>(* Func)(const FVector2&, bool, int))
+	const bool RegisterGameClass(const int ID, const std::string& Name, std::weak_ptr<CGameObject>(* Func)(const FVector2&, bool, int))
 	{
 		if (mWorldObjMap.contains(ID))
 		{
@@ -25,10 +27,11 @@ public:
 		}
 
 		mWorldObjMap[ID] = std::bind(Func, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+		mNameMap[ID] = Name;
 		return true;
 	}
 	template<typename T>
-	const bool RegisterGameClass(const int ID, std::shared_ptr<CGameObject>(*Func)())
+	const bool RegisterGameClass(const int ID, const std::string& Name, std::shared_ptr<CGameObject>(*Func)())
 	{
 		if (mDefMap.contains(ID))
 		{
@@ -36,6 +39,7 @@ public:
 		}
 
 		mDefMap[ID] = std::bind(Func);
+		mNameMap[ID] = Name;
 		return true;
 	}
 
@@ -50,6 +54,10 @@ public:
 		if (!mDefMap.contains(ID))
 			return std::shared_ptr<CGameObject>();
 		return mDefMap[ID]();
+	}
+	const std::string& GetName(const int ID)
+	{
+		return mNameMap[ID];
 	}
 
 	void MakeWithData(class CGameData* GData);

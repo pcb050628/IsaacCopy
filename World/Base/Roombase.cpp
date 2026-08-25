@@ -584,7 +584,12 @@ void CRoombase::GenerateRoom(FVector2 Direction, int Min, int Max, int& Current)
 	//나중엔 어떻게 만들까
 	//방 리소스를 전부 만들고 나면 그 개수 구해오기
 	auto mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
-	std::shared_ptr<CRoomGData> rd = std::dynamic_pointer_cast<CRoomGData>(mgr->FindData("RoomDefault1").lock());
+	std::shared_ptr<CRoomGData> rd = mgr->PeekRandom<CRoomGData>(EGDataType::Room).lock();
+	if (!rd)
+	{
+		assert(false && "로드된 데이터가 비어있습니다.");
+	}
+
 	FRoomData d = rd->GetData();
 	//d.ID //어떤 방 프리셋을 사용할건지에 대한 정보
 	//d.Coord //방의 좌표를 설정해줄건지에 대한 정보
@@ -619,7 +624,7 @@ void CRoombase::GenerateRoom(FVector2 Direction, int Min, int Max, int& Current)
 	{
 		if (CChapter::FourDirections[i] == -Direction)
 			continue;
-		float random = CGameRuleManager::GetInst()->GenerateRandom();
+		float random = CGameRuleManager::GetInst()->GenerateRandomF();
 		if (random < 0.5f)
 			continue;
 

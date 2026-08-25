@@ -4,11 +4,13 @@
 
 #include "World/ColliderBox2D.h"
 #include "World/MeshComponent.h"
+#include "World/SoundComponent.h"
 #include "World/Animation2DComponent.h"
 
 #include "World/CollisionInfoManager.h"
 
 #include "Asset/AssetManager.h"
+#include "Asset/SoundManager.h"
 #include "Asset/AnimationManager.h"
 #include "Data/GameDataManager.h"
 #include "Data/GameObjectStructure.h"
@@ -43,7 +45,8 @@ bool CDoor::Init()
 	mBoxColComp = CreateComponent<CColliderBox2D>("Root");
 	mMesh = CreateComponent<CMeshComponent>("Mesh");
 	mAnimator = CreateComponent<CAnimation2DComponent>("Animator");
-	if (mBoxColComp.expired() || mMesh.expired() || mAnimator.expired())
+	mSound = CreateComponent<CSoundComponent>("DoorSound");
+	if (mBoxColComp.expired() || mMesh.expired() || mAnimator.expired() || mSound.expired())
 		return false;
 
 	mMesh.lock()->SetWorldScale(100.f, 100.f);
@@ -61,13 +64,13 @@ bool CDoor::Init()
 	mesh->SetMesh("TexRect"); mesh->SetShader("Animation2D");
 
 	auto mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
-	if(!mgr->LoadDataFile<CAnimGData>("Door_Wooden_Frame", TEXT("Anim\\Door_Wooden_Frame")))
+	if(!mgr->LoadDataFile<CAnimGData>("Door_Wooden_Frame", EGDataType::Anim, TEXT("Door_Wooden_Frame")))
 		return false;
-	if (!mgr->LoadDataFile<CAnimGData>("Door_Wooden_Layer", TEXT("Anim\\Door_Wooden_Layer")))
+	if (!mgr->LoadDataFile<CAnimGData>("Door_Wooden_Layer", EGDataType::Anim, TEXT("Door_Wooden_Layer")))
 		return false;
-	auto frameData = std::dynamic_pointer_cast<CAnimGData>(mgr->FindData("Door_Wooden_Frame").lock());
+	auto frameData = mgr->FindData<CAnimGData>("Door_Wooden_Frame", EGDataType::Anim).lock();
 	frameData->MakeAnim();
-	auto layerData = std::dynamic_pointer_cast<CAnimGData>(mgr->FindData("Door_Wooden_Layer").lock());
+	auto layerData = mgr->FindData<CAnimGData>("Door_Wooden_Layer", EGDataType::Anim).lock();
 	layerData->MakeAnim();
 
 	std::shared_ptr<CAnimation2DComponent> animator = mAnimator.lock();
@@ -76,6 +79,10 @@ bool CDoor::Init()
 	animator->AddAnimation(layerData->GetData().Name);
 
 	mMesh.lock()->SetRenderLayer("Obstacle");
+
+	std::shared_ptr<CSoundManager> soundMgr = CAssetManager::GetInst()->GetSubManager<CSoundManager>(EAssetType::Sound);
+	mCloseSound = soundMgr->FindSound("Obstacle_door_close");
+	mOpenSound = soundMgr->FindSound("Obstacle_door_open");
 
 	return true;
 }
@@ -106,11 +113,14 @@ void CDoor::SetOpen(bool Val)
 	if(mbIsOpen)
 	{
 		mBoxColComp.lock()->SetCollisionProfile("Door");
+		mSound.lock()->mSound = mOpenSound.lock();
 	}
 	else
 	{
 		mBoxColComp.lock()->SetCollisionProfile("Wall");
+		mSound.lock()->mSound = mCloseSound.lock();
 	}
+	mSound.lock()->Play();
 	//나중에 작성할것
 	//애니메이션 출력
 	//문열리는 애니메이션 만들어야하는데

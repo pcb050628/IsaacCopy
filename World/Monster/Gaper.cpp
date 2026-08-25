@@ -2,15 +2,21 @@
 
 #include "LogManager.h"
 
-#include "World/Animation2DComponent.h"
+#include "Asset/AssetManager.h"
+#include "Asset/SoundManager.h"
+
 #include "World/ColliderBox2D.h"
 #include "World/ColliderSphere2D.h"
+#include "World/SoundComponent.h"
+#include "World/Animation2DComponent.h"
 
+#include "../Manager/GameRuleManager.h"
 #include "../Manager/GameClassContainer.h"
 
 #include "../Chapter.h"
 #include "../Base/Roombase.h"
 #include "../Component/RigidBodyComponent.h"
+#include "../Component/RouteMaker.h"
 
 REGISTER_GAMEOBJCLASS(CGaper, "Gaper", EObjectType::Monster);
 
@@ -71,6 +77,25 @@ bool CGaper::Init()
 	//.이동 -> 애니메이션 변경 + Rb로 방향 보내기
 	//.대기 -> 애니메이션 정지
 
+	std::shared_ptr<CSoundManager> soundmgr = CAssetManager::GetInst()->GetSubManager<CSoundManager>(EAssetType::Sound);
+
+	float rand = CGameRuleManager::GetInst()->GenerateRandomF();
+	int num = static_cast<int>(rand *= 10) % 2 + 1;
+	std::string soundName = "Monster_zombie_walker_kid_";
+	soundName += std::to_string(num);
+
+	mMumblingSound = soundmgr->FindSound(soundName);
+	mHurtSound.push_back(soundmgr->FindSound("Monster_monster_grunt_a_1"));
+	mHurtSound.push_back(soundmgr->FindSound("Monster_monster_grunt_a_2"));
+	mHurtSound.push_back(soundmgr->FindSound("Monster_monster_grunt_a_3"));
+	mHurtSound.push_back(soundmgr->FindSound("Monster_monster_grunt_a_4"));
+	mHurtSound.push_back(soundmgr->FindSound("Monster_monster_grunt_a_5"));
+	mHurtSound.push_back(soundmgr->FindSound("Monster_monster_grunt_b_1"));
+	mHurtSound.push_back(soundmgr->FindSound("Monster_monster_grunt_b_2"));
+	mHurtSound.push_back(soundmgr->FindSound("Monster_monster_grunt_b_3"));
+	mHurtSound.push_back(soundmgr->FindSound("Monster_monster_grunt_b_4"));
+	mHurtSound.push_back(soundmgr->FindSound("Monster_monster_grunt_b_5"));
+
 	return true;
 }
 
@@ -128,17 +153,22 @@ void CGaper::Update(float DeltaTime)
 	//	mNextMoveDir = FVector3::Zero;
 	//	rb->SetVelocity(FVector3::Zero);
 	//}
-	MakeRoute();
-	if (!mRoute.empty())
+	//MakeRoute();
+	//MakeRouteBFS();
+	FVector2 result = mRouteMaker.lock()->MakeRouteBFS();
+	if (-FVector2::One != result)
 	{
-		if (mRoute.size() < 3)
+		//FVector2 result = mRoute.front();
+		std::shared_ptr<CRoombase> room = mRoomOwner.lock();
+		FVector2 playerCoord = room->GetPlayerCoordInGrid();
+		FVector2 myCoord = room->WorldPosToCoord(GetWorldPos());
+		if (FVector2(playerCoord - myCoord).Length() < 1.5f)
 		{
 			MoveToTarget();
 		}
 		else
 		{
-			FVector2 coord = mRoute.front();
-			FVector3 pos = mRoomOwner.lock()->CoordToWorldPos(coord);
+			FVector3 pos = room->CoordToWorldPos(result);
 			FVector3 dir = pos - GetWorldPos();
 			dir.Normalize();
 			rb->AddForce(dir * mMoveSpeed);
@@ -165,6 +195,7 @@ void CGaper::Dead()
 void CGaper::Reset(bool HardReset)
 {
 	CWalker::Reset(HardReset);
+	SetMumblingSound(5.7f, true);
 }
 
 void CGaper::PlayBodyVerticalAnim()

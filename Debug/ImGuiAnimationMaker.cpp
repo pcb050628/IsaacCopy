@@ -38,7 +38,6 @@ void CImGuiAnimationMaker::Update()
 		if (ImGui::BeginPopup(ErrorPopupID.c_str()))
 		{
 			ImGui::Text("Somethings wrong...");
-
 			ImGui::EndPopup();
 		}
 	}
@@ -224,14 +223,14 @@ void CImGuiAnimationMaker::LoadAnimButton()
 	if (ImGui::Button("Load Anim"))
 	{
 		std::shared_ptr<CGameDataManager> mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
-		std::wstring fileName = L"Anim\\" + std::wstring().assign(AnimPath.begin(), AnimPath.end());
-		if (!mgr->LoadDataFile<CAnimGData>(Name, fileName.c_str()))
+		std::wstring path(AnimPath.begin(), AnimPath.end());
+		if (!mgr->LoadDataFile<CAnimGData>(Name, EGDataType::Anim, path.c_str()))
 		{
 			ImGui::OpenPopup(ErrorPopupID.c_str());
 			return;
 		}
 
-		gd = std::dynamic_pointer_cast<CAnimGData>(mgr->FindData(Name).lock());
+		gd = mgr->FindData<CAnimGData>(Name, EGDataType::Anim).lock();
 		if (!gd)
 		{
 			ImGui::OpenPopup(ErrorPopupID.c_str());
