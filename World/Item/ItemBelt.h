@@ -10,8 +10,7 @@ public:
     virtual ~CItemBelt();
 
 public:
-    virtual bool Init() override;
-    virtual void Destroy() override;
+    virtual bool Init(const std::weak_ptr<CGameClass>& Owner) override;
     virtual void Reset(bool HardReset = false);
 
 public:

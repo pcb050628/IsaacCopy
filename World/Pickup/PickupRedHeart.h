@@ -11,7 +11,5 @@ public:
 
 public:
     virtual bool Init() override;
-
-    virtual void Reset(bool Hard = false);
 };
 

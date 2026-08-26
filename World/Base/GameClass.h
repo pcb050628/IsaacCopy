@@ -1,9 +1,11 @@
 #pragma once
-
+#include "EssentialHeader.h"
 #include "../../GameObjectEnums.h"
 
 class CGameClass
 {
+public:
+    virtual const int GetGClassID() = 0;
 public:
     CGameClass(EObjectType Type);
     CGameClass(const CGameClass& src);
@@ -20,5 +22,6 @@ public:
 
 private:
     static int GlobalID;
+
 };
 

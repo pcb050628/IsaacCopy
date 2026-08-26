@@ -65,7 +65,7 @@ public:
 public:
     void OnGetPickup(EPickupType Type, int Count);
     void OnLosePickup(EPickupType Type, int Count);
-    void OnAttributeChanged(FUnitAttribute Attribute, bool IsMagnification = false);
+    void OnAttributeChanged();
 
     //나중에 만들어야 하는 것
     // 플레이어 이펙트라고 구조체는 만들어놨고
@@ -78,6 +78,9 @@ protected:
     virtual void PlayBodyHorizontalAnim();
     virtual void PlayHeadVerticalAnim();
     virtual void PlayHeadHorizontalAnim();
+
+    virtual void PlayHeadAnim(bool Stop = false, bool Reset = false);
+    virtual void PlayBodyAnim(bool Stop = false, bool Reset = false);
 
 private:
     void MoveUp();

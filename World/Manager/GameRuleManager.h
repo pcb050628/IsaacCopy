@@ -29,7 +29,7 @@ public:
 
 	void SetRandomSeed(unsigned int Seed = 1);
 	float GenerateRandomF() { return mfDistribution(mGen); }
-	float GenerateRandomI() { return static_cast<int>(mfDistribution(mGen) * 100); }
+	int GenerateRandomI() { return static_cast<int>(mfDistribution(mGen) * 100); }
 
 	const int GetItemWeightStack() const { return PlayerItemWeightStack; }
 

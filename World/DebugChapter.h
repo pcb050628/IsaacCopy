@@ -3,6 +3,7 @@
 
 #include "../Debug/ImGuiAnimationMaker.h"
 #include "../Debug/ImGuiRoomMaker.h"
+#include "../Debug/ImGuiSpriteMaker.h"
 
 class CDebugChapter :
     public CChapter
@@ -18,7 +19,9 @@ public:
 private:
 	CImGuiAnimationMaker animMaker;
 	CImGuiRoomMaker roomMaker;
+	CImGuiSpriteMaker spriteMaker;
 	bool debugMode = true;
+	EGDataType dataType = EGDataType::Anim;
 
 	void CheckPlayerPos();
 };

@@ -41,6 +41,12 @@ void CPickup::Destroy()
     CGameObject::Destroy();
 }
 
+void CPickup::Reset(bool HardReset)
+{
+    SetEnable(true);
+    SetRenderEnable(true);
+}
+
 void CPickup::OnCollision(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
 {
     std::shared_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());

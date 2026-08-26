@@ -2,7 +2,7 @@
 
 #include "LogManager.h"
 
-#include "Asset/AssetManager.h";
+#include "Asset/AssetManager.h"
 #include "../Data/GameDataManager.h"
 #include "../Data/AnimGData.h"
 
@@ -22,9 +22,9 @@ CItemSpoonBender::~CItemSpoonBender()
 {
 }
 
-bool CItemSpoonBender::Init()
+bool CItemSpoonBender::Init(const std::weak_ptr<CGameClass>& Owner)
 {
-    if (!CItem::Init())
+    if (!CItem::Init(Owner))
         return false;
     
     auto mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
@@ -51,14 +51,11 @@ bool CItemSpoonBender::Init()
     if (!animData || !animData->MakeAnim())
         return false;
 
+
+    mbHasHeadAnim = true;
     mHeadAnimName = "Item_Spoon_Bender";
 
     return true;
-}
-
-void CItemSpoonBender::Destroy()
-{
-	CGameObject::Destroy();
 }
 
 void CItemSpoonBender::Reset(bool HardReset)

@@ -3,17 +3,17 @@
 #include "../Chapter.h"
 
 CGameObject::CGameObject(EObjectType Type)
-	:CGameClass(Type)
+	:CActor(), CGameClass(Type)
 {
 }
 
 CGameObject::CGameObject(const CGameObject& src)
-	:CGameClass(src)
+	:CActor(src), CGameClass(src)
 {
 }
 
 CGameObject::CGameObject(CGameObject&& src) noexcept
-	:CGameClass(std::move(src))
+	:CActor(std::move(src)), CGameClass(std::move(src))
 {
 }
 

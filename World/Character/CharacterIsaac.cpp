@@ -83,4 +83,6 @@ void CCharacterIsaac::Destroy()
 void CCharacterIsaac::TestFuncForItemContainer()
 {
     mItemContainer.lock()->ContainItem(91);
+    mItemContainer.lock()->ContainItem(92);
+    mItemContainer.lock()->ContainItem(93);
 }

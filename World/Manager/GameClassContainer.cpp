@@ -40,6 +40,6 @@ void CGameClassContainer::MakeChapter(CChapterGData* GData, bool IsFocused)
 	std::weak_ptr<CChapter> chapter = CWorldManager::GetInst()->CreateWorld<CChapter>();
 	for (int i = 0; i < d.Rooms.size(); ++i)
 	{
-		Instantiate(d.Rooms[i].ID, d.Rooms[i].Coord, d.ChapterLevel);
+		Instantiate(d.Rooms[i].ID, d.Rooms[i].Coord, IsFocused, d.ChapterLevel);
 	}
 }

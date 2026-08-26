@@ -91,6 +91,7 @@ protected:
 public:
     virtual bool Init() override;
     virtual void Destroy() override;
+    virtual void Reset(bool HardReset = false);
 
 protected:
     //충돌시

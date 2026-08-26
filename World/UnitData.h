@@ -85,6 +85,32 @@ struct FUnitAttribute
 		ret.knockback *= other.knockback;
 		return ret;
 	}
+
+	void operator+=(const FUnitAttribute& other)
+	{
+		ShotTerm += other.ShotTerm;
+		Speed += other.Speed;
+		Luck += other.Luck;
+
+		Damage += other.Damage;
+		ShotSpeed += other.ShotSpeed;
+		Range += other.Range;
+		Height += other.Height;
+		knockback += other.knockback;
+	}
+
+	void operator-=(const FUnitAttribute& other)
+	{
+		ShotTerm -= other.ShotTerm;
+		Speed -= other.Speed;
+		Luck -= other.Luck;
+
+		Damage -= other.Damage;
+		ShotSpeed -= other.ShotSpeed;
+		Range -= other.Range;
+		Height -= other.Height;
+		knockback -= other.knockback;
+	}
 };
 
 //공격시 효과들도 그냥 다 집어넣기

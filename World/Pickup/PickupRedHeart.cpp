@@ -58,8 +58,3 @@ bool CPickupRedHeart::Init()
 
     return true;
 }
-
-void CPickupRedHeart::Reset(bool Hard)
-{
-
-}

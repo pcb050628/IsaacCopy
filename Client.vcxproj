@@ -154,6 +154,7 @@
   <ItemGroup>
     <ClCompile Include="Debug\ImGuiAnimationMaker.cpp" />
     <ClCompile Include="Debug\ImGuiRoomMaker.cpp" />
+    <ClCompile Include="Debug\ImGuiSpriteMaker.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="World\Base\Character.cpp" />
     <ClCompile Include="World\Base\GameClass.cpp" />
@@ -179,11 +180,13 @@
     <ClCompile Include="World\Data\GameData.cpp" />
     <ClCompile Include="World\Data\GameDataManager.cpp" />
     <ClCompile Include="World\Data\RoomGData.cpp" />
+    <ClCompile Include="World\Data\SpriteGData.cpp" />
     <ClCompile Include="World\DebugChapter.cpp" />
     <ClCompile Include="World\Door.cpp" />
     <ClCompile Include="World\GameSystemActor.cpp" />
     <ClCompile Include="World\GlobalCollision.cpp" />
     <ClCompile Include="World\Item\ItemBelt.cpp" />
+    <ClCompile Include="World\Item\ItemCroockedPenny.cpp" />
     <ClCompile Include="World\Item\ItemSpoonBender.cpp" />
     <ClCompile Include="World\MainWorld.cpp" />
     <ClCompile Include="World\Manager\GameClassContainer.cpp" />
@@ -198,6 +201,7 @@
   <ItemGroup>
     <ClInclude Include="Debug\ImGuiAnimationMaker.h" />
     <ClInclude Include="Debug\ImGuiRoomMaker.h" />
+    <ClInclude Include="Debug\ImGuiSpriteMaker.h" />
     <ClInclude Include="GameObjectEnums.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rooms.h" />
@@ -226,11 +230,13 @@
     <ClInclude Include="World\Data\GameDataManager.h" />
     <ClInclude Include="World\Data\GameObjectStructure.h" />
     <ClInclude Include="World\Data\RoomGData.h" />
+    <ClInclude Include="World\Data\SpriteGData.h" />
     <ClInclude Include="World\DebugChapter.h" />
     <ClInclude Include="World\Door.h" />
     <ClInclude Include="World\GameSystemActor.h" />
     <ClInclude Include="World\GlobalCollision.h" />
     <ClInclude Include="World\Item\ItemBelt.h" />
+    <ClInclude Include="World\Item\ItemCroockedPenny.h" />
     <ClInclude Include="World\Item\ItemSpoonBender.h" />
     <ClInclude Include="World\MainWorld.h" />
     <ClInclude Include="World\Manager\GameClassContainer.h" />

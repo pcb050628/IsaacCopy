@@ -1,24 +1,26 @@
 #pragma once
 #include "EngineInfo.h"
 
+#include "../Base/GameDefinition.h"
+
 class CGameObject;
+//class CGameDefinition;
 
 //1-방 (예시: 10, 11, 141, 111, 101, 15 등
 //2-적 (예시: 20, 21, 22, 211, 213, 24 등
-//6-픽업
 //7-아이템
+//8-픽업
 //9-보스
 class CGameClassContainer
 {
-	Singleton(CGameClassContainer)
+	Singleton(CGameClassContainer);
 private:
 	std::unordered_map<int, std::function<std::weak_ptr<CGameObject>(const FVector2&, bool, int)>> mWorldObjMap;
-	std::unordered_map<int, std::function<std::shared_ptr<CGameObject>()>> mDefMap;
+	std::unordered_map<int, std::function<std::shared_ptr<CGameDefinition>(const std::weak_ptr<CGameClass>&)>> mDefMap;
 
 	std::unordered_map<int, std::string> mNameMap;
 
 public:
-	template<typename T>
 	const bool RegisterGameClass(const int ID, const std::string& Name, std::weak_ptr<CGameObject>(* Func)(const FVector2&, bool, int))
 	{
 		if (mWorldObjMap.contains(ID))
@@ -30,15 +32,14 @@ public:
 		mNameMap[ID] = Name;
 		return true;
 	}
-	template<typename T>
-	const bool RegisterGameClass(const int ID, const std::string& Name, std::shared_ptr<CGameObject>(*Func)())
+	const bool RegisterGameClass(const int ID, const std::string& Name, std::shared_ptr<CGameDefinition>(*Func)(const std::weak_ptr<CGameClass>&))
 	{
 		if (mDefMap.contains(ID))
 		{
 			return false;
 		}
 
-		mDefMap[ID] = std::bind(Func);
+		mDefMap[ID] = std::bind(Func, std::placeholders::_1);
 		mNameMap[ID] = Name;
 		return true;
 	}
@@ -49,11 +50,11 @@ public:
 			return std::weak_ptr<CGameObject>();
 		return mWorldObjMap[ID](Coord, OnFocus, ChapterLevel);
 	}
-	std::shared_ptr<CGameObject> InstantiateDef(const int ID)
+	std::shared_ptr<CGameDefinition> InstantiateDef(const int ID, const std::weak_ptr<CGameClass>& Owner)
 	{
 		if (!mDefMap.contains(ID))
-			return std::shared_ptr<CGameObject>();
-		return mDefMap[ID]();
+			return std::weak_ptr<CGameDefinition>().lock();
+		return mDefMap[ID](Owner);
 	}
 	const std::string& GetName(const int ID)
 	{

@@ -102,7 +102,7 @@ void CImGuiRoomMaker::IDInput()
 		ImGui::Text(text.c_str());
 		int x = SelectedIdx % 13;
 		int y = (SelectedIdx - x) / 13;
-		FVector2 coord = FVector2(x, y);
+		FVector2 coord = FVector2(static_cast<float>(x), static_cast<float>(y));
 		ImGui::InputInt("ID", &InputID);
 		if (ImGui::Button("Insert ID"))
 		{

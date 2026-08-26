@@ -38,12 +38,12 @@ enum class EObjectType
     PlayerCharacter,
     Room,
     Door,
+    Item,
     //방 내부 객체
     Tear,
     Monster,
     Obstacle,
     Pickup,
-    Item,
     End,
 };
 

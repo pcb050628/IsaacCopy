@@ -53,7 +53,7 @@ protected:
 	std::map<int, std::weak_ptr<class CRoomMember>> mMonsterMap;
 	std::map<int, std::weak_ptr<class CRoomMember>> mObstacleMap;
 	std::map<int, std::weak_ptr<class CRoomMember>> mPickupMap;
-	//길찾기 알고리즘을 위한 장애물 위치 저장용 | Coord, Type
+	//위치 저장용 | Coord, Type
 	std::unordered_map<int, EObstacleType> mObstacleGridMap;
 	//객체 저장 및 생성용 | 좌표, 아이디
 	std::unordered_map<int, std::list<FVector2>> mMonsterData;
@@ -107,10 +107,19 @@ public:
 	void RegisterGObj(const std::weak_ptr<class CRoomMember>& GObj, const FVector2& Coord);
 	void DisregisterGObj(const std::weak_ptr<class CRoomMember>& GObj);
 
+	void GetIdOfUnit(std::vector<std::pair<int, FVector2>>& out);
+	void GetIdOfObstacle(std::vector<std::pair<int, FVector2>>& out);
+	void GetIdOfPickup(std::vector<std::pair<int, FVector2>>& out);
+
+	void GetUnits(std::vector<std::weak_ptr<CRoomMember>>& out);
+	void GetObstacles(std::vector<std::weak_ptr<CRoomMember>>& out);
+	void GetPickups(std::vector<std::weak_ptr<CRoomMember>>& out);
+
 	const FVector3 CoordToWorldPos(FVector2 Coord);
 	const virtual FVector2 WorldPosToCoord(FVector3 WorldPos);
 	const FVector2 GetPlayerCoordInGrid();
 	const bool CanGetToPlayerCharacter(FVector3 FromWorldPos);
+	void GetValidNearCell(FVector2 coord, std::vector<FVector2>& out);
 	bool CheckNearCell(FVector2 Coord);
 	bool CheckCell(FVector2 Coord);
 

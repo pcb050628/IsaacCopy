@@ -43,7 +43,7 @@ private:
 
 	int CoordDistance(FVector2 to, FVector2 from)
 	{
-		return abs(to.x - from.x) + abs(to.y - from.y);
+		return static_cast<int>(abs(to.x - from.x) + abs(to.y - from.y));
 	}
 	FVector2 GetDir(FVector2 to, FVector2 from)
 	{

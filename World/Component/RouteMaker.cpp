@@ -57,7 +57,7 @@ FVector2 CRouteMaker::MakeRoute()
 			return -FVector2::One;
 
 		mRoom = owner->GetRoom();
-		mChapter = owner->GetChater();
+		mChapter = owner->GetChapter();
 	}
 
 	std::shared_ptr<CRoombase> room = mRoom.lock();
@@ -113,7 +113,7 @@ FVector2 CRouteMaker::MakeRouteBFS()
 			return -FVector2::One;
 
 		mRoom = owner->GetRoom();
-		mChapter = owner->GetChater();
+		mChapter = owner->GetChapter();
 	}
 
 	std::shared_ptr<CRoombase> room = mRoom.lock();
@@ -166,7 +166,7 @@ bool CRouteMaker::CheckStraightRoute(FVector2 to, FVector2 from)
 			return false;
 
 		mRoom = owner->GetRoom();
-		mChapter = owner->GetChater();
+		mChapter = owner->GetChapter();
 	}
 
 	std::shared_ptr<CRoombase> room = mRoom.lock();

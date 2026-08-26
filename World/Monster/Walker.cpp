@@ -333,7 +333,7 @@ bool CWalker::CheckCellValid(const FVector2& Coord)
 
 int CWalker::CoordDistance(FVector2 to, FVector2 from)
 {
-	return abs(to.x - from.x) + abs(to.y - from.y);
+	return static_cast<int>(abs(to.x - from.x) + abs(to.y - from.y));
 }
 
 void CWalker::RouteCountCheck()

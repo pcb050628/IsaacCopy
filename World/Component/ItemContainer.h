@@ -17,10 +17,11 @@ protected:
 	//순회가 좋은 벡터가 낫겠지?
 	//순회도 필요한 만큼만 한느게 낫겠찌?
 	//맵으로 만들어서 용도에 따라 다르게 저장하고 필요할때마다 필요한 맵의 벡터만 순회한다.
-	std::vector<std::shared_ptr<class CItem>> mItems;
-	std::unordered_map<std::string, std::vector<std::weak_ptr<class CItem>>> mItemMap;
+	std::map<int, std::shared_ptr<class CItem>> mContainedItems;
+	std::unordered_map<std::string, std::vector<std::weak_ptr<class CItem>>> mItemCallbackMap;
 	std::vector<std::shared_ptr<class CItem>> mActiveItems;
 	int mActiveContainLimit = 1;
+	int mActiveFocused = 0;
 
 	//layer 아이템을 얻으면 외형적인게 추가되는데 이걸 layer 마냥 쌓아간다.
 	//아무리 많아봐야 20개를 넘기도 힘들겠지만
@@ -38,8 +39,12 @@ public:
 
 public:
 	void ContainItem(int ID);
+	bool IsContained(int ID);
+	void ReleaseItem(int ID);
 
 public:
+	void UseItem();
+
 	void OnHit();
 	void OnShot();
 	void OnDead();
@@ -50,13 +55,17 @@ public:
 	void EnterChapter();
 
 public:
-	void PlayHeadAnim(bool Play, int Frame = 0);
-	void PlayBodyAnim(bool Play, int Frame = 0);
+	void PlayHeadAnim(bool Stop, int Frame = 0);
+	void PlayBodyAnim(bool Stop, int Frame = 0);
 	void SetHeadDirection(FVector2 Dir);
 	void SetBodyDirection(FVector2 Dir);
 
+	void SetHeadAnimPlayTime(float Time);
+	void SetBodyAnimPlayTime(float Time);
 
 private:
+	void ContainPassive(const std::shared_ptr<CItem>& item);
+	void ContainActive(const std::shared_ptr<CItem>& item);
 
 };
 

@@ -200,7 +200,7 @@ void CRoombase::ContainMonsterData()
 		std::shared_ptr<CRoomMember> m = iter->second.lock();
 		if (!iter->second.lock()->GetIsTemporary())
 		{
-			mMonsterData[m->GetGObjID()].push_back(WorldPosToCoord(m->GetWorldPos()));
+			mMonsterData[m->GetGClassID()].push_back(WorldPosToCoord(m->GetWorldPos()));
 		}
 
 		m->ReturnToChapter();
@@ -221,7 +221,7 @@ void CRoombase::ContainObstacleData()
 		std::shared_ptr<CRoomMember> m = iter->second.lock();
 		if (!iter->second.lock()->GetIsTemporary())
 		{
-			mObstacleData[m->GetGObjID()].push_back(WorldPosToCoord(m->GetWorldPos()));
+			mObstacleData[m->GetGClassID()].push_back(WorldPosToCoord(m->GetWorldPos()));
 		}
 
 		iter->second.lock()->ReturnToChapter();
@@ -242,7 +242,7 @@ void CRoombase::ContainPickupData()
 		std::shared_ptr<CRoomMember> m = iter->second.lock();
 		if (!iter->second.lock()->GetIsTemporary())
 		{
-			mPickupData[m->GetGObjID()].push_back(WorldPosToCoord(m->GetWorldPos()));
+			mPickupData[m->GetGClassID()].push_back(WorldPosToCoord(m->GetWorldPos()));
 		}
 
 		iter->second.lock()->ReturnToChapter();
@@ -418,6 +418,78 @@ void CRoombase::DisregisterGObj(const std::weak_ptr<class CRoomMember>& GObj)
 	}
 }
 
+void CRoombase::GetIdOfUnit(std::vector<std::pair<int, FVector2>>& out)
+{
+	for (std::pair<int, std::weak_ptr<CRoomMember>> rm : mMonsterMap)
+	{
+		std::shared_ptr<CRoomMember> m = rm.second.lock();
+		if (!m)
+			continue;
+		out.push_back(std::make_pair(m->GetGClassID(), WorldPosToCoord(m->GetWorldPos())));
+	}
+}
+
+void CRoombase::GetIdOfObstacle(std::vector<std::pair<int, FVector2>>& out)
+{
+	for (std::pair<int, std::weak_ptr<CRoomMember>> rm : mObstacleMap)
+	{
+		std::shared_ptr<CRoomMember> m = rm.second.lock();
+		if (!m)
+			continue;
+		out.push_back(std::make_pair(m->GetGClassID(), WorldPosToCoord(m->GetWorldPos())));
+	}
+}
+
+void CRoombase::GetIdOfPickup(std::vector<std::pair<int, FVector2>>& out)
+{
+	for (std::pair<int, std::weak_ptr<CRoomMember>> rm : mPickupMap)
+	{
+		std::shared_ptr<CRoomMember> m = rm.second.lock();
+		if (!m)
+			continue;
+		out.push_back(std::make_pair(m->GetGClassID(), WorldPosToCoord(m->GetWorldPos())));
+	}
+}
+
+void CRoombase::GetUnits(std::vector<std::weak_ptr<CRoomMember>>& out)
+{
+	if (!IsEnable())
+		return;
+
+	for (std::pair<int, std::weak_ptr<CRoomMember>> rm : mMonsterMap)
+	{
+		if (rm.second.expired())
+			continue;
+		out.push_back(rm.second);
+	}
+}
+
+void CRoombase::GetObstacles(std::vector<std::weak_ptr<CRoomMember>>& out)
+{
+	if (!IsEnable())
+		return;
+
+	for (std::pair<int, std::weak_ptr<CRoomMember>> rm : mObstacleMap)
+	{
+		if (rm.second.expired())
+			continue;
+		out.push_back(rm.second);
+	}
+}
+
+void CRoombase::GetPickups(std::vector<std::weak_ptr<CRoomMember>>& out)
+{
+	if (!IsEnable())
+		return;
+
+	for (std::pair<int, std::weak_ptr<CRoomMember>> rm : mPickupMap)
+	{
+		if (rm.second.expired())
+			continue;
+		out.push_back(rm.second);
+	}
+}
+
 const FVector3 CRoombase::CoordToWorldPos(FVector2 Coord)
 {
 	//좌표기준으로 00이 좌하단
@@ -487,6 +559,19 @@ const bool CRoombase::CanGetToPlayerCharacter(FVector3 FromWorldPos)
 	return true;
 }
 
+void CRoombase::GetValidNearCell(FVector2 coord, std::vector<FVector2>& out)
+{
+	for (int i = 0; i < 4; ++i)
+	{
+		FVector2 dest = coord + CChapter::FourDirections[i];
+		int hash = CChapter::Coord2Hash(dest);
+		if (dest.x < 0 || dest.y < 0 || dest.x >= mRoomCellMax.x || dest.y >= mRoomCellMax.y || EObstacleType::None != mObstacleGridMap[hash])
+			continue;
+
+		out.push_back(coord);
+	}
+}
+
 bool CRoombase::CheckNearCell(FVector2 Coord)
 {
 	for (int i = 0; i < 4; ++i)
@@ -496,10 +581,10 @@ bool CRoombase::CheckNearCell(FVector2 Coord)
 			continue;
 
 		int hash = CChapter::Coord2Hash(dest);
-		if (EObstacleType::None == mObstacleGridMap[hash])
-			return true;
+		if (EObstacleType::None != mObstacleGridMap[hash])
+			return false;
 	}
-	return false;
+	return true;
 }
 
 bool CRoombase::CheckCell(FVector2 Coord)

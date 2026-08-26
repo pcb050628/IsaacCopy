@@ -15,6 +15,14 @@ struct FAnimationData
 	std::vector<FFrameData> Frames;
 };
 
+struct FSpriteData
+{
+	std::string Name;
+	std::string TextureName;
+	std::string TexturePath;
+	FFrameData UV;
+};
+
 struct FRoomObjectData
 {
 	int ID;

@@ -77,13 +77,15 @@ public:
     FVector2 GetBodyDirection() const { return mBodyDirection; }
     FVector2 GetHeadDirection() const { return mHeadDirection; }
 
-    const std::weak_ptr<CSceneComponent>& GetHeadComp();
-    const std::weak_ptr<CSceneComponent>& GetBodyComp();
-    const std::weak_ptr<class CTearShooter>& GetShooterComp() { return mShooter; }
+    std::weak_ptr<CSceneComponent> GetHeadComp();
+    std::weak_ptr<CSceneComponent> GetBodyComp();
+    std::weak_ptr<class CTearShooter> GetShooterComp() { return mShooter; }
 
     FUnitAttribute GetAttribute() { return mAttribute; }
+    void AddAttribute(FUnitAttribute attribute) { mAttribute += attribute; }
     void SetAttribute(FUnitAttribute attribute) { mAttribute = attribute; }
     FUnitAttribute GetMagnification() { return mMagnification; }
+    void AddMagnification(FUnitAttribute magnification) { mMagnification += magnification; }
     void SetMagnification(FUnitAttribute magnification) { mMagnification = magnification; }
 };                                              
 

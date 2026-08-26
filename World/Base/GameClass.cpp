@@ -12,8 +12,8 @@ CGameClass::CGameClass(const CGameClass& src)
 {
 }
 
-CGameClass::CGameClass(CGameClass&& src)
-	:mObjType(src.mObjType), mID(src.mID)
+CGameClass::CGameClass(CGameClass&& src) noexcept
+	:mObjType(src.mObjType), mID(GlobalID++)
 {
 }
 

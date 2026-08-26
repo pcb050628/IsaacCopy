@@ -21,6 +21,7 @@ enum class EGDataType
 	Player,
 	Item,
 	Anim,
+	Sprite,
 	End = 100,
 };
 

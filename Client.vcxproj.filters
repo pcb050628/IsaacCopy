@@ -13,29 +13,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="소스 파일\1.GameObject">
-      <UniqueIdentifier>{60d794f2-0015-45f6-9044-c50b08350b63}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\1.GameObject\Component">
-      <UniqueIdentifier>{7353a8c6-1f9d-4333-ad23-22c70b625e9a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\1.GameObject\Component\SceneComponent">
-      <UniqueIdentifier>{7a68e21c-dc64-44c8-b5d2-216d37ab51fa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\1.GameObject\Component\ActorComponent">
-      <UniqueIdentifier>{11478bd3-53c6-4d6c-b8a5-c8d473f9c62d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\0.Manager">
       <UniqueIdentifier>{8f1bb050-6d02-4014-9959-4d6fda3095b0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\0.Manager\GameRuleManager">
-      <UniqueIdentifier>{1f26cd9c-f580-4090-a62c-0e87cff80da4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\0.Manager\GameStarter">
-      <UniqueIdentifier>{5608093f-0e9a-4be0-9792-469bd926d77f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\0.Manager\InstancingMananger">
-      <UniqueIdentifier>{d247f1cb-cb7c-43d4-8729-f56253d4f0b5}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\2.World">
       <UniqueIdentifier>{e5b2d89a-1ef6-48c8-a53b-4fba16c8335b}</UniqueIdentifier>
@@ -142,6 +121,45 @@
     <Filter Include="소스 파일\2.World\0.Debug\GameDataAsset\Data\Anim">
       <UniqueIdentifier>{c97bd0b8-3753-4e18-a942-26037a242571}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\1.GameClass">
+      <UniqueIdentifier>{60d794f2-0015-45f6-9044-c50b08350b63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\1.GameClass\Component">
+      <UniqueIdentifier>{7353a8c6-1f9d-4333-ad23-22c70b625e9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\1.GameClass\Component\SceneComponent">
+      <UniqueIdentifier>{7a68e21c-dc64-44c8-b5d2-216d37ab51fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\1.GameClass\Component\ActorComponent">
+      <UniqueIdentifier>{11478bd3-53c6-4d6c-b8a5-c8d473f9c62d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\0.Manager\0.GameStarter">
+      <UniqueIdentifier>{5608093f-0e9a-4be0-9792-469bd926d77f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\0.Manager\2.GameRuleManager">
+      <UniqueIdentifier>{1f26cd9c-f580-4090-a62c-0e87cff80da4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\0.Manager\1.ClassContainer">
+      <UniqueIdentifier>{d247f1cb-cb7c-43d4-8729-f56253d4f0b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\3.Item\CroockedPenny">
+      <UniqueIdentifier>{5fa7fef9-e3be-4f59-97a7-2cfb86db8e63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\1.GameClass\Class">
+      <UniqueIdentifier>{a23784fe-2d71-4717-81df-6e3ddfe3a93f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\0.Debug\Imgui\Room">
+      <UniqueIdentifier>{387f7ff7-b92e-4977-afc6-7ccda20a0d4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\0.Debug\Imgui\Anim">
+      <UniqueIdentifier>{41a58e42-3dd9-419e-9e92-222aaf1e9132}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\0.Debug\Imgui\Sprite">
+      <UniqueIdentifier>{99f05813-1e4d-46be-94ec-b3883f922329}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\0.Debug\GameDataAsset\Data\Sprite">
+      <UniqueIdentifier>{ed86f682-4909-44ca-b1bb-9913b5ffd132}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -157,7 +175,7 @@
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Base</Filter>
     </ClCompile>
     <ClCompile Include="World\Component\RigidBodyComponent.cpp">
-      <Filter>소스 파일\1.GameObject\Component\SceneComponent</Filter>
+      <Filter>소스 파일\1.GameClass\Component\SceneComponent</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\Roombase.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\0.Base</Filter>
@@ -175,10 +193,10 @@
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle\Base</Filter>
     </ClCompile>
     <ClCompile Include="World\Manager\GameClassContainer.cpp">
-      <Filter>소스 파일\0.Manager\InstancingMananger</Filter>
+      <Filter>소스 파일\0.Manager\1.ClassContainer</Filter>
     </ClCompile>
     <ClCompile Include="World\Manager\GameRuleManager.cpp">
-      <Filter>소스 파일\0.Manager\GameRuleManager</Filter>
+      <Filter>소스 파일\0.Manager\2.GameRuleManager</Filter>
     </ClCompile>
     <ClCompile Include="World\Room\DefaultRoom.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room</Filter>
@@ -210,14 +228,11 @@
     <ClCompile Include="World\DebugChapter.cpp">
       <Filter>소스 파일\2.World\0.Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\ImGuiAnimationMaker.cpp">
-      <Filter>소스 파일\2.World\0.Debug\Imgui</Filter>
-    </ClCompile>
     <ClCompile Include="World\Base\Tear.cpp">
       <Filter>소스 파일\2.World\1.Chapter\2.Tear</Filter>
     </ClCompile>
     <ClCompile Include="World\Component\TearShooter.cpp">
-      <Filter>소스 파일\1.GameObject\Component\ActorComponent</Filter>
+      <Filter>소스 파일\1.GameClass\Component\ActorComponent</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\Character.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\PlayerCharacter\Base</Filter>
@@ -232,13 +247,13 @@
       <Filter>소스 파일\2.World\1.Chapter\3.Item</Filter>
     </ClCompile>
     <ClCompile Include="World\Component\SpriteComponent.cpp">
-      <Filter>소스 파일\1.GameObject\Component\SceneComponent</Filter>
+      <Filter>소스 파일\1.GameClass\Component\SceneComponent</Filter>
     </ClCompile>
     <ClCompile Include="World\Item\ItemBelt.cpp">
       <Filter>소스 파일\2.World\1.Chapter\3.Item\Blet</Filter>
     </ClCompile>
     <ClCompile Include="World\Component\ItemContainer.cpp">
-      <Filter>소스 파일\1.GameObject\Component\ActorComponent</Filter>
+      <Filter>소스 파일\1.GameClass\Component\ActorComponent</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\Pickup.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup</Filter>
@@ -246,29 +261,41 @@
     <ClCompile Include="World\Pickup\PickupRedHeart.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup\Heart</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\ImGuiRoomMaker.cpp">
-      <Filter>소스 파일\2.World\0.Debug\Imgui</Filter>
-    </ClCompile>
     <ClCompile Include="World\Base\RoomMember.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member</Filter>
     </ClCompile>
     <ClCompile Include="World\Component\RouteMaker.cpp">
-      <Filter>소스 파일\1.GameObject\Component\ActorComponent</Filter>
+      <Filter>소스 파일\1.GameClass\Component\ActorComponent</Filter>
     </ClCompile>
     <ClCompile Include="World\Manager\GameStarter.cpp">
-      <Filter>소스 파일\0.Manager\GameStarter</Filter>
+      <Filter>소스 파일\0.Manager\0.GameStarter</Filter>
     </ClCompile>
     <ClCompile Include="World\Item\ItemSpoonBender.cpp">
       <Filter>소스 파일\2.World\1.Chapter\3.Item\SpoonBender</Filter>
     </ClCompile>
-    <ClCompile Include="World\Base\GameObject.cpp">
-      <Filter>소스 파일\1.GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="World\Base\GameDefinition.cpp">
-      <Filter>소스 파일\1.GameObject</Filter>
+    <ClCompile Include="World\Item\ItemCroockedPenny.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\3.Item\CroockedPenny</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\GameClass.cpp">
-      <Filter>소스 파일\1.GameObject</Filter>
+      <Filter>소스 파일\1.GameClass\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Base\GameDefinition.cpp">
+      <Filter>소스 파일\1.GameClass\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Base\GameObject.cpp">
+      <Filter>소스 파일\1.GameClass\Class</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\ImGuiAnimationMaker.cpp">
+      <Filter>소스 파일\2.World\0.Debug\Imgui\Anim</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\ImGuiRoomMaker.cpp">
+      <Filter>소스 파일\2.World\0.Debug\Imgui\Room</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\ImGuiSpriteMaker.cpp">
+      <Filter>소스 파일\2.World\0.Debug\Imgui\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Data\SpriteGData.cpp">
+      <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Sprite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -288,7 +315,7 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="World\Component\RigidBodyComponent.h">
-      <Filter>소스 파일\1.GameObject\Component\SceneComponent</Filter>
+      <Filter>소스 파일\1.GameClass\Component\SceneComponent</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\Roombase.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\0.Base</Filter>
@@ -309,10 +336,10 @@
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle\Base</Filter>
     </ClInclude>
     <ClInclude Include="World\Manager\GameClassContainer.h">
-      <Filter>소스 파일\0.Manager\InstancingMananger</Filter>
+      <Filter>소스 파일\0.Manager\1.ClassContainer</Filter>
     </ClInclude>
     <ClInclude Include="World\Manager\GameRuleManager.h">
-      <Filter>소스 파일\0.Manager\GameRuleManager</Filter>
+      <Filter>소스 파일\0.Manager\2.GameRuleManager</Filter>
     </ClInclude>
     <ClInclude Include="World\Room\DefaultRoom.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room</Filter>
@@ -347,14 +374,11 @@
     <ClInclude Include="World\DebugChapter.h">
       <Filter>소스 파일\2.World\0.Debug</Filter>
     </ClInclude>
-    <ClInclude Include="Debug\ImGuiAnimationMaker.h">
-      <Filter>소스 파일\2.World\0.Debug\Imgui</Filter>
-    </ClInclude>
     <ClInclude Include="World\Base\Tear.h">
       <Filter>소스 파일\2.World\1.Chapter\2.Tear</Filter>
     </ClInclude>
     <ClInclude Include="World\Component\TearShooter.h">
-      <Filter>소스 파일\1.GameObject\Component\ActorComponent</Filter>
+      <Filter>소스 파일\1.GameClass\Component\ActorComponent</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\Character.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\PlayerCharacter\Base</Filter>
@@ -372,13 +396,13 @@
       <Filter>소스 파일\2.World\1.Chapter\3.Item</Filter>
     </ClInclude>
     <ClInclude Include="World\Component\SpriteComponent.h">
-      <Filter>소스 파일\1.GameObject\Component\SceneComponent</Filter>
+      <Filter>소스 파일\1.GameClass\Component\SceneComponent</Filter>
     </ClInclude>
     <ClInclude Include="World\Item\ItemBelt.h">
       <Filter>소스 파일\2.World\1.Chapter\3.Item\Blet</Filter>
     </ClInclude>
     <ClInclude Include="World\Component\ItemContainer.h">
-      <Filter>소스 파일\1.GameObject\Component\ActorComponent</Filter>
+      <Filter>소스 파일\1.GameClass\Component\ActorComponent</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\Pickup.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup</Filter>
@@ -386,29 +410,41 @@
     <ClInclude Include="World\Pickup\PickupRedHeart.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup\Heart</Filter>
     </ClInclude>
-    <ClInclude Include="Debug\ImGuiRoomMaker.h">
-      <Filter>소스 파일\2.World\0.Debug\Imgui</Filter>
-    </ClInclude>
     <ClInclude Include="World\Base\RoomMember.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member</Filter>
     </ClInclude>
     <ClInclude Include="World\Component\RouteMaker.h">
-      <Filter>소스 파일\1.GameObject\Component\ActorComponent</Filter>
+      <Filter>소스 파일\1.GameClass\Component\ActorComponent</Filter>
     </ClInclude>
     <ClInclude Include="World\Manager\GameStarter.h">
-      <Filter>소스 파일\0.Manager\GameStarter</Filter>
+      <Filter>소스 파일\0.Manager\0.GameStarter</Filter>
     </ClInclude>
     <ClInclude Include="World\Item\ItemSpoonBender.h">
       <Filter>소스 파일\2.World\1.Chapter\3.Item\SpoonBender</Filter>
     </ClInclude>
-    <ClInclude Include="World\Base\GameObject.h">
-      <Filter>소스 파일\1.GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="World\Base\GameDefinition.h">
-      <Filter>소스 파일\1.GameObject</Filter>
+    <ClInclude Include="World\Item\ItemCroockedPenny.h">
+      <Filter>소스 파일\2.World\1.Chapter\3.Item\CroockedPenny</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\GameClass.h">
-      <Filter>소스 파일\1.GameObject</Filter>
+      <Filter>소스 파일\1.GameClass\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Base\GameDefinition.h">
+      <Filter>소스 파일\1.GameClass\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Base\GameObject.h">
+      <Filter>소스 파일\1.GameClass\Class</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug\ImGuiAnimationMaker.h">
+      <Filter>소스 파일\2.World\0.Debug\Imgui\Anim</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug\ImGuiRoomMaker.h">
+      <Filter>소스 파일\2.World\0.Debug\Imgui\Room</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug\ImGuiSpriteMaker.h">
+      <Filter>소스 파일\2.World\0.Debug\Imgui\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Data\SpriteGData.h">
+      <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Sprite</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

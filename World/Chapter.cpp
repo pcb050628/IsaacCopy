@@ -226,6 +226,7 @@ void CChapter::InitialSetting()
 }
 void CChapter::SettingFocus() //지금은 벽만 설정하지만 이 함수를 포커스 이동시 초기 설정 함수로 만들기(벽, 문 모두 이동 설정하기)
 {
+	mPlayerCharacter.lock()->UnsetRoom();
 	mRoomMap[mPrevRoomHash].lock()->ExitRoom();
 	InitialSetting();
 	//플레이어 위치 옮겨주기
@@ -242,17 +243,23 @@ void CChapter::SetPlayerPos()
 	else
 		dist.x += dir.x * WALLSIZE * 2;
 	mPlayerCharacter.lock()->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->GetWorldPos() + FVector3(dist.x, dist.y, 0));
+	mPlayerCharacter.lock()->SetRoom(mRoomMap[mFocusedRoomHash]);
 	mInput->SetEnable(true);
+	LOG_DEBUG("플레이어의 방 좌표: ", mFocusedRoomHash);
 }
 bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 {
 	if (Obj.expired())
 		return false;
 
-	Obj.lock()->SetEnable(false);
-	Obj.lock()->SetRenderEnable(false);
-	const int classID = Obj.lock()->GetGObjID();
-	EObjectType t = Obj.lock()->GetObjType();
+	std::shared_ptr<CGameObject> gobj = Obj.lock();
+	std::shared_ptr<CRoomMember> rm = std::dynamic_pointer_cast<CRoomMember>(gobj);
+
+	gobj->SetEnable(false);
+	gobj->SetRenderEnable(false);
+	const int classID = gobj->GetGClassID();
+	const int ObjID = gobj->GetID();
+	EObjectType t = gobj->GetObjType();
 	switch (t)
 	{
 	case EObjectType::Room:
@@ -260,55 +267,23 @@ bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 	case EObjectType::Door:
 		break; 
 	case EObjectType::Tear: {
-		std::shared_ptr<CTear> tear = std::static_pointer_cast<CTear>(Obj.lock());
-		mTearsActivate.erase(tear->GetID());
-		mTearsDeactivate[tear->GetID()] = tear;
+		mTearsDeactivate[ObjID] = mTearsActivate[ObjID];
+		mTearsActivate.erase(ObjID);
 	} return true;
 	case EObjectType::Monster: {
-		std::shared_ptr<CUnitbase> unit = std::static_pointer_cast<CUnitbase>(Obj.lock());
-		std::list<std::weak_ptr<CUnitbase>>::iterator iter = mUnitsActivate[classID].begin();
-		std::list<std::weak_ptr<CUnitbase>>::iterator iterEnd = mUnitsActivate[classID].end();
-		for (; iter != iterEnd; ++iter)
-		{
-			if (iter->lock()->GetID() == unit->GetID())
-			{
-				mUnitsActivate[classID].erase(iter);
-				break;
-			}
-		}
-		unit->UnsetRoom().lock()->DisregisterGObj(unit);
-		mUnitsDeactivate[classID].push_back(unit);
+		rm->UnsetRoom().lock()->DisregisterGObj(rm);
+		mUnitsDeactivate[classID][ObjID] = mUnitsActivate[classID][ObjID];
+		mUnitsActivate[classID].erase(ObjID);
 	} return true;
 	case EObjectType::Obstacle: {
-		std::shared_ptr<CObstaclebase> obs = std::static_pointer_cast<CObstaclebase>(Obj.lock());
-		std::list<std::weak_ptr<CObstaclebase>>::iterator iter = mObstaclesActivate[classID].begin();
-		std::list<std::weak_ptr<CObstaclebase>>::iterator iterEnd = mObstaclesActivate[classID].end();
-		for (; iter != iterEnd; ++iter)
-		{
-			if (iter->lock()->GetID() == obs->GetID())
-			{
-				mObstaclesActivate[classID].erase(iter);
-				break;
-			}
-		}
-		obs->UnsetRoom().lock()->DisregisterGObj(obs);
-		mObstaclesDeactivate[classID].push_back(obs);
+		rm->UnsetRoom().lock()->DisregisterGObj(rm);
+		mObstaclesDeactivate[classID][ObjID] = mObstaclesActivate[classID][ObjID];
+		mObstaclesActivate[classID].erase(ObjID);
 	} return true;
-	case EObjectType::Pickup: //애초에 등록을 안함 | 근데 해야됨 -> 나중에 수정하기
-	{
-		std::shared_ptr<CPickup> pku = std::static_pointer_cast<CPickup>(Obj.lock());
-		std::list<std::weak_ptr<CPickup>>::iterator iter = mPickupsActivate[classID].begin();
-		std::list<std::weak_ptr<CPickup>>::iterator iterEnd = mPickupsActivate[classID].end();
-		for (; iter != iterEnd; ++iter)
-		{
-			if (iter->lock()->GetID() == pku->GetID())
-			{
-				mPickupsActivate[classID].erase(iter);
-				break;
-			}
-		}
-		pku->UnsetRoom().lock()->DisregisterGObj(pku);
-		mPickupsDeactivate[classID].push_back(pku);
+	case EObjectType::Pickup: { //애초에 등록을 안함 | 근데 해야됨 -> 나중에 수정하기
+		rm->UnsetRoom().lock()->DisregisterGObj(rm);
+		mPickupsDeactivate[classID][ObjID] = mPickupsActivate[classID][ObjID];
+		mPickupsActivate[classID].erase(ObjID);
 	} return true;
 	}
 

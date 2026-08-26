@@ -12,24 +12,30 @@ public:
 	virtual ~CItem() = 0;
 
 public:
-	virtual bool Init();
+	virtual bool Init(const std::weak_ptr<CGameClass>& Owner);
 
 protected:
 	//아이템의 타입 - 패시브 | 액티브
 	const EItemType mItemType;
 	//아이템 획득 시 출력 될 텍스트
 	std::string mQuote;
-	//참인 경우 스탯의 배율 변경 - 플레이어 유닛은 기본적으로 스탯과 스탯 배율을 지님
-	bool mbIsAttributeMagnification = false;
+	//아이템 스탯을 적용할 것인지
+	bool mbIsHasAttribute = false;
 	//아이템의 추가 스탯
 	FUnitAttribute mUnitAdditionalAttribute = FUnitAttribute();
+	//참인 경우 스탯의 배율 변경 - 플레이어 유닛은 기본적으로 스탯과 스탯 배율을 지님
+	bool mbIsAttributeMagnification = false;
 
 	//스프라이트 렌더러 먼저 만들자 그냥 미치겠다.
 	//장애물에서 아이템 렌더를 위한 아이템 애니메이션
 	//머리, 몸을 애니메이션 이름으로 저장하고 보내주는 이유는
 	//유닛이 움직이는 방향에 따라 다른 스프라이트 또는 애니메이션으로 바꿔줘야 하기 때문
 	std::string mItemSpriteName;
-	std::string mItemAnimDataPath; //<-나중에 필요하지 않다면 제거하기
+	FVector2 mItemSpriteStart;
+	FVector2 mItemSpriteSize;
+
+	bool mbHasHeadAnim = false;
+	bool mbHasBodyAnim = false;
 	//참인 경우 이미지를 추가 렌더하는 것이 아니라 렌더 이미지를 변경한다.
 	bool mbIsHeadAnimOverride = false;
 	bool mbIsBodyAnimOverride = false;
@@ -77,8 +83,12 @@ public: //발동 조건들
 	virtual void OnUpdatecShooter(const std::weak_ptr<class CCharacter>& character);
 
 public:
+	const EItemType GetItemType() const { return mItemType; }
+	const bool HasAttribute() const { return mbIsHasAttribute; }
 	const bool GetIsMagnification() const { return mbIsAttributeMagnification; }
 	FUnitAttribute GetAttribute() const { return mUnitAdditionalAttribute; }
+	const bool HasHeadAnim() const { return mbHasHeadAnim; }
+	const bool HasBodyAnim() const { return mbHasBodyAnim; }
 	const bool GetIsHeadAnimOverride() const { return mbIsHeadAnimOverride; }
 	const bool GetIsBodyAnimOverride() const { return mbIsBodyAnimOverride; }
 	const std::string& GetHeadAnimName() { return mHeadAnimName; }
@@ -113,7 +123,6 @@ public:
 	//액티브 아이템인 경우 아이템 사용을 위한 함수
 	//패시브 아이템의 UseItem 을 호출할경우 false 를 반환함
 	virtual bool UseItem();
-
 	virtual void OnGetItem(const std::weak_ptr<class CCharacter>& character) = 0;
 };
 

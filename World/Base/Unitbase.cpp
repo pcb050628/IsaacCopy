@@ -213,14 +213,14 @@ void CUnitbase::PlayHeadHorizontalAnim()
 {
 }
 
-const std::weak_ptr<CSceneComponent>& CUnitbase::GetHeadComp()
+std::weak_ptr<CSceneComponent> CUnitbase::GetHeadComp()
 {
 	if(mHeadMesh.expired())
 		return std::weak_ptr<CSceneComponent>();
 	return mHeadMesh.lock()->GetThisPtr<CSceneComponent>();
 }
 
-const std::weak_ptr<CSceneComponent>& CUnitbase::GetBodyComp()
+std::weak_ptr<CSceneComponent> CUnitbase::GetBodyComp()
 {
 	if (mBodyMesh.expired())
 		return std::weak_ptr<CSceneComponent>();

@@ -247,14 +247,14 @@ FVector3 CTearShooter::FirePointCalculate(int Index)
 	{
 		if (CChapter::FourDirections[0] == headDir)
 		{
-			int y = origin.x;
-			int x = -origin.y;
+			int y = static_cast<float>(origin.x);
+			int x = static_cast<float>(-origin.y);
 			return FVector3(x, y, 0);
 		}
 		else if (CChapter::FourDirections[1] == headDir)
 		{
-			int y = origin.x;
-			int x = origin.y;
+			int y = static_cast<float>(origin.x);
+			int x = static_cast<float>(origin.y);
 			return FVector3(x, y, 0);
 		}
 		else if (CChapter::FourDirections[2] == headDir)

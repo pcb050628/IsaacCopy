@@ -3,7 +3,7 @@
 
 #include "LogManager.h"
 
-#include "Asset/AssetManager.h";
+#include "Asset/AssetManager.h"
 #include "../Data/GameDataManager.h"
 #include "../Data/AnimGData.h"
 
@@ -20,13 +20,10 @@ CItemBelt::~CItemBelt()
 {
 }
 
-bool CItemBelt::Init()
+bool CItemBelt::Init(const std::weak_ptr<CGameClass>& Owner)
 {
-    if (!CItem::Init())
+    if (!CItem::Init(Owner))
         return false;
-
-    mbIsBodyAnimOverride = true;
-    mUnitAdditionalAttribute.Speed = 20.f;
 
     auto mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
     if (!mgr->LoadDataFile<CAnimGData>("Item_Belt_Walk_V", EGDataType::Anim, TEXT("Item_Belt_Walk_V")))
@@ -42,16 +39,14 @@ bool CItemBelt::Init()
     if (!animData || !animData->MakeAnim())
         return false;
 
+    mbHasBodyAnim = true;
+    mbIsBodyAnimOverride = true;
+    mbIsHasAttribute = true;
+    mUnitAdditionalAttribute.Speed = 20.f;
     mBodyAnimName = "Item_Belt_Walk";
 
     return true;
 }
-
-void CItemBelt::Destroy()
-{
-    CItem::Destroy();
-}
-
 void CItemBelt::Reset(bool HardReset)
 {
 }

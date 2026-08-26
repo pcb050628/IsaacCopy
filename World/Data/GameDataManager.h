@@ -93,13 +93,13 @@ private:
 		for (const directory_entry& entry : directory_iterator(path))
 		{
 			std::wstring path = entry.path();
+			std::string pathName = entry.path().string();
 			std::fstream file(path);
 			if (!file.is_open())
 				continue;
 
 			size_t loc = path.rfind('\\') + 1;
-			std::wstring tmp = path.substr(loc, path.size() - loc);
-			std::string name(tmp.begin(), tmp.end());
+			std::string name = pathName.substr(loc, pathName.size() - loc);
 
 			LoadDataFile<T>(name, Type, std::wstring(name.begin(), name.end()).c_str());
 		}

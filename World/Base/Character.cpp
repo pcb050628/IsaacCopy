@@ -94,7 +94,9 @@ bool CCharacter::Init()
 	input->SetBindFunction("FireLeft", EInputType::Hold, this, &CCharacter::FireLeft);
 	input->SetBindFunction("FireRight", EInputType::Hold, this, &CCharacter::FireRight);
 
-	OnAttributeChanged(mAttribute);
+	input->SetBindFunction("UseItem", EInputType::Press, this, &CCharacter::UseItem);
+
+	OnAttributeChanged();
 
 	std::shared_ptr<CSoundManager> soundMgr = CAssetManager::GetInst()->GetSubManager<CSoundManager>(EAssetType::Sound);
 	mHurtSound.push_back(soundMgr->FindSound("Character_hurt_grunt_1"));
@@ -133,21 +135,20 @@ void CCharacter::Update(float DeltaTime)
 				SetBodyDirection(FVector2(0, -1));
 		}
 
-		mBody.lock()->Play();
+		PlayBodyAnim();
 	}
 	else
 	{
 		SetBodyDirection(FVector2(0, -1));
-		mBody.lock()->Stop(true);
-
+		PlayBodyAnim(true, true);
 	}
 
-	if (mbIsFiring)
-		mHead.lock()->Play();
-	else
+	/*if (mbIsFiring)
+		PlayHeadAnim();*/
+	if(!mbIsFiring)
 	{
 		SetHeadDirection(mBodyDirection);
-		mHead.lock()->Stop(true);
+		PlayHeadAnim(true, true);
 	}
 
 	mMoveDirection = FVector3::Zero;
@@ -213,11 +214,8 @@ void CCharacter::OnLosePickup(EPickupType Type, int Count)
 {
 }
 
-void CCharacter::OnAttributeChanged(FUnitAttribute Attribute, bool IsMagnification)
+void CCharacter::OnAttributeChanged() //유닛의 능력치 변동 함수들 모아서 연결하기
 {
-	//여ㅑ기서 능력치 변동 해주기
-	mAttribute = Attribute;
-
 	mHead.lock()->SetPlayTime(mHeadAnimName + "_Front", mAttribute.ShotTerm);
 	mHead.lock()->SetPlayTime(mHeadAnimName + "_Back", mAttribute.ShotTerm);
 	mHead.lock()->SetPlayTime(mHeadAnimName + "_Left", mAttribute.ShotTerm);
@@ -229,13 +227,13 @@ void CCharacter::PlayBodyVerticalAnim()
 	mBody.lock()->ChangeAnimation(mBodyAnimName + "_V");
 	bool symmetry = mBodyDirection.y > 0 ? true : false;
 	mBody.lock()->SetSymmetry(mBodyAnimName + "_V", symmetry);
-	mBody.lock()->Play();
 	if (!mbIsFiring)
 		SetHeadDirection(mBodyDirection);
 
-	if (mItemContainer.expired())
-		return;
-	mItemContainer.lock()->SetBodyDirection(mBodyDirection);
+	if (!mItemContainer.expired())
+		mItemContainer.lock()->SetBodyDirection(mBodyDirection);
+
+	PlayBodyAnim();
 }
 
 void CCharacter::PlayBodyHorizontalAnim()
@@ -243,13 +241,13 @@ void CCharacter::PlayBodyHorizontalAnim()
 	mBody.lock()->ChangeAnimation(mBodyAnimName + "_H");
 	bool symmetry = mBodyDirection.x > 0 ? false : true;
 	mBody.lock()->SetSymmetry(mBodyAnimName + "_H", symmetry);
-	mBody.lock()->Play();
 	if (!mbIsFiring)
 		SetHeadDirection(mBodyDirection);
 
-	if (mItemContainer.expired())
-		return;
-	mItemContainer.lock()->SetBodyDirection(mBodyDirection);
+	if (!mItemContainer.expired())
+		mItemContainer.lock()->SetBodyDirection(mBodyDirection);
+
+	PlayBodyAnim();
 }
 
 void CCharacter::PlayHeadVerticalAnim()
@@ -260,14 +258,13 @@ void CCharacter::PlayHeadVerticalAnim()
 	else
 		mHead.lock()->ChangeAnimation(mHeadAnimName + "_Front");
 
+	if (!mItemContainer.expired())
+		mItemContainer.lock()->SetHeadDirection(mHeadDirection);
+
 	if (!mbIsFiring)
 	{
-		mHead.lock()->Stop(true);
+		PlayHeadAnim(true, true);
 	}
-
-	if (mItemContainer.expired())
-		return;
-	mItemContainer.lock()->SetHeadDirection(mHeadDirection);
 }
 
 void CCharacter::PlayHeadHorizontalAnim()
@@ -278,14 +275,33 @@ void CCharacter::PlayHeadHorizontalAnim()
 	else
 		mHead.lock()->ChangeAnimation(mHeadAnimName + "_Right");
 
+	if (!mItemContainer.expired())
+		mItemContainer.lock()->SetHeadDirection(mHeadDirection);
+
 	if (!mbIsFiring)
 	{
-		mHead.lock()->Stop(true);
+		PlayHeadAnim(true, true);
 	}
+}
 
-	if (mItemContainer.expired())
-		return;
-	mItemContainer.lock()->SetHeadDirection(mHeadDirection);
+void CCharacter::PlayHeadAnim(bool Stop, bool Reset)
+{
+	std::shared_ptr<CAnimation2DComponent> animator = mHead.lock();
+	if (Stop)
+		animator->Stop(Reset);
+	else
+		animator->Play(Reset);
+	mItemContainer.lock()->PlayHeadAnim(Stop, animator->GetAnimationFrame());
+}
+
+void CCharacter::PlayBodyAnim(bool Stop, bool Reset)
+{
+	std::shared_ptr<CAnimation2DComponent> animator = mBody.lock();
+	if (Stop)
+		animator->Stop(Reset);
+	else
+		animator->Play(Reset);
+	mItemContainer.lock()->PlayBodyAnim(Stop, animator->GetAnimationFrame());
 }
 
 void CCharacter::MoveUp()
@@ -316,21 +332,15 @@ void CCharacter::Fire()
 	mbIsFiring = true;
 	std::shared_ptr<CTearShooter> shooter = mShooter.lock();
 
-	//일단 해놓긴 했는데
-	//발사 가능 상태를 어디서 검사하는게 맞는지 확신이 없네
-	//일단은 슈터에서 확인하는게 맞는거같긴함
-	//유닛쪽에서는 모든 역할을 슈터에 위임한거니까
-	//아는건 아무것도 없고 능력치만 던져주고 발사하라고만 하는거니까
-	//검사는 슈터에서 해야겟지?
-	//아닌거같긴한데 아닌거같은데
 	FVector3 dir = mRigidBody.lock()->GetVelocity();
 	dir.Normalize();
+
 	if (shooter->FireWithVelocityOffset(FVector2(dir.x, dir.y)))
 	{
 		mbIsJustFired = true;
 
-		mHead.lock()->Play(true);
 		mHead.lock()->SetFrame(1);
+		PlayHeadAnim();
 	}
 }
 
@@ -360,6 +370,10 @@ void CCharacter::FireRight()
 
 void CCharacter::UseItem()
 {
+	if (mItemContainer.expired())
+		return;
+
+	mItemContainer.lock()->UseItem();
 }
 
 void CCharacter::UsePickup()

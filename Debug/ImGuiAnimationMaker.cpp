@@ -99,7 +99,7 @@ void CImGuiAnimationMaker::DrawImage()
 		return;
 
 	const FTextureInfo* info = DrawingTex.lock()->GetTexture(0);
-	ImGui::Image(info->SRV, ImVec2(info->Width, info->Height));
+	ImGui::Image(info->SRV, ImVec2(static_cast<float>(info->Width), static_cast<float>(info->Height)));
 }
 
 void CImGuiAnimationMaker::FrameList()
@@ -107,31 +107,33 @@ void CImGuiAnimationMaker::FrameList()
 	ImGui::Spacing(); ImGui::Spacing();
 	if (!d->Frames.empty())
 	{
-		ImGui::BeginListBox("Frames");
-		for (int n = 0; n < d->Frames.size(); n++)
+		if (ImGui::BeginListBox("Frames"))
 		{
-			const bool is_selected = (SelectedIdx == n);
+			for (int n = 0; n < d->Frames.size(); n++)
+			{
+				const bool is_selected = (SelectedIdx == n);
 
-			if (ImGui::Selectable(std::to_string(n).c_str(), is_selected))
-			{
-				if (d->Frames.size() > SelectedIdx)
+				if (ImGui::Selectable(std::to_string(n).c_str(), is_selected))
 				{
-					Start = d->Frames[SelectedIdx].Start;
-					Size = d->Frames[SelectedIdx].Size;
+					if (d->Frames.size() > SelectedIdx)
+					{
+						Start = d->Frames[SelectedIdx].Start;
+						Size = d->Frames[SelectedIdx].Size;
+					}
+					SelectedIdx = n; // Update selection when clicked
 				}
-				SelectedIdx = n; // Update selection when clicked
+				std::string StartText = "Start X: " + std::to_string(d->Frames[n].Start.x) + ", Y:" + std::to_string(d->Frames[n].Start.y);
+				std::string SizeText = "Sizes X: " + std::to_string(d->Frames[n].Size.x) + ", Y:" + std::to_string(d->Frames[n].Size.y);
+				std::string FinalText = StartText + "\n" + SizeText;
+				ImGui::Text(FinalText.c_str());
+				// Set the initial focus when opening the list box (keyboard navigation)
+				if (is_selected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
 			}
-			std::string StartText = "Start X: " + std::to_string(d->Frames[n].Start.x) + ", Y:" + std::to_string(d->Frames[n].Start.y);
-			std::string SizeText = "Sizes X: " + std::to_string(d->Frames[n].Size.x) + ", Y:" + std::to_string(d->Frames[n].Size.y);
-			std::string FinalText = StartText + "\n" + SizeText;
-			ImGui::Text(FinalText.c_str());
-			// Set the initial focus when opening the list box (keyboard navigation)
-			if (is_selected)
-			{
-				ImGui::SetItemDefaultFocus();
-			}
+			ImGui::EndListBox();
 		}
-		ImGui::EndListBox();
 	}
 
 	if (!d->Frames.empty())

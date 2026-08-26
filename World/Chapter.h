@@ -37,12 +37,12 @@ protected:
 	//이거 그냥 통합해버릴까? 어짜피 전부 GameObject 상속받는데
 	//구분도 내부에서 클래스 아이디로 구분하면 그냥 해도 되는거 아닌가
 	std::weak_ptr<CUnitbase> mPlayerCharacter;
-	std::unordered_map<int, std::list<std::weak_ptr<CUnitbase>>> mUnitsActivate;
-	std::unordered_map<int, std::list<std::weak_ptr<CUnitbase>>> mUnitsDeactivate;
-	std::unordered_map<int, std::list<std::weak_ptr<CObstaclebase>>> mObstaclesActivate;
-	std::unordered_map<int, std::list<std::weak_ptr<CObstaclebase>>> mObstaclesDeactivate;
-	std::unordered_map<int, std::list<std::weak_ptr<CPickup>>> mPickupsActivate;
-	std::unordered_map<int, std::list<std::weak_ptr<CPickup>>> mPickupsDeactivate;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CUnitbase>>> mUnitsActivate;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CUnitbase>>> mUnitsDeactivate;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CObstaclebase>>> mObstaclesActivate;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CObstaclebase>>> mObstaclesDeactivate;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CPickup>>> mPickupsActivate;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CPickup>>> mPickupsDeactivate;
 	std::unordered_map<int, std::weak_ptr<CTear>> mTearsActivate;
 	std::unordered_map<int, std::weak_ptr<CTear>> mTearsDeactivate;
 
@@ -170,15 +170,14 @@ public:
 	{
 		if (!mUnitsDeactivate[GObjID].empty())
 		{
-			std::shared_ptr<CUnitbase> unit = mUnitsDeactivate[GObjID].front().lock();
+			std::shared_ptr<CUnitbase> unit = mUnitsDeactivate[GObjID].begin()->second.lock();
 			std::shared_ptr<T> mon = std::dynamic_pointer_cast<T>(unit);
-			mUnitsDeactivate[GObjID].pop_front();
-			mUnitsActivate[GObjID].push_back(unit);
+			mUnitsDeactivate[GObjID].erase(unit->GetID());
+			mUnitsActivate[GObjID][unit->GetID()] = unit;
 
 			unit->Reset(true);
 			if (OnFocus)
 			{
-				unit->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
 				unit->SetRoom(mRoomMap[mFocusedRoomHash].lock());
 				mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(unit, Coord);
 			}
@@ -190,11 +189,10 @@ public:
 			return std::weak_ptr<T>();
 
 		std::shared_ptr<CUnitbase> ub = std::dynamic_pointer_cast<CUnitbase>(unit.lock());
-		mUnitsActivate[GObjID].push_back(ub);
+		mUnitsActivate[GObjID][ub->GetID()] = ub;
 
 		if (OnFocus)
 		{
-			ub->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
 			ub->SetRoom(mRoomMap[mFocusedRoomHash].lock());
 			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(ub, Coord);
 		}
@@ -205,15 +203,14 @@ public:
 	{
 		if (!mObstaclesDeactivate[GObjID].empty())
 		{
-			std::shared_ptr<CObstaclebase> obstacle = mObstaclesDeactivate[GObjID].front().lock();
+			std::shared_ptr<CObstaclebase> obstacle = mObstaclesDeactivate[GObjID].begin()->second.lock();
 			std::shared_ptr<T> ob = std::dynamic_pointer_cast<T>(obstacle);
-			mObstaclesDeactivate[GObjID].pop_front();
-			mObstaclesActivate[GObjID].push_back(obstacle);
+			mObstaclesDeactivate[GObjID].erase(obstacle->GetID());
+			mObstaclesActivate[GObjID][obstacle->GetID()] = obstacle;
 
 			obstacle->Reset(true);
 			if(OnFocus)
 			{
-				obstacle->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
 				obstacle->SetRoom(mRoomMap[mFocusedRoomHash].lock());
 				mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(obstacle, Coord);
 			}
@@ -225,11 +222,10 @@ public:
 			return std::weak_ptr<T>();
 		
 		std::shared_ptr<CObstaclebase> ob = std::dynamic_pointer_cast<CObstaclebase>(obstacle.lock());
-		mObstaclesActivate[GObjID].push_back(ob);
+		mObstaclesActivate[GObjID][ob->GetID()] = ob;
 
 		if(OnFocus)
 		{
-			ob->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
 			ob->SetRoom(mRoomMap[mFocusedRoomHash].lock());
 			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(ob, Coord);
 		}
@@ -238,22 +234,20 @@ public:
 	template<typename T>
 	std::weak_ptr<T> CreatePickup(const std::string& Name, const int GObjID, FVector2 Coord, bool OnFocus)
 	{
-
 		if (!mPickupsDeactivate[GObjID].empty())
 		{
-			std::shared_ptr<CPickup> pickup = mPickupsDeactivate[GObjID].front().lock();
-			std::shared_ptr<T> ob = std::dynamic_pointer_cast<T>(pickup);
-			mPickupsDeactivate[GObjID].pop_front();
-			mPickupsDeactivate[GObjID].push_back(pickup);
+			std::shared_ptr<CPickup> pickup = mPickupsDeactivate[GObjID].begin()->second.lock();
+			std::shared_ptr<T> pu = std::dynamic_pointer_cast<T>(pickup);
+			mPickupsDeactivate[GObjID].erase(pickup->GetID());
+			mPickupsActivate[GObjID][pickup->GetID()] = pickup;
 
 			pickup->Reset(true);
 			if(OnFocus)
 			{
-				pickup->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
 				pickup->SetRoom(mRoomMap[mFocusedRoomHash]);
 				mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(pickup, Coord);
 			}
-			return ob;
+			return pu;
 		}
 
 		std::weak_ptr<T> pickup = CreateActor<T>(Name);
@@ -261,11 +255,11 @@ public:
 			return std::weak_ptr<T>();
 
 		std::shared_ptr<CPickup> pu = std::dynamic_pointer_cast<CPickup>(pickup.lock());
-		mPickupsActivate[GObjID].push_back(pu);
+		mPickupsActivate[GObjID][pu->GetID()] = pu;
 
 		if(OnFocus)
 		{
-			pu->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
+			pu->SetRoom(mRoomMap[mFocusedRoomHash]);
 			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(pu, Coord);
 		}
 		return pickup;

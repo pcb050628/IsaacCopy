@@ -44,13 +44,25 @@ bool CDebugChapter::Init()
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[2].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);*/
 
-	debugMode = false;
+	debugMode = true;
+	dataType = EGDataType::Sprite;
 
 	if (debugMode) //애니메이션 만들기
 	{
 		//애니메이션 만들때 명심할것
 		//같은 부위인 애니메이션들의 사이즈는 항상 동일해야함
-		animMaker.Init();
+		switch (dataType)
+		{
+		case EGDataType::Anim:
+			animMaker.Init();
+			break;
+		case EGDataType::Sprite:
+			spriteMaker.Init();
+			break;
+		case EGDataType::Room:
+			roomMaker.Init();
+			break;
+		}
 		//roomMaker.Init();
 	}
 	else //테스트 코드
@@ -136,8 +148,18 @@ void CDebugChapter::Update(float DeltaTime)
 {
 	if (debugMode)
 	{
-		//roomMaker.Update();
-		animMaker.Update();
+		switch (dataType)
+		{
+		case EGDataType::Anim:
+			animMaker.Update();
+			break;
+		case EGDataType::Sprite:
+			spriteMaker.Update();
+			break;
+		case EGDataType::Room:
+			roomMaker.Update();
+			break;
+		}
 	}
 	else
 		CChapter::Update(DeltaTime);

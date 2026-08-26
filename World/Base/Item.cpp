@@ -11,11 +11,11 @@ CItem::~CItem()
 {
 }
 
-bool CItem::Init()
+bool CItem::Init(const std::weak_ptr<CGameClass>& Owner)
 {
     //아이템은 플레이어에게 종속되기 떄문에 월드에 할당 되지 않음
     //외부에서 생성하는 함수도 액터로 생성하지 않고 
-    return true;
+    return CGameDefinition::Init(Owner);
 }
 
 void CItem::OnHit()
