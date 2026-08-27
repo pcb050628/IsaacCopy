@@ -28,62 +28,8 @@
     <Filter Include="소스 파일\2.World\1.Chapter\3.Item">
       <UniqueIdentifier>{2c334286-61a9-483a-b43f-f313db5da6f7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\3.Item\Blet">
-      <UniqueIdentifier>{43ddeeff-d804-4cb8-acbe-55a3b1433032}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\2.World\1.Chapter\3.Item\SpoonBender">
       <UniqueIdentifier>{78b0e97b-abf1-42f7-9e91-1614706395ce}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room">
-      <UniqueIdentifier>{bd5da692-7472-4254-97a9-5306d93cbe8d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\0.Base">
-      <UniqueIdentifier>{93167817-30ff-4cf9-8012-6a6676fe13f7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member">
-      <UniqueIdentifier>{87401af5-ca06-4305-a9f6-eb169a9cdef1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle">
-      <UniqueIdentifier>{34156043-5c96-4f22-87b4-9e1e48f5112d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle\Base">
-      <UniqueIdentifier>{ef5697e0-ea0c-4472-be9a-253d395d1ec9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle\Rock">
-      <UniqueIdentifier>{d2032e68-af8a-4449-ada4-e18b8b54936a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit">
-      <UniqueIdentifier>{cdf22f46-dd2d-4d81-b73e-565b9519a1c2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Base">
-      <UniqueIdentifier>{c8bd5a9c-48fc-472d-827e-f93e286ac562}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\PlayerCharacter">
-      <UniqueIdentifier>{a09cbb4c-cc67-4b0d-9745-657932ebcc3b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\PlayerCharacter\Base">
-      <UniqueIdentifier>{8d99020a-5ca5-4f25-96bf-fd372f2605ac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\PlayerCharacter\Isaac">
-      <UniqueIdentifier>{cb073f81-f02c-4350-9933-e98b27fdc5ed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster">
-      <UniqueIdentifier>{615cab64-f73b-4f21-9df9-42927a479e6f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\Base">
-      <UniqueIdentifier>{2fa46ce5-1063-4343-b360-1ea3af116042}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\Gaper">
-      <UniqueIdentifier>{38a171e8-0195-4bcc-b154-c42e5e9de14a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup">
-      <UniqueIdentifier>{f8ae1d4e-f75c-4040-b06f-55be244b5bc6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup\Heart">
-      <UniqueIdentifier>{810224ec-619a-4397-95f6-8dc88b3bd21d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\1.Room">
-      <UniqueIdentifier>{43257701-caf4-4ccc-9658-e1505f0b6e27}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\2.World\1.Chapter\1.Door">
       <UniqueIdentifier>{4e61cb1a-6a28-4003-b124-2fb6c8405b56}</UniqueIdentifier>
@@ -160,6 +106,69 @@
     <Filter Include="소스 파일\2.World\0.Debug\GameDataAsset\Data\Sprite">
       <UniqueIdentifier>{ed86f682-4909-44ca-b1bb-9913b5ffd132}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\3.Item\Belt">
+      <UniqueIdentifier>{43ddeeff-d804-4cb8-acbe-55a3b1433032}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\1.GameClass\Component\ActorComponent\ItemContainer">
+      <UniqueIdentifier>{e4ef35ed-ac0c-415f-aef5-331f45759eb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\1.GameClass\Component\ActorComponent\RouteMaker">
+      <UniqueIdentifier>{020725b4-9fb1-451d-b4cd-990285bebf42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\1.GameClass\Component\ActorComponent\TearShooter">
+      <UniqueIdentifier>{02664f7a-7f33-4245-9bcb-6b82be7f4395}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room">
+      <UniqueIdentifier>{bd5da692-7472-4254-97a9-5306d93cbe8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member">
+      <UniqueIdentifier>{87401af5-ca06-4305-a9f6-eb169a9cdef1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle">
+      <UniqueIdentifier>{34156043-5c96-4f22-87b4-9e1e48f5112d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle\Base">
+      <UniqueIdentifier>{ef5697e0-ea0c-4472-be9a-253d395d1ec9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle\Rock">
+      <UniqueIdentifier>{d2032e68-af8a-4449-ada4-e18b8b54936a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit">
+      <UniqueIdentifier>{cdf22f46-dd2d-4d81-b73e-565b9519a1c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Base">
+      <UniqueIdentifier>{c8bd5a9c-48fc-472d-827e-f93e286ac562}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\PlayerCharacter">
+      <UniqueIdentifier>{a09cbb4c-cc67-4b0d-9745-657932ebcc3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\PlayerCharacter\Base">
+      <UniqueIdentifier>{8d99020a-5ca5-4f25-96bf-fd372f2605ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\PlayerCharacter\Isaac">
+      <UniqueIdentifier>{cb073f81-f02c-4350-9933-e98b27fdc5ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster">
+      <UniqueIdentifier>{615cab64-f73b-4f21-9df9-42927a479e6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\Base">
+      <UniqueIdentifier>{2fa46ce5-1063-4343-b360-1ea3af116042}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\Gaper">
+      <UniqueIdentifier>{38a171e8-0195-4bcc-b154-c42e5e9de14a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup">
+      <UniqueIdentifier>{f8ae1d4e-f75c-4040-b06f-55be244b5bc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup\Heart">
+      <UniqueIdentifier>{810224ec-619a-4397-95f6-8dc88b3bd21d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\1.Room">
+      <UniqueIdentifier>{43257701-caf4-4ccc-9658-e1505f0b6e27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\1.Room\0.Base">
+      <UniqueIdentifier>{93167817-30ff-4cf9-8012-6a6676fe13f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -178,7 +187,7 @@
       <Filter>소스 파일\1.GameClass\Component\SceneComponent</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\Roombase.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\0.Base</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\0.Base</Filter>
     </ClCompile>
     <ClCompile Include="World\Door.cpp">
       <Filter>소스 파일\2.World\1.Chapter\1.Door</Filter>
@@ -231,9 +240,6 @@
     <ClCompile Include="World\Base\Tear.cpp">
       <Filter>소스 파일\2.World\1.Chapter\2.Tear</Filter>
     </ClCompile>
-    <ClCompile Include="World\Component\TearShooter.cpp">
-      <Filter>소스 파일\1.GameClass\Component\ActorComponent</Filter>
-    </ClCompile>
     <ClCompile Include="World\Base\Character.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\PlayerCharacter\Base</Filter>
     </ClCompile>
@@ -250,10 +256,7 @@
       <Filter>소스 파일\1.GameClass\Component\SceneComponent</Filter>
     </ClCompile>
     <ClCompile Include="World\Item\ItemBelt.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\3.Item\Blet</Filter>
-    </ClCompile>
-    <ClCompile Include="World\Component\ItemContainer.cpp">
-      <Filter>소스 파일\1.GameClass\Component\ActorComponent</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\3.Item\Belt</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\Pickup.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup</Filter>
@@ -263,9 +266,6 @@
     </ClCompile>
     <ClCompile Include="World\Base\RoomMember.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member</Filter>
-    </ClCompile>
-    <ClCompile Include="World\Component\RouteMaker.cpp">
-      <Filter>소스 파일\1.GameClass\Component\ActorComponent</Filter>
     </ClCompile>
     <ClCompile Include="World\Manager\GameStarter.cpp">
       <Filter>소스 파일\0.Manager\0.GameStarter</Filter>
@@ -297,6 +297,15 @@
     <ClCompile Include="World\Data\SpriteGData.cpp">
       <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Sprite</Filter>
     </ClCompile>
+    <ClCompile Include="World\Component\ItemContainer.cpp">
+      <Filter>소스 파일\1.GameClass\Component\ActorComponent\ItemContainer</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Component\RouteMaker.cpp">
+      <Filter>소스 파일\1.GameClass\Component\ActorComponent\RouteMaker</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Component\TearShooter.cpp">
+      <Filter>소스 파일\1.GameClass\Component\ActorComponent\TearShooter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -318,7 +327,7 @@
       <Filter>소스 파일\1.GameClass\Component\SceneComponent</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\Roombase.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\0.Base</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\0.Base</Filter>
     </ClInclude>
     <ClInclude Include="World\Door.h">
       <Filter>소스 파일\2.World\1.Chapter\1.Door</Filter>
@@ -377,9 +386,6 @@
     <ClInclude Include="World\Base\Tear.h">
       <Filter>소스 파일\2.World\1.Chapter\2.Tear</Filter>
     </ClInclude>
-    <ClInclude Include="World\Component\TearShooter.h">
-      <Filter>소스 파일\1.GameClass\Component\ActorComponent</Filter>
-    </ClInclude>
     <ClInclude Include="World\Base\Character.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\PlayerCharacter\Base</Filter>
     </ClInclude>
@@ -399,10 +405,7 @@
       <Filter>소스 파일\1.GameClass\Component\SceneComponent</Filter>
     </ClInclude>
     <ClInclude Include="World\Item\ItemBelt.h">
-      <Filter>소스 파일\2.World\1.Chapter\3.Item\Blet</Filter>
-    </ClInclude>
-    <ClInclude Include="World\Component\ItemContainer.h">
-      <Filter>소스 파일\1.GameClass\Component\ActorComponent</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\3.Item\Belt</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\Pickup.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup</Filter>
@@ -412,9 +415,6 @@
     </ClInclude>
     <ClInclude Include="World\Base\RoomMember.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member</Filter>
-    </ClInclude>
-    <ClInclude Include="World\Component\RouteMaker.h">
-      <Filter>소스 파일\1.GameClass\Component\ActorComponent</Filter>
     </ClInclude>
     <ClInclude Include="World\Manager\GameStarter.h">
       <Filter>소스 파일\0.Manager\0.GameStarter</Filter>
@@ -445,6 +445,15 @@
     </ClInclude>
     <ClInclude Include="World\Data\SpriteGData.h">
       <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Component\RouteMaker.h">
+      <Filter>소스 파일\1.GameClass\Component\ActorComponent\RouteMaker</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Component\TearShooter.h">
+      <Filter>소스 파일\1.GameClass\Component\ActorComponent\TearShooter</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Component\ItemContainer.h">
+      <Filter>소스 파일\1.GameClass\Component\ActorComponent\ItemContainer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

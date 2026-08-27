@@ -13,6 +13,8 @@
 #include "World/MeshComponent.h"
 #include "World/Animation2DComponent.h"
 
+#include "Door.h"
+
 #include "Data/AnimGData.h"
 
 #include "ImGui/include/imgui.h"
@@ -44,7 +46,7 @@ bool CDebugChapter::Init()
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[2].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);*/
 
-	debugMode = true;
+	debugMode = false;
 	dataType = EGDataType::Sprite;
 
 	if (debugMode) //애니메이션 만들기
@@ -92,6 +94,11 @@ bool CDebugChapter::Init()
 		//}
 
 		InitialSetting();
+		for (int i = 0; i < 4; ++i)
+		{
+			std::shared_ptr<CDoor> door = mDoors[i].lock();
+			door->SetOpen(true);
+		}
 
 		//CTimeManager::SetTimer(3.f, true, this, &CDebugChapter::CheckPlayerPos);
 	}

@@ -14,8 +14,12 @@
 #include "World/SoundComponent.h"
 #include "World/Animation2DComponent.h"
 
+#include "../Data/GameDataManager.h"
+#include "../Data/AnimGData.h"
+
 #include "../Chapter.h"
 #include "Monster.h"
+#include "../Component/SpriteComponent.h"
 #include "../Component/RigidBodyComponent.h"
 #include "../Component/TearShooter.h"
 #include "../Component/ItemContainer.h"
@@ -33,6 +37,27 @@ bool CCharacter::Init()
 {
 	if (!CUnitbase::Init())
 		return false;
+
+	mFullBodyMesh = CreateComponent<CMeshComponent>("FullBodyMesh");
+	mFullBodyAnimator = CreateComponent<CAnimation2DComponent>("FullBodyAnimator");
+	mItemSprite = CreateComponent<CSpriteComponent>("CharacterItemSprite");
+	if (mFullBodyMesh.expired() || mFullBodyAnimator.expired() || mItemSprite.expired())
+		return false;
+
+	mFullBodyMesh.lock()->SetRelativePos(FVector2(0, 25.f));
+	mFullBodyMesh.lock()->SetRelativeScale(FVector2(7.5f, 7.5f));
+	mFullBodyMesh.lock()->SetMesh("TexRect"); mFullBodyMesh.lock()->SetShader("Animation2D");
+	mFullBodyMesh.lock()->SetRenderLayer("Body");
+	mFullBodyMesh.lock()->SetRenderEnable(false);
+	mFullBodyAnimator.lock()->SetUpdateComponent(mFullBodyMesh);
+
+	mItemSprite.lock()->SetRelativePos(FVector2(0, 80.f));
+	mItemSprite.lock()->SetRelativeScale(FVector2(10.f, 10.f));
+	mItemSprite.lock()->SetMesh("TexRect"); mItemSprite.lock()->SetShader("Sprite2D");
+	mItemSprite.lock()->SetRenderLayer("Item");
+	mItemSprite.lock()->SetRenderEnable(false);
+
+	mItemSprite.lock()->SetSpriteData("Crooked_Penny");
 
 	//키 입력 설정만
 	//캐릭터 텍스쳐 등 개인적인 설정은 상속받은 객체에서
@@ -222,6 +247,46 @@ void CCharacter::OnAttributeChanged() //유닛의 능력치 변동 함수들 모
 	mHead.lock()->SetPlayTime(mHeadAnimName + "_Right", mAttribute.ShotTerm);
 }
 
+bool CCharacter::AddFullBodyAnim(const std::string& Name, const TCHAR* FilePath, float PlayTime, float PlayRate, bool Loop, bool Reverse, bool Symmetry)
+{
+	std::shared_ptr<CGameDataManager> dataMgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
+	std::weak_ptr<CGameData> data = dataMgr->FindData<CAnimGData>(Name, EGDataType::Anim);
+	if (data.expired())
+	{
+		if (!dataMgr->LoadDataFile<CAnimGData>(Name, EGDataType::Anim, FilePath))
+			return false;
+		data = dataMgr->FindData<CAnimGData>(Name, EGDataType::Anim);
+	}
+	std::shared_ptr<CAnimGData> d = std::dynamic_pointer_cast<CAnimGData>(data.lock());
+	d->MakeAnim();
+
+	std::shared_ptr<CAnimationManager> mgr = CAssetManager::GetInst()->GetSubManager<CAnimationManager>(EAssetType::Animation2D);
+	std::weak_ptr<CAnimation2D> anim = mgr->FindAnimation(Name);
+
+	mFullBodyAnimator.lock()->AddAnimation(anim);
+	mFullBodyAnimator.lock()->SetFinishFunction(anim.lock()->GetName(), this, &CCharacter::FullBodyAnimEnd);
+
+	return true;
+}
+
+void CCharacter::PlayFullBodyAnim(const std::string& Anim)
+{
+	mbIsFullBodyAnimPlaying = true;
+
+	mHeadMesh.lock()->SetRenderEnable(false);
+	mBodyMesh.lock()->SetRenderEnable(false);
+	if (!mItemContainer.expired())
+	{
+		mItemContainer.lock()->SetHeadRenderEnable(false);
+		mItemContainer.lock()->SetBodyRenderEnable(false);
+	}
+
+	mFullBodyMesh.lock()->SetRenderEnable(true);
+
+	mFullBodyAnimator.lock()->ChangeAnimation(Anim);
+	mFullBodyAnimator.lock()->Play(true);
+}
+
 void CCharacter::PlayBodyVerticalAnim()
 {
 	mBody.lock()->ChangeAnimation(mBodyAnimName + "_V");
@@ -304,6 +369,12 @@ void CCharacter::PlayBodyAnim(bool Stop, bool Reset)
 	mItemContainer.lock()->PlayBodyAnim(Stop, animator->GetAnimationFrame());
 }
 
+void CCharacter::RenderItemSprite(const std::string& SpriteName)
+{
+	mItemSprite.lock()->SetSpriteData(SpriteName);
+	mItemSprite.lock()->SetRenderEnable(true);
+}
+
 void CCharacter::MoveUp()
 {
 	mMoveDirection.y += 1;
@@ -346,24 +417,36 @@ void CCharacter::Fire()
 
 void CCharacter::FireUp()
 {
+	if (mbIsFullBodyAnimPlaying)
+		return;
+
 	SetHeadDirection(FVector2(0, 1));
 	Fire();
 }
 
 void CCharacter::FireLeft()
 {
+	if (mbIsFullBodyAnimPlaying)
+		return;
+
 	SetHeadDirection(FVector2(-1, 0));
 	Fire();
 }
 
 void CCharacter::FireDown()
 {
+	if (mbIsFullBodyAnimPlaying)
+		return;
+
 	SetHeadDirection(FVector2(0, -1));
 	Fire();
 }
 
 void CCharacter::FireRight()
 {
+	if (mbIsFullBodyAnimPlaying)
+		return;
+
 	SetHeadDirection(FVector2(1, 0));
 	Fire();
 }
@@ -374,6 +457,8 @@ void CCharacter::UseItem()
 		return;
 
 	mItemContainer.lock()->UseItem();
+	PlayFullBodyAnim("Isaac_Item_Pickup");
+	RenderItemSprite(mItemContainer.lock()->GetActiveItemName());
 }
 
 void CCharacter::UsePickup()
@@ -390,6 +475,27 @@ void CCharacter::DropPickupPress()
 
 void CCharacter::DropPickupRelease()
 {
+}
+
+void CCharacter::FullBodyAnimEnd()
+{
+	mbIsFullBodyAnimPlaying = false;
+	mFullBodyMesh.lock()->SetRenderEnable(false);
+
+	mBodyMesh.lock()->SetRenderEnable(true);
+	mHeadMesh.lock()->SetRenderEnable(true);
+	if (!mItemContainer.expired())
+	{
+		mItemContainer.lock()->SetHeadRenderEnable(true);
+		mItemContainer.lock()->SetBodyRenderEnable(true);
+	}
+
+	RenderDisableItemSprite();
+}
+
+void CCharacter::RenderDisableItemSprite()
+{
+	mItemSprite.lock()->SetRenderEnable(false);
 }
 
 void CCharacter::Attack(const FVector3& Point, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)

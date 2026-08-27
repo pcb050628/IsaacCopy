@@ -64,6 +64,7 @@ void CRoombase::Update(float DeltaTime)
 	{
 		if (WinCheck())
 		{
+			OpenDoor();
 			WinRoom();
 		}
 	}
@@ -723,4 +724,9 @@ void CRoombase::GenerateRoom(FVector2 Direction, int Min, int Max, int& Current)
 	//LShape 인 경우
 	//TR | RT 은 같은 방향을 가리킨다.
 	return;
+}
+
+void CRoombase::OpenDoor()
+{
+	mChapter.lock()->OpenDoor();
 }

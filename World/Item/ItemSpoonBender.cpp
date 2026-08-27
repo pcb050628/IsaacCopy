@@ -14,7 +14,7 @@
 REGISTER_GAMEDEFCLASS(CItemSpoonBender, "SpoonBender", EObjectType::Item)
 
 CItemSpoonBender::CItemSpoonBender()
-	:CItem(EItemType::Passive)
+	:CItem("Spoon_Bender", EItemType::Passive)
 {
 }
 

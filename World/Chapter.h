@@ -320,6 +320,7 @@ public:
 
 public:
 	void MoveRoom(FVector2 Dir);
+	void OpenDoor(); //<= 이거 꼭 지우고 문 방에 할당한 후에 방에서 여는 함수 다시 작성하기 | 이건 잘못된 구조임
 
 	void RegisterRoom(const std::shared_ptr<CRoombase>& room);
 	void RegisterGObjToRoom(const std::weak_ptr<CRoomMember>& rm, const FVector2& Coord, const FVector2& targetRoomCoord);

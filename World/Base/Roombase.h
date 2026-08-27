@@ -135,4 +135,6 @@ public:
 	const ERoomShape GetRoomShape() const { return mShape; }
 
 private:
+	void OpenDoor();
+
 };

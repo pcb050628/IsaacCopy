@@ -8,7 +8,6 @@ private:
 	std::shared_ptr<struct FAnimationData> d;
 
 	std::string Name;
-	std::string AnimPath;
 	std::string TextureName;
 	std::string TexturePath;
 

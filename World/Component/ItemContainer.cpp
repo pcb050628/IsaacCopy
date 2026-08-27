@@ -170,6 +170,13 @@ void CItemContainer::ReleaseItem(int ID)
 {
 }
 
+std::string CItemContainer::GetActiveItemName()
+{
+	if(mActiveItems.empty())
+		return std::string();
+	return mActiveItems[mActiveFocused]->GetName();
+}
+
 void CItemContainer::UseItem()
 {
 	if (mActiveItems.empty())
@@ -317,6 +324,22 @@ void CItemContainer::SetBodyDirection(FVector2 Dir)
 
 		animator.lock()->SetSymmetry(animName, symmetry);
 		animator.lock()->ChangeAnimation(animName);
+	}
+}
+
+void CItemContainer::SetHeadRenderEnable(bool Enable)
+{
+	for (std::weak_ptr<CMeshComponent> mesh : mHeadMesh)
+	{
+		mesh.lock()->SetRenderEnable(Enable);
+	}
+}
+
+void CItemContainer::SetBodyRenderEnable(bool Enable)
+{
+	for (std::weak_ptr<CMeshComponent> mesh : mBodyMesh)
+	{
+		mesh.lock()->SetRenderEnable(Enable);
 	}
 }
 

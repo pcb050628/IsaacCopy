@@ -3,21 +3,19 @@
 #include "LogManager.h"
 
 #include "World/ColliderBox2D.h"
-#include "World/MeshComponent.h"
 #include "World/SoundComponent.h"
-#include "World/Animation2DComponent.h"
 
 #include "World/CollisionInfoManager.h"
 
 #include "Asset/AssetManager.h"
 #include "Asset/SoundManager.h"
-#include "Asset/AnimationManager.h"
 #include "Data/GameDataManager.h"
 #include "Data/GameObjectStructure.h"
-#include "Data/AnimGData.h"
+#include "Data/SpriteGData.h"
 
 #include "Chapter.h"
 #include "Component/RigidBodyComponent.h"
+#include "Component/SpriteComponent.h"
 
 #include "Base/Roombase.h"
 #include "Base/Unitbase.h"
@@ -43,13 +41,19 @@ CDoor::~CDoor()
 bool CDoor::Init()
 {
 	mBoxColComp = CreateComponent<CColliderBox2D>("Root");
-	mMesh = CreateComponent<CMeshComponent>("Mesh");
-	mAnimator = CreateComponent<CAnimation2DComponent>("Animator");
-	mSound = CreateComponent<CSoundComponent>("DoorSound");
-	if (mBoxColComp.expired() || mMesh.expired() || mAnimator.expired() || mSound.expired())
-		return false;
+	mFrameRenderer = CreateComponent<CSpriteComponent>("FrameSprite");
 
-	mMesh.lock()->SetWorldScale(100.f, 100.f);
+	mLayerRenderer1 = CreateComponent<CSpriteComponent>("LayerSprite", "FrameSprite");
+	mLayer2Rigid = CreateComponent<CRigidBodyComponent>("Layer2Rigid", "FrameSprite");
+	mLayer3Rigid = CreateComponent<CRigidBodyComponent>("Layer3Rigid", "FrameSprite");
+
+	mLayerRenderer2 = CreateComponent<CSpriteComponent>("LayerSprite", "Layer2Rigid");
+	mLayerRenderer3 = CreateComponent<CSpriteComponent>("LayerSprite", "Layer3Rigid");
+	mSound = CreateComponent<CSoundComponent>("DoorSound");
+	if (mBoxColComp.expired()
+		|| mFrameRenderer.expired() || mLayerRenderer1.expired() || mLayerRenderer2.expired() || mLayerRenderer3.expired()
+		|| mSound.expired())
+		return false;
 
 	std::shared_ptr<CColliderBox2D> box = mBoxColComp.lock();
 	box->SetBoxSize(100.f, 100.f);
@@ -60,25 +64,37 @@ bool CDoor::Init()
 
 	//메시 또는 애니메이션 초기화 코드 작성하기
 
-	std::shared_ptr<CMeshComponent> mesh = mMesh.lock();
-	mesh->SetMesh("TexRect"); mesh->SetShader("Animation2D");
+	std::shared_ptr<CSpriteComponent> frame = mFrameRenderer.lock();
+	std::shared_ptr<CSpriteComponent> layer1 = mLayerRenderer1.lock();
+	std::shared_ptr<CSpriteComponent> layer2 = mLayerRenderer2.lock();
+	std::shared_ptr<CSpriteComponent> layer3 = mLayerRenderer3.lock();
+	frame->SetMesh("TexRect"); frame->SetShader("Sprite2D");
+	layer1->SetMesh("TexRect"); layer1->SetShader("Sprite2D");
+	layer2->SetMesh("TexRect"); layer2->SetShader("Sprite2D");
+	layer3->SetMesh("TexRect"); layer3->SetShader("Sprite2D");
 
-	auto mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
-	if(!mgr->LoadDataFile<CAnimGData>("Door_Wooden_Frame", EGDataType::Anim, TEXT("Door_Wooden_Frame")))
-		return false;
-	if (!mgr->LoadDataFile<CAnimGData>("Door_Wooden_Layer", EGDataType::Anim, TEXT("Door_Wooden_Layer")))
-		return false;
-	auto frameData = mgr->FindData<CAnimGData>("Door_Wooden_Frame", EGDataType::Anim).lock();
-	frameData->MakeAnim();
-	auto layerData = mgr->FindData<CAnimGData>("Door_Wooden_Layer", EGDataType::Anim).lock();
-	layerData->MakeAnim();
+	frame->SetWorldScale(100.f, 100.f);
+	//layer2->SetRelativePos(-10.f, 0);
+	//layer3->SetRelativePos(10.f, 0);
 
-	std::shared_ptr<CAnimation2DComponent> animator = mAnimator.lock();
-	animator->SetUpdateComponent(mMesh);
-	animator->AddAnimation(frameData->GetData().Name);
-	animator->AddAnimation(layerData->GetData().Name);
+	layer1->SetRenderState(0, "StencilMaskWrite");
+	layer2->SetRenderState(0, "StencilMaskApply");
+	layer3->SetRenderState(0, "StencilMaskApply");
 
-	mMesh.lock()->SetRenderLayer("Obstacle");
+	frame->SetSpriteData("Door_Wooden_Frame");
+	layer1->SetSpriteData("Door_Wooden_Layer_1");
+	layer2->SetSpriteData("Door_Wooden_Layer_2_1");
+	layer3->SetSpriteData("Door_Wooden_Layer_2_2");
+
+	frame->SetRenderLayer("Obstacle");
+	layer1->SetRenderLayer("Obstacle");
+	layer2->SetRenderLayer("Obstacle");
+	layer3->SetRenderLayer("Obstacle");
+
+	layer1->SetRelativePos(-0.9f, 0);
+
+	mLayer2Rigid.lock()->SetMass(1.f); mLayer2Rigid.lock()->SetUseGravity(false); mLayer2Rigid.lock()->SetMoveRoot(false);
+	mLayer3Rigid.lock()->SetMass(1.f); mLayer3Rigid.lock()->SetUseGravity(false); mLayer3Rigid.lock()->SetMoveRoot(false);
 
 	std::shared_ptr<CSoundManager> soundMgr = CAssetManager::GetInst()->GetSubManager<CSoundManager>(EAssetType::Sound);
 	mCloseSound = soundMgr->FindSound("Obstacle_door_close");
@@ -109,23 +125,27 @@ void CDoor::Destroy()
 
 void CDoor::SetOpen(bool Val)
 {
+	mLayer2Rigid.lock()->SetRelativePos(0, 0);
+	mLayer3Rigid.lock()->SetRelativePos(0, 0);
+
 	mbIsOpen = Val;
 	if(mbIsOpen)
 	{
 		mBoxColComp.lock()->SetCollisionProfile("Door");
 		mSound.lock()->mSound = mOpenSound.lock();
+
+		mLayer2Rigid.lock()->AddForce(FVector3(-1, 0, 0) * 200.f);
+		mLayer3Rigid.lock()->AddForce(FVector3(1, 0, 0) * 200.f);
 	}
 	else
 	{
 		mBoxColComp.lock()->SetCollisionProfile("Wall");
 		mSound.lock()->mSound = mCloseSound.lock();
+
+		mLayer2Rigid.lock()->SetVelocity(FVector3::Zero);
+		mLayer3Rigid.lock()->SetVelocity(FVector3::Zero);
 	}
 	mSound.lock()->Play();
-	//나중에 작성할것
-	//애니메이션 출력
-	//문열리는 애니메이션 만들어야하는데
-	//이 거지같은 리소스가 시발 문이 양쪽이 떨어져서 만들어져 있고
-	//메시 두개 올려서 스텐실 뷰 사용해야할듯
 }
 
 void CDoor::SetBoxSize(FVector2 size)

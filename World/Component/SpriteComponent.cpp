@@ -5,6 +5,9 @@
 #include "Asset/CBufferSprite2D.h"
 #include "Asset/Texture.h"
 
+#include "../Data/GameDataManager.h"
+#include "../Data/SpriteGData.h"
+
 CSpriteComponent::CSpriteComponent()
 {
 }
@@ -30,8 +33,35 @@ void CSpriteComponent::SetTexture(const std::string& Name)
     if (TextureMgr)
     {
         mTexture = TextureMgr->FindTexture(Name);
-        AddTexture(0, mTexture);
+        CMeshComponent::SetTexture(0, 0, mTexture);
     }
+}
+
+void CSpriteComponent::SetSpriteData(const std::string& dataName)
+{
+    std::shared_ptr<CGameDataManager> mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
+    if (mgr)
+    {
+        std::shared_ptr<CSpriteGData> sprite = mgr->FindData<CSpriteGData>(dataName, EGDataType::Sprite).lock();
+        if (sprite)
+        {
+            mSpriteData = sprite->GetData();
+
+            SetTexture(mSpriteData.TextureName);
+            SetUV(mSpriteData.UV.Start, mSpriteData.UV.Size);
+        }
+    }
+}
+
+void CSpriteComponent::SetSpriteData(const std::weak_ptr<class CSpriteGData>& d)
+{
+    if (d.expired())
+        return;
+
+    mSpriteData = d.lock()->GetData();
+
+    SetUV(mSpriteData.UV.Start, mSpriteData.UV.Size);
+    SetTexture(mSpriteData.Name);
 }
 
 void CSpriteComponent::SetUV(FVector2 Start, FVector2 Size)

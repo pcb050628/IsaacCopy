@@ -16,7 +16,7 @@
 REGISTER_GAMEDEFCLASS(CItemCroockedPenny, "Croocked Penny", EObjectType::Item)
 
 CItemCroockedPenny::CItemCroockedPenny()
-    :CItem(EItemType::Active, false, false, false, false, false, true)
+    :CItem("Crooked_Penny", EItemType::Active, false, false, false, false, false, true)
 {
     mEnergyMax = 4;
     mCurrentEnergy = mEnergyMax;

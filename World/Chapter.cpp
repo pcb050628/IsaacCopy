@@ -185,7 +185,7 @@ void CChapter::InitialSetting()
 		door->SetEnable(true);
 		bool enable = room->HasNearRoom(FourDirections[i]);
 		door->SetRenderEnable(enable);
-		door->SetOpen(enable);
+		door->SetOpen(false);
 		for (int j = -1; j < 2; ++j)
 		{
 			if (0 == j)
@@ -304,6 +304,13 @@ void CChapter::MoveRoom(FVector2 Dir)
 	mInput->SetEnable(false);
 	mRoomMap[mPrevRoomHash].lock()->PauseRoom();
 	mRoomMap[mFocusedRoomHash].lock()->PauseRoom();
+}
+void CChapter::OpenDoor() //잠금 해제 조건들 중 어떤 것이 충족되었는지 입력받기
+{
+	for (int i = 0; i < 4; i++)//방 크기 확인하고 반복 횟수 지정하기
+	{
+		mDoors[i].lock()->SetOpen(true); //문 잠금 해제 조건 확인하고 열기
+	}
 }
 void CChapter::RegisterRoom(const std::shared_ptr<CRoombase>& room)
 {

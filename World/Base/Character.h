@@ -28,6 +28,11 @@ protected:
     std::string mDefaultHeadAnimName;
     std::string mDefaultBodyAnimName;
 
+    std::weak_ptr<class CMeshComponent> mFullBodyMesh;
+    std::weak_ptr<class CAnimation2DComponent> mFullBodyAnimator; //캐릭터 애니메이션 렌더 시 ( 점프, 순간이동 등 )
+    bool mbIsFullBodyAnimPlaying = false;
+    std::weak_ptr<class CSpriteComponent> mItemSprite; //캐릭터는 아닌데 캐릭터가 렌더해야하는 것 ( 아이템 획득 또는 사용시 )
+
 public:
     virtual bool Init();//초기화 단계에서 첫번째 캐릭터인지 알아야함
     virtual void Update(float DeltaTime);
@@ -74,6 +79,10 @@ public:
     //void AddPlayerEffect();
 
 protected:
+    virtual bool AddFullBodyAnim(const std::string& Name, const TCHAR* FilePath, float PlayTime, float PlayRate, bool Loop, bool Reverse, bool Symmetry);
+
+    virtual void PlayFullBodyAnim(const std::string& Anim);
+
     virtual void PlayBodyVerticalAnim();
     virtual void PlayBodyHorizontalAnim();
     virtual void PlayHeadVerticalAnim();
@@ -81,6 +90,8 @@ protected:
 
     virtual void PlayHeadAnim(bool Stop = false, bool Reset = false);
     virtual void PlayBodyAnim(bool Stop = false, bool Reset = false);
+
+    virtual void RenderItemSprite(const std::string& SpriteName);
 
 private:
     void MoveUp();
@@ -101,6 +112,8 @@ private:
     void DropPickupPress();
     void DropPickupRelease();
 
+    void FullBodyAnimEnd();
+    void RenderDisableItemSprite();
 
     void Attack(const FVector3& Point, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
 };

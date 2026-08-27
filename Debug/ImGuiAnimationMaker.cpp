@@ -18,7 +18,6 @@ void CImGuiAnimationMaker::Init()
 	gd = std::make_shared<CAnimGData>();
 
 	Name.reserve(100);
-	AnimPath.reserve(100);
 	TextureName.reserve(100);
 	TexturePath.reserve(100);
 }
@@ -49,7 +48,6 @@ void CImGuiAnimationMaker::Update()
 void CImGuiAnimationMaker::InputInfo()
 {
 	ImGui::InputText("AnimName", &Name);
-	ImGui::InputText("AnimFileName", &AnimPath);
 	ImGui::InputText("TexName", &TextureName);
 	ImGui::InputText("TexFileName", &TexturePath);
 }
@@ -189,7 +187,7 @@ void CImGuiAnimationMaker::MakeButton()
 			gd->ContainData(*d.get());
 			gd->MakeAnim();
 			std::wstring path = L"Anim\\";
-			path += std::wstring().assign(AnimPath.begin(), AnimPath.end());
+			path += std::wstring().assign(Name.begin(), Name.end());
 			gd->WriteData(path.c_str());
 		}
 	}
@@ -225,7 +223,7 @@ void CImGuiAnimationMaker::LoadAnimButton()
 	if (ImGui::Button("Load Anim"))
 	{
 		std::shared_ptr<CGameDataManager> mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
-		std::wstring path(AnimPath.begin(), AnimPath.end());
+		std::wstring path(Name.begin(), Name.end());
 		if (!mgr->LoadDataFile<CAnimGData>(Name, EGDataType::Anim, path.c_str()))
 		{
 			ImGui::OpenPopup(ErrorPopupID.c_str());

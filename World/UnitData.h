@@ -177,8 +177,21 @@ enum class EPlayerHeartState
 
 struct FPlayerHeartData
 {
-	EPlayerHeartType Type;
-	EPlayerHeartState State;
+	EPlayerHeartType Type = EPlayerHeartType::Red;
+	EPlayerHeartState State = EPlayerHeartState::Empty;
+
+	FPlayerHeartData(EPlayerHeartType t, EPlayerHeartState s)
+		:Type(t), State(s)
+	{
+
+	}
+};
+
+struct FPlayerHeartContainer
+{
+	std::vector<FPlayerHeartData> Hearts;
+	int Limit = 3;
+	int WhiteCount = 0; //2개 되면 한칸 늘리기
 };
 
 namespace CharacterEffect

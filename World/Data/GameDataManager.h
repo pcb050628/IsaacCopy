@@ -42,6 +42,9 @@ public:
 		case EGDataType::Anim:
 			filePath.insert(0, TEXT("Anim\\"));
 			break;
+		case EGDataType::Sprite:
+			filePath.insert(0, TEXT("Sprite\\"));
+			break;
 		}
 
 		std::shared_ptr<T> original = std::make_shared<T>();

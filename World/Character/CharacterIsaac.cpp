@@ -65,6 +65,9 @@ bool CCharacterIsaac::Init()
     input->AddBindKey("TestFunc", 'J');
     input->SetBindFunction("TestFunc", EInputType::Press, this, &CCharacterIsaac::TestFuncForItemContainer);
 
+
+    AddFullBodyAnim("Isaac_Item_Pickup", TEXT("Isaac_Item_Pickup"), 1.f, 1.f, false, false, false);
+
     mActorTag = "Isaac";
 
     return true;

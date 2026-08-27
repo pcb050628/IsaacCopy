@@ -19,8 +19,14 @@ public:
 protected:
     std::weak_ptr<class CRoombase> mRoomOwner;
     std::weak_ptr<class CColliderBox2D> mBoxColComp;
-    std::weak_ptr<class CMeshComponent> mMesh; 
-    std::weak_ptr<class CAnimation2DComponent> mAnimator; 
+    std::weak_ptr<class CSpriteComponent> mFrameRenderer;
+    std::weak_ptr<class CSpriteComponent> mLayerRenderer1;
+    std::weak_ptr<class CSpriteComponent> mLayerRenderer2;
+    std::weak_ptr<class CSpriteComponent> mLayerRenderer3;
+    
+    std::weak_ptr<class CRigidBodyComponent> mLayer2Rigid;
+    std::weak_ptr<class CRigidBodyComponent> mLayer3Rigid;
+
     std::weak_ptr<class CSoundComponent> mSound;
 
     FVector2 mDirection;

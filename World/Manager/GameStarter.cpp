@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "RenderManager.h"
+
 #include "Asset/AssetManager.h"
 #include "Asset/PathManager.h"
 #include "Asset/TextureManager.h"
@@ -23,6 +25,14 @@ bool CGameStarter::Start()
 	mgr->SetGroupVolume("BGM", 35);
 	mgr->SetGroupVolume("Obstacle", 35);
 	mgr->SetGroupVolume("Monster", 55);
+
+	CRenderManager::GetInst()->CreateDepthStencilState("StencilMaskWrite", false, D3D11_DEPTH_WRITE_MASK_ALL, D3D11_COMPARISON_LESS, true, (UINT8)255U, (UINT8)255U,
+		{ D3D11_STENCIL_OP_ZERO, D3D11_STENCIL_OP_REPLACE, D3D11_STENCIL_OP_REPLACE, D3D11_COMPARISON_ALWAYS },
+		{ D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS }, 1U);
+	CRenderManager::GetInst()->CreateDepthStencilState("StencilMaskApply", false, D3D11_DEPTH_WRITE_MASK_ALL, D3D11_COMPARISON_LESS, true, (UINT8)255U, (UINT8)255U,
+		{ D3D11_STENCIL_OP_ZERO, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_EQUAL },
+		{ D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS },
+		1U);
 
 	return true;
 }

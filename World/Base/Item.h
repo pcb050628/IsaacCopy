@@ -6,7 +6,7 @@ class CItem :
 	public CGameDefinition
 {
 public:
-	CItem(EItemType Type, bool hit = false, bool shot = false, bool dead = false, bool kill = false
+	CItem(const std::string& Name, EItemType Type, bool hit = false, bool shot = false, bool dead = false, bool kill = false
 		, bool enterRoom = false, bool winRoom = false, bool exitRoom = false, bool enterChapter = false
 		, bool disposable = false);
 	virtual ~CItem() = 0;

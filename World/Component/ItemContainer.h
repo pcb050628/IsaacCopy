@@ -42,6 +42,8 @@ public:
 	bool IsContained(int ID);
 	void ReleaseItem(int ID);
 
+	std::string GetActiveItemName();
+
 public:
 	void UseItem();
 
@@ -62,6 +64,9 @@ public:
 
 	void SetHeadAnimPlayTime(float Time);
 	void SetBodyAnimPlayTime(float Time);
+
+	void SetHeadRenderEnable(bool Enable);
+	void SetBodyRenderEnable(bool Enable);
 
 private:
 	void ContainPassive(const std::shared_ptr<CItem>& item);

@@ -12,7 +12,7 @@
 REGISTER_GAMEDEFCLASS(CItemBelt, "Belt", EObjectType::Item)
 
 CItemBelt::CItemBelt()
-    :CItem(EItemType::Passive)
+    :CItem("Belt", EItemType::Passive)
 {
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "EngineInfo.h"
+#include "../UnitData.h"
 
 class CGameObject;
 class CGameRuleManager
@@ -23,6 +24,8 @@ private: //일단 다 모아두고 모아 둘 필요가 없으면 흩어놓기
 	//2. 오브젝트에 대해서
 	
 	//3. 플레이어에 대해서
+	EPlayerHeartType mPlayerHeartDrainPriority = EPlayerHeartType::End;
+	std::map<int, FPlayerHeartContainer> mPlayerHeartContainer;
 
 public:
 	bool Init();
@@ -32,6 +35,12 @@ public:
 	int GenerateRandomI() { return static_cast<int>(mfDistribution(mGen) * 100); }
 
 	const int GetItemWeightStack() const { return PlayerItemWeightStack; }
+
+	void RegisterPlayerHeartContainer(const int InstantID, const int InitialLimit = 3);
+	bool FillHeart(const int ID, EPlayerHeartType Heart, EPlayerHeartState State = EPlayerHeartState::Half); //체력 채우기
+	bool DrainHeart(const int ID, EPlayerHeartType Heart, EPlayerHeartState State = EPlayerHeartState::Half); //체력 빼기
+	bool AddContainerCapcity(const int ID, EPlayerHeartState State = EPlayerHeartState::Full); //칸 늘리기
+	bool RemoveContainerCapcity(const int ID); //칸 줄이기
 
 	template<typename T>
 	void RegisterRoomEnterFunc(std::shared_ptr<T> Obj, void(T::*Func)())

@@ -1,10 +1,11 @@
 #include "Item.h"
 
-CItem::CItem(EItemType Type, bool hit, bool shot, bool dead, bool kill, bool enterRoom, bool winRoom, bool exitRoom, bool enterChapter, bool disposable)
+CItem::CItem(const std::string& Name, EItemType Type, bool hit, bool shot, bool dead, bool kill, bool enterRoom, bool winRoom, bool exitRoom, bool enterChapter, bool disposable)
     :CGameDefinition(EObjectType::Item), mItemType(Type)
     , bIsOnHit(hit), bIsOnShot(shot), bIsOnDead(dead), bIsOnKill(kill), bIsEnterRoom(enterRoom), bIsOnWinRoom(winRoom), bIsExitRoom(exitRoom)
     , bIsEnterChapter(enterChapter), mbIsDisposable(disposable)
 {
+    mName = Name;
 }
 
 CItem::~CItem()
