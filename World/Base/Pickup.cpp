@@ -56,16 +56,6 @@ void CPickup::OnCollision(const FVector3& HitPoint, const FVector3& Normal, std:
     EObjectType t = obj->GetObjType();
     switch (t)
     {
-    case EObjectType::PlayerCharacter:
-        break;
-    default:
-    case EObjectType::Door:
-    case EObjectType::Monster:
-    case EObjectType::Obstacle:
-    case EObjectType::Pickup:
-    case EObjectType::End:
-        mRigidbody.lock()->SetVelocity(-Normal * 100.f);
-        return;
     case EObjectType::Tear:
         return;
     }
@@ -73,10 +63,15 @@ void CPickup::OnCollision(const FVector3& HitPoint, const FVector3& Normal, std:
     if (EObjectType::PlayerCharacter == t)
     {
         std::shared_ptr<CCharacter> p = std::dynamic_pointer_cast<CCharacter>(obj);
-
+        bool check = false;
         if (mbIsAboutPickup)
         {
-            p->OnGetPickup(mPickupType, mAffectPickupCount);
+            if (TryGet(p))
+            {
+                p->OnGetPickup(mPickupType, mAffectPickupCount); //
+                ReturnToChapter();
+                return;
+            }
         }
         else if (mbIsAboutCharacter)
         {
@@ -86,11 +81,21 @@ void CPickup::OnCollision(const FVector3& HitPoint, const FVector3& Normal, std:
         {
 
         }
-
-        ReturnToChapter();
+        if (check)
+        {
+            ReturnToChapter();
+            return;
+        }
     }
+
+    mRigidbody.lock()->SetVelocity(-Normal * 100.f);
 }
 
 void CPickup::InstantiatePickup()
 {
+}
+
+bool CPickup::TryGet(std::weak_ptr<class CCharacter> chara)
+{
+    return false;
 }

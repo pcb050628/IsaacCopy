@@ -34,9 +34,6 @@
     <Filter Include="소스 파일\2.World\1.Chapter\1.Door">
       <UniqueIdentifier>{4e61cb1a-6a28-4003-b124-2fb6c8405b56}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\0.GameSystem">
-      <UniqueIdentifier>{7da11b31-5d54-4f7a-8a2a-a1d819271f68}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\2.World\0.Debug">
       <UniqueIdentifier>{45dc776b-d4dc-4d66-9eaf-534a1a17f6a0}</UniqueIdentifier>
     </Filter>
@@ -169,6 +166,15 @@
     <Filter Include="소스 파일\2.World\1.Chapter\4.Room\1.Room\0.Base">
       <UniqueIdentifier>{93167817-30ff-4cf9-8012-6a6676fe13f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\0.GameSystemActor">
+      <UniqueIdentifier>{7da11b31-5d54-4f7a-8a2a-a1d819271f68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\1.GameClass\Component\SceneComponent\Rigidbody">
+      <UniqueIdentifier>{86e80254-c5f7-4830-93bc-0748fb6fab60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\1.GameClass\Component\SceneComponent\SpriteRenderer">
+      <UniqueIdentifier>{663a1adc-e4a3-447f-b2b3-3a0b3d12115d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -182,9 +188,6 @@
     </ClCompile>
     <ClCompile Include="World\Base\Unitbase.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="World\Component\RigidBodyComponent.cpp">
-      <Filter>소스 파일\1.GameClass\Component\SceneComponent</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\Roombase.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\0.Base</Filter>
@@ -226,7 +229,7 @@
       <Filter>소스 파일\2.World\1.Chapter</Filter>
     </ClCompile>
     <ClCompile Include="World\GameSystemActor.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\0.GameSystem</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\0.GameSystemActor</Filter>
     </ClCompile>
     <ClCompile Include="World\Data\AnimGData.cpp">
       <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Anim</Filter>
@@ -251,9 +254,6 @@
     </ClCompile>
     <ClCompile Include="World\Base\Item.cpp">
       <Filter>소스 파일\2.World\1.Chapter\3.Item</Filter>
-    </ClCompile>
-    <ClCompile Include="World\Component\SpriteComponent.cpp">
-      <Filter>소스 파일\1.GameClass\Component\SceneComponent</Filter>
     </ClCompile>
     <ClCompile Include="World\Item\ItemBelt.cpp">
       <Filter>소스 파일\2.World\1.Chapter\3.Item\Belt</Filter>
@@ -306,6 +306,15 @@
     <ClCompile Include="World\Component\TearShooter.cpp">
       <Filter>소스 파일\1.GameClass\Component\ActorComponent\TearShooter</Filter>
     </ClCompile>
+    <ClCompile Include="World\UnitData.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Component\RigidBodyComponent.cpp">
+      <Filter>소스 파일\1.GameClass\Component\SceneComponent\Rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Component\SpriteComponent.cpp">
+      <Filter>소스 파일\1.GameClass\Component\SceneComponent\SpriteRenderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -322,9 +331,6 @@
     </ClInclude>
     <ClInclude Include="World\UnitData.h">
       <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="World\Component\RigidBodyComponent.h">
-      <Filter>소스 파일\1.GameClass\Component\SceneComponent</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\Roombase.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\0.Base</Filter>
@@ -372,7 +378,7 @@
       <Filter>소스 파일\2.World\1.Chapter</Filter>
     </ClInclude>
     <ClInclude Include="World\GameSystemActor.h">
-      <Filter>소스 파일\2.World\1.Chapter\0.GameSystem</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\0.GameSystemActor</Filter>
     </ClInclude>
     <ClInclude Include="World\Data\AnimGData.h">
       <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Anim</Filter>
@@ -400,9 +406,6 @@
     </ClInclude>
     <ClInclude Include="World\Base\Item.h">
       <Filter>소스 파일\2.World\1.Chapter\3.Item</Filter>
-    </ClInclude>
-    <ClInclude Include="World\Component\SpriteComponent.h">
-      <Filter>소스 파일\1.GameClass\Component\SceneComponent</Filter>
     </ClInclude>
     <ClInclude Include="World\Item\ItemBelt.h">
       <Filter>소스 파일\2.World\1.Chapter\3.Item\Belt</Filter>
@@ -454,6 +457,12 @@
     </ClInclude>
     <ClInclude Include="World\Component\ItemContainer.h">
       <Filter>소스 파일\1.GameClass\Component\ActorComponent\ItemContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Component\RigidBodyComponent.h">
+      <Filter>소스 파일\1.GameClass\Component\SceneComponent\Rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Component\SpriteComponent.h">
+      <Filter>소스 파일\1.GameClass\Component\SceneComponent\SpriteRenderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

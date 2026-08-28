@@ -150,12 +150,13 @@ void CItemContainer::ContainItem(int ID)
 
 	if (item->HasAttribute()) //능력치 적용
 	{
-		FUnitAttribute charAttribute = character->GetAttribute();
 		FUnitAttribute itemAttribute = item->GetAttribute();
 		if (item->GetIsMagnification())
 			character->AddMagnification(itemAttribute);
 		else
-			character->AddAttribute(charAttribute + itemAttribute);
+			character->AddAttribute(itemAttribute);
+
+		character->OnAttributeChanged();
 	}
 
 	item->OnGetItem(mOwnerCharacter);
@@ -190,11 +191,11 @@ void CItemContainer::UseItem()
 		LOG_DEBUG("아이템 사용 실패");
 }
 
-void CItemContainer::OnHit()
+void CItemContainer::OnGetHit(std::weak_ptr<CGameObject> from, int& dmg)
 {
 	for (std::weak_ptr<CItem> item : mItemCallbackMap["Hit"])
 	{
-		item.lock()->OnHit();
+		item.lock()->OnGetHit();
 	}
 }
 

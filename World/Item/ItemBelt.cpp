@@ -42,7 +42,7 @@ bool CItemBelt::Init(const std::weak_ptr<CGameClass>& Owner)
     mbHasBodyAnim = true;
     mbIsBodyAnimOverride = true;
     mbIsHasAttribute = true;
-    mUnitAdditionalAttribute.Speed = 20.f;
+    mUnitAdditionalAttribute.Speed = 5.f;
     mBodyAnimName = "Item_Belt_Walk";
 
     return true;

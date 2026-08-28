@@ -28,7 +28,25 @@ bool CRigidBodyComponent::Init()
 
 void CRigidBodyComponent::Update(float DeltaTime)
 {
-    if (!mRBVelocity.IsZero())
+    if (mGravityOn)
+    {
+        if (mRBVelocity.Length() > mRBSpeedLimit)
+        {
+            mRBVelocity.Normalize();
+            mRBVelocity *= mRBSpeedLimit;
+        }
+
+        if (mSetMoveRoot)
+            AddWorldPos(mRBVelocity * DeltaTime);
+        else
+            AddRelativePos(mRBVelocity * DeltaTime);
+
+        float friction = mMass * DeltaTime;
+        FVector3 v3Friction = FVector3(friction, friction, 0);
+
+        mRBVelocity += -mRBVelocity * friction + FVector3(0, -1 * mMass * 45 * mGravity * DeltaTime, 0);
+    }
+    else if (!mRBVelocity.IsZero())
     {
         if (mRBVelocity.Length() > mRBSpeedLimit)
         {
@@ -41,9 +59,7 @@ void CRigidBodyComponent::Update(float DeltaTime)
         else
             AddRelativePos(mRBVelocity * DeltaTime);
 
-        float friction = mMass * mGravity * DeltaTime;
-        if (!mGravityOn)
-            friction /= mGravity;
+        float friction = mMass * DeltaTime;
         mRBVelocity += -mRBVelocity * friction;
 
         if (mRBVelocity.Length() < 0.1f)

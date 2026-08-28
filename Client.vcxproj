@@ -197,6 +197,7 @@
     <ClCompile Include="World\Obstacle\RockObstacle.cpp" />
     <ClCompile Include="World\Pickup\PickupRedHeart.cpp" />
     <ClCompile Include="World\Room\DefaultRoom.cpp" />
+    <ClCompile Include="World\UnitData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Debug\ImGuiAnimationMaker.h" />

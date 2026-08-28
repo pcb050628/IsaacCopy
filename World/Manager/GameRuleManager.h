@@ -26,6 +26,7 @@ private: //일단 다 모아두고 모아 둘 필요가 없으면 흩어놓기
 	//3. 플레이어에 대해서
 	EPlayerHeartType mPlayerHeartDrainPriority = EPlayerHeartType::End;
 	std::map<int, FPlayerHeartContainer> mPlayerHeartContainer;
+	std::map<std::string, std::function<void(int, FPlayerHeartContainer)>> OnHeartUpdate; //체력 업데이트 시 호출되어야 하는 함수들
 
 public:
 	bool Init();
@@ -38,9 +39,15 @@ public:
 
 	void RegisterPlayerHeartContainer(const int InstantID, const int InitialLimit = 3);
 	bool FillHeart(const int ID, EPlayerHeartType Heart, EPlayerHeartState State = EPlayerHeartState::Half); //체력 채우기
-	bool DrainHeart(const int ID, EPlayerHeartType Heart, EPlayerHeartState State = EPlayerHeartState::Half); //체력 빼기
-	bool AddContainerCapcity(const int ID, EPlayerHeartState State = EPlayerHeartState::Full); //칸 늘리기
-	bool RemoveContainerCapcity(const int ID); //칸 줄이기
+	bool DrainHeart(const int ID, EPlayerHeartState State = EPlayerHeartState::Half); //체력 빼기
+	bool AddRedContainerCapcity(const int ID, EPlayerHeartState State = EPlayerHeartState::Full); //칸 늘리기
+	bool RemoveRedContainerCapcity(const int ID); //칸 줄이기
+
+	template<typename T>
+	void RegisterPlayerHeartOnUpdate(const std::string& Name, T* Obj, void(T::* Func)(int, FPlayerHeartContainer))
+	{
+		OnHeartUpdate[Name] = std::bind(Func, Obj, std::placeholders::_1, std::placeholders::_2);
+	}
 
 	template<typename T>
 	void RegisterRoomEnterFunc(std::shared_ptr<T> Obj, void(T::*Func)())
@@ -92,5 +99,8 @@ public:
 		OnRoomClear.erase(ID);
 	}
 
+
+private:
+	void CallOnHeartUpdate();
 };
 

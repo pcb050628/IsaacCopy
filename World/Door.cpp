@@ -13,6 +13,8 @@
 #include "Data/GameObjectStructure.h"
 #include "Data/SpriteGData.h"
 
+#include "Manager/GameClassContainer.h"
+
 #include "Chapter.h"
 #include "Component/RigidBodyComponent.h"
 #include "Component/SpriteComponent.h"
@@ -20,17 +22,20 @@
 #include "Base/Roombase.h"
 #include "Base/Unitbase.h"
 
+REGISTER_GAMEOBJCLASS(CDoor, "Door", EObjectType::Door)
+
 CDoor::CDoor()
+	:CGameObject(EObjectType::Door)
 {
 }
 
 CDoor::CDoor(const CDoor& src)
-	:CActor(src)
+	:CGameObject(src)
 {
 }
 
 CDoor::CDoor(CDoor&& src) noexcept
-	:CActor(std::move(src))
+	:CGameObject(std::move(src))
 {
 }
 
@@ -74,8 +79,6 @@ bool CDoor::Init()
 	layer3->SetMesh("TexRect"); layer3->SetShader("Sprite2D");
 
 	frame->SetWorldScale(100.f, 100.f);
-	//layer2->SetRelativePos(-10.f, 0);
-	//layer3->SetRelativePos(10.f, 0);
 
 	layer1->SetRenderState(0, "StencilMaskWrite");
 	layer2->SetRenderState(0, "StencilMaskApply");
@@ -93,8 +96,8 @@ bool CDoor::Init()
 
 	layer1->SetRelativePos(-0.9f, 0);
 
-	mLayer2Rigid.lock()->SetMass(1.f); mLayer2Rigid.lock()->SetUseGravity(false); mLayer2Rigid.lock()->SetMoveRoot(false);
-	mLayer3Rigid.lock()->SetMass(1.f); mLayer3Rigid.lock()->SetUseGravity(false); mLayer3Rigid.lock()->SetMoveRoot(false);
+	mLayer2Rigid.lock()->SetMass(1.f); mLayer2Rigid.lock()->SetLimit(5000.f); mLayer2Rigid.lock()->SetUseGravity(false); mLayer2Rigid.lock()->SetMoveRoot(false);
+	mLayer3Rigid.lock()->SetMass(1.f); mLayer3Rigid.lock()->SetLimit(5000.f); mLayer3Rigid.lock()->SetUseGravity(false); mLayer3Rigid.lock()->SetMoveRoot(false);
 
 	std::shared_ptr<CSoundManager> soundMgr = CAssetManager::GetInst()->GetSubManager<CSoundManager>(EAssetType::Sound);
 	mCloseSound = soundMgr->FindSound("Obstacle_door_close");
@@ -123,6 +126,11 @@ void CDoor::Destroy()
 	CActor::Destroy();
 }
 
+void CDoor::Reset(bool HardReset)
+{
+	SetOpen(false);
+}
+
 void CDoor::SetOpen(bool Val)
 {
 	mLayer2Rigid.lock()->SetRelativePos(0, 0);
@@ -134,8 +142,8 @@ void CDoor::SetOpen(bool Val)
 		mBoxColComp.lock()->SetCollisionProfile("Door");
 		mSound.lock()->mSound = mOpenSound.lock();
 
-		mLayer2Rigid.lock()->AddForce(FVector3(-1, 0, 0) * 200.f);
-		mLayer3Rigid.lock()->AddForce(FVector3(1, 0, 0) * 200.f);
+		mLayer2Rigid.lock()->AddForce(FVector3(-1, 0, 0) * 350.f);
+		mLayer3Rigid.lock()->AddForce(FVector3(1, 0, 0) * 350.f);
 	}
 	else
 	{

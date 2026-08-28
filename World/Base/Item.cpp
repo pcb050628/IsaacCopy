@@ -19,7 +19,7 @@ bool CItem::Init(const std::weak_ptr<CGameClass>& Owner)
     return CGameDefinition::Init(Owner);
 }
 
-void CItem::OnHit()
+void CItem::OnGetHit()
 {
 }
 

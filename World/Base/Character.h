@@ -17,10 +17,14 @@ protected:
     // rb, 머리(메시 애님), 몸(메시 애님), 히트박스, 허트박스, 능력치, 상태(이거 나중에 유닛 가서 만들어야 함)
     //
 
+    FPlayerHeartContainer mInitialHeartSetting;
     std::weak_ptr<class CItemContainer> mItemContainer;
     FVector3 mMoveDirection;
     bool mbIsFiring = false;
     bool mbIsJustFired = false;
+    bool mbIsInvincible = false;
+    float mInvincibleDuration = 1.f;
+    float mInvincibleEffectIntensity = 0.f;
 
     std::string mHeadAnimName;
     std::string mBodyAnimName;
@@ -66,6 +70,8 @@ public:
     void SetDefaultBodyAnim() { mBodyAnimName = mDefaultBodyAnimName; }
     void OverrideBodyAnim(const std::string& Name);
     const std::string& GetBodyAnimName() const { return mBodyAnimName; }
+
+    FPlayerHeartContainer GetInitialHeart() { return mInitialHeartSetting; }
 
 public:
     void OnGetPickup(EPickupType Type, int Count);
@@ -116,5 +122,7 @@ private:
     void RenderDisableItemSprite();
 
     void Attack(const FVector3& Point, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
+
+    void InvincibleEnd();
 };
 

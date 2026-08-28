@@ -14,6 +14,8 @@
 #include "World/SoundComponent.h"
 #include "World/Animation2DComponent.h"
 
+#include "../Manager/GameClassContainer.h"
+
 #include "../Data/GameDataManager.h"
 #include "../Data/AnimGData.h"
 
@@ -79,7 +81,7 @@ bool CCharacter::Init()
 	shooter->UpdateUnitAttributeData(false, mAttribute);
 
 	std::shared_ptr<CRigidBodyComponent> rb = mRigidBody.lock();
-	rb->SetMass(1.f);
+	rb->SetMass(7.f);
 	rb->SetLimit(500.f);
 
 	mHurtBox.lock()->SetCollisionProfile("Player");
@@ -127,6 +129,10 @@ bool CCharacter::Init()
 	mHurtSound.push_back(soundMgr->FindSound("Character_hurt_grunt_1"));
 	mHurtSound.push_back(soundMgr->FindSound("Character_hurt_grunt_2"));
 	mHurtSound.push_back(soundMgr->FindSound("Character_hurt_grunt_3"));
+
+	mInitialHeartSetting.RedContainer.push_back(FPlayerHeartData(EPlayerHeartType::Red, EPlayerHeartState::Full));
+	mInitialHeartSetting.RedContainer.push_back(FPlayerHeartData(EPlayerHeartType::Red, EPlayerHeartState::Full));
+	mInitialHeartSetting.RedContainer.push_back(FPlayerHeartData(EPlayerHeartType::Red, EPlayerHeartState::Full));
 
 	return true;
 }
@@ -176,6 +182,50 @@ void CCharacter::Update(float DeltaTime)
 		PlayHeadAnim(true, true);
 	}
 
+	if(!mOverlaps.empty())
+	{
+		std::map<int, std::weak_ptr<CCollider>>::iterator iter = mOverlaps.begin();
+		std::map<int, std::weak_ptr<CCollider>>::iterator iterEnd = mOverlaps.end();
+		for (; iter != iterEnd;)
+		{
+			if (iter->second.expired() || iter->second.lock()->GetOwner().expired() || !iter->second.lock()->GetOwner().lock()->IsEnable())
+			{
+				iter = mOverlaps.erase(iter);
+				iterEnd = mOverlaps.end();
+				continue;
+			}
+
+			std::shared_ptr<CCollider> col = iter->second.lock();
+			std::shared_ptr<CGameClass> gc = std::dynamic_pointer_cast<CGameClass>(col->GetOwner().lock());
+			if (!mbIsInvincible)
+			{
+				LOG_DEBUG(CGameClassContainer::GetInst()->GetName(gc->GetGClassID()), "가 캐릭터를 공격했습니다.");
+				FVector3 Normal = col->GetWorldPos() - GetWorldPos();
+				Normal.Normalize();
+				mRigidBody.lock()->AddForce(-Normal * 3000.f);
+				GetHit(std::static_pointer_cast<CGameObject>(gc));
+				mbIsInvincible = true;
+				mHeadMesh.lock()->SetHitEffect(0, true, 0, FVector4(1, 1, 1, 0));
+				mBodyMesh.lock()->SetHitEffect(0, true, 0, FVector4(1, 1, 1, 0));
+				CTimeManager::SetTimer(mInvincibleDuration, false, this, &CCharacter::InvincibleEnd);
+				break;
+			}
+			++iter;
+		}
+	}
+
+	if (mbIsInvincible)
+	{
+		//intensity 계산해서 material 업데이트
+		mInvincibleEffectIntensity += DeltaTime * 10;
+		if (mInvincibleEffectIntensity > 1)
+		{
+			mInvincibleEffectIntensity = 0;
+		}
+		mHeadMesh.lock()->SetHitIntensity(0, mInvincibleEffectIntensity);
+		mBodyMesh.lock()->SetHitIntensity(0, mInvincibleEffectIntensity);
+	}
+
 	mMoveDirection = FVector3::Zero;
 	CUnitbase::Update(DeltaTime);
 
@@ -190,6 +240,60 @@ void CCharacter::Destroy()
 
 void CCharacter::GetHit(std::weak_ptr<CGameObject> From)
 {
+	if (From.expired())
+		return;
+
+	//int dmg = static_cast<int>(Dmg);
+	int dmg = 1;
+
+	//2차 검증
+	std::shared_ptr<CGameObject> obj = From.lock();
+	switch (obj->GetObjType())
+	{
+	case EObjectType::PlayerCharacter:
+	case EObjectType::Room:
+	case EObjectType::Door:
+	case EObjectType::Pickup:
+	case EObjectType::End:
+	default:
+		LOG_DEBUG("캐릭터가 이상한 객체에 피격당했습니다.\n클래스 아이디: ", obj->GetGClassID());
+		return;
+	case EObjectType::Tear:
+		LOG_DEBUG("캐릭터가 충돌에서 피격체를 제대로 검사하지 못했습니다. 눈물이 검출되었습니다.\n클래스 아이디: ", obj->GetGClassID());
+		return;
+	case EObjectType::Item:
+		break;
+	case EObjectType::Monster:
+		break;
+	case EObjectType::Obstacle:
+		break;
+	}
+
+	//소리 출력
+	if (mHurtSound.size() > 1)
+	{
+		int rand = CGameRuleManager::GetInst()->GenerateRandomI();
+		mSoundPlayer.lock()->mSound = mHurtSound[rand % mHurtSound.size()].lock();
+	}
+	else if (!mHurtSound.empty())
+	{
+		mSoundPlayer.lock()->mSound = mHurtSound[0].lock();
+	}
+
+	if (!mHurtSound.empty())
+		mSoundPlayer.lock()->Play();
+
+	if (!mItemContainer.expired())
+		mItemContainer.lock()->OnGetHit(From, dmg);
+
+	while (dmg > 0)
+	{
+		int drain = dmg % 2;
+		if (!drain)
+			drain = 1;
+		CGameRuleManager::GetInst()->DrainHeart(mID, static_cast<EPlayerHeartState>(drain));
+		dmg -= drain;
+	}
 }
 
 void CCharacter::Reset(bool hard) //캐릭터는 사용할 일이 없음
@@ -198,10 +302,46 @@ void CCharacter::Reset(bool hard) //캐릭터는 사용할 일이 없음
 
 void CCharacter::OnHurtOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
 {
+	if (Collider.expired() || Collider.lock()->GetOwner().expired())
+		return;
+
+	std::shared_ptr<CGameClass> gc = std::dynamic_pointer_cast<CGameClass>(Collider.lock()->GetOwner().lock());
+	if (!gc)
+		return;
+
+	switch (gc->GetObjType())
+	{
+	case EObjectType::PlayerCharacter:
+	case EObjectType::Room:
+	case EObjectType::Door:
+	case EObjectType::Pickup:
+	case EObjectType::End:
+		return;
+	default:
+	case EObjectType::Item:
+	case EObjectType::Monster:
+	case EObjectType::Obstacle:
+		break;
+	case EObjectType::Tear:
+		if (EObjectType::PlayerCharacter == std::static_pointer_cast<CTear>(gc)->GetShooterOwner().lock()->GetObjType())
+			return;
+		break;
+	}
+
+	mOverlaps.insert(std::make_pair(gc->GetID(), Collider));
 }
 
 void CCharacter::ExitHurtOverlaps(std::weak_ptr<CCollider> Collider)
 {
+	if (Collider.expired() || Collider.lock()->GetOwner().expired())
+		return;
+
+	std::shared_ptr<CGameClass> gc = std::dynamic_pointer_cast<CGameClass>(Collider.lock()->GetOwner().lock());
+	if (!gc)
+		return;
+
+	if (mOverlaps.find(gc->GetID()) != mOverlaps.end())
+		mOverlaps.erase(gc->GetID());
 }
 
 void CCharacter::OnHitOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
@@ -245,6 +385,8 @@ void CCharacter::OnAttributeChanged() //유닛의 능력치 변동 함수들 모
 	mHead.lock()->SetPlayTime(mHeadAnimName + "_Back", mAttribute.ShotTerm);
 	mHead.lock()->SetPlayTime(mHeadAnimName + "_Left", mAttribute.ShotTerm);
 	mHead.lock()->SetPlayTime(mHeadAnimName + "_Right", mAttribute.ShotTerm);
+
+	mRigidBody.lock()->SetLimit(mAttribute.Speed * 10.f);
 }
 
 bool CCharacter::AddFullBodyAnim(const std::string& Name, const TCHAR* FilePath, float PlayTime, float PlayRate, bool Loop, bool Reverse, bool Symmetry)
@@ -506,4 +648,11 @@ void CCharacter::Attack(const FVector3& Point, const FVector3& Normal, std::weak
 	std::shared_ptr<CUnitbase> unit = std::dynamic_pointer_cast<CUnitbase>(Collider.lock()->GetOwner().lock());
 	unit->GetHit(GetThisPtr<CUnitbase>());
 	//노말로 넉백주기
+}
+
+void CCharacter::InvincibleEnd()
+{
+	mbIsInvincible = false;
+	mHeadMesh.lock()->SetHitEffect(0, false, 0, FVector4::Zero);
+	mBodyMesh.lock()->SetHitEffect(0, false, 0, FVector4::Zero);
 }

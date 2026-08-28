@@ -72,7 +72,6 @@ bool CDebugChapter::Init()
 		if (!CChapter::Init())
 			return false;
 		//CGameClassContainer::GetInst()->Instantiate(20, FVector2(5, 3));
-		CGameClassContainer::GetInst()->Instantiate(31, FVector2(7, 3));
 		//CGameClassContainer::GetInst()->Instantiate(81, FVector2(4, 3));
 		//
 		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(6, 3));
@@ -92,7 +91,7 @@ bool CDebugChapter::Init()
 		//		CGameClassContainer::GetInst()->Instantiate(41, FVector2(x, y));
 		//	}
 		//}
-
+		RegisterCharacter(31);
 		InitialSetting();
 		for (int i = 0; i < 4; ++i)
 		{

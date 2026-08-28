@@ -57,7 +57,7 @@ bool CCharacterIsaac::Init()
     mAttribute.Range = 85.f * 5.f;
     mAttribute.ShotSpeed = 7.f; //이게 힘이고
     mAttribute.ShotTerm = 1.f;
-    mAttribute.Speed = 10.f;
+    mAttribute.Speed = 30.f;
 
     mShooter.lock()->UpdateUnitAttributeData(false, mAttribute);
 
@@ -69,6 +69,8 @@ bool CCharacterIsaac::Init()
     AddFullBodyAnim("Isaac_Item_Pickup", TEXT("Isaac_Item_Pickup"), 1.f, 1.f, false, false, false);
 
     mActorTag = "Isaac";
+
+    OnAttributeChanged();
 
     return true;
 }

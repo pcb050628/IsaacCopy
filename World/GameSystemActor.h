@@ -1,5 +1,6 @@
 #pragma once
 #include "World\Actor.h"
+#include "UnitData.h"
 
 //방에 종속되지않는 객체
 //카메라 및 UI 역할을 겸함 / 각각의 역할을 하는 액터 컴포넌트를 각각 지님 각각각각각각각각
@@ -20,6 +21,11 @@ protected:
     //넣을 생각이긴 헀는데
     //일단 넣고 커지면 분리할까?
     //좀 커도 그냥 넣어놓ㅇ르까
+    FVector3 mHeartSpriteOffset = FVector3::Zero;
+    float mHeartSpriteSize = 50.f;
+    float mHeartSpriteSpacing = 50.f;
+    float mHeartSpritePadding = 10.f;
+    std::vector<std::weak_ptr<class CSpriteComponent>> mHearts; // 최대 12
 
     FVector3 mTargetPosition = -FVector3::One;
 
@@ -39,6 +45,8 @@ private:
     void MoveLeft();
 
     void MoveToTarget(float DeltaTime);
+
+    void UpdateHeart(int id, FPlayerHeartContainer container);
 
 public:
     void Move(FVector2 dir);

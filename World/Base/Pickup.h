@@ -104,6 +104,6 @@ protected:
     //1. 픽업 개수 관련 -> 어짜피 플레이어 내부 함수 호출해줘야해서 거기에서 개수도 조정해주면 됨
     //2. 능력치 관련도 마찬가지
     //그래서 만들어야 하는 함수는 생성하는 것 뿐임
-
+    virtual bool TryGet(std::weak_ptr<class CCharacter> chara) = 0;
 };
 

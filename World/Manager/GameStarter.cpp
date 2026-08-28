@@ -34,6 +34,14 @@ bool CGameStarter::Start()
 		{ D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS },
 		1U);
 
+	CRenderManager::GetInst()->CreateLayer("UI", 9, ERenderSortType::None);
+	CRenderManager::GetInst()->CreateLayer("Tear", 7, ERenderSortType::None);
+	CRenderManager::GetInst()->CreateLayer("Pickup", 6, ERenderSortType::Y);
+	CRenderManager::GetInst()->CreateLayer("Item", 5, ERenderSortType::None);
+	CRenderManager::GetInst()->CreateLayer("Head", 4, ERenderSortType::Y);
+	CRenderManager::GetInst()->CreateLayer("Body", 3, ERenderSortType::Y);
+	CRenderManager::GetInst()->CreateLayer("Obstacle", 2, ERenderSortType::None);
+
 	return true;
 }
 

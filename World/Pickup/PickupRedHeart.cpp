@@ -11,8 +11,11 @@
 #include "../Data/GameDataManager.h"
 #include "../Data/AnimGData.h"
 
+#include "../Manager/GameRuleManager.h"
 #include "../Manager/GameClassContainer.h"
 #include "../Chapter.h"
+
+#include "../Base/Character.h"
 
 REGISTER_GAMEOBJCLASS(CPickupRedHeart, "Heart_Red", EObjectType::Pickup)
 
@@ -57,4 +60,12 @@ bool CPickupRedHeart::Init()
     //mRigidbody.lock()->SetWorldScale(100.f, 100.f);
 
     return true;
+}
+
+bool CPickupRedHeart::TryGet(std::weak_ptr<class CCharacter> chara)
+{
+    if (chara.expired())
+        return false;
+
+    return CGameRuleManager::GetInst()->FillHeart(chara.lock()->GetID(), EPlayerHeartType::Red, mHeartState);
 }

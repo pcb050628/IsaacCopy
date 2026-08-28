@@ -170,10 +170,14 @@ enum class EPlayerHeartType
 
 enum class EPlayerHeartState
 {
-	Empty,
-	Half,
-	Full,
+	Empty = 0,
+	Half = 1,
+	Full = 2,
 };
+
+EPlayerHeartState operator+(const EPlayerHeartState& from, const EPlayerHeartState& to);
+EPlayerHeartState operator-(const EPlayerHeartState& from, const EPlayerHeartState& to);
+EPlayerHeartState operator-(const EPlayerHeartState& v);
 
 struct FPlayerHeartData
 {
@@ -189,8 +193,8 @@ struct FPlayerHeartData
 
 struct FPlayerHeartContainer
 {
-	std::vector<FPlayerHeartData> Hearts;
-	int Limit = 3;
+	std::list<FPlayerHeartData> RedContainer;
+	std::list<FPlayerHeartData> OtherContainer;
 	int WhiteCount = 0; //2개 되면 한칸 늘리기
 };
 

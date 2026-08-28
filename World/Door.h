@@ -1,10 +1,11 @@
 #pragma once
-#include "World\Actor.h"
+#include "Base/GameObject.h"
 #include "../GameObjectEnums.h"
 
 class CDoor :
-    public CActor
+    public CGameObject
 {
+    GAMEOBJCLASS(CDoor, 40)
 public:
     CDoor();
     CDoor(const CDoor& src);
@@ -16,13 +17,14 @@ public:
     virtual void Update(float DeltaTime);
     virtual void Destroy();
 
+    virtual void Reset(bool HardReset = false);
 protected:
     std::weak_ptr<class CRoombase> mRoomOwner;
     std::weak_ptr<class CColliderBox2D> mBoxColComp;
-    std::weak_ptr<class CSpriteComponent> mFrameRenderer;
-    std::weak_ptr<class CSpriteComponent> mLayerRenderer1;
-    std::weak_ptr<class CSpriteComponent> mLayerRenderer2;
-    std::weak_ptr<class CSpriteComponent> mLayerRenderer3;
+    std::weak_ptr<class CSpriteComponent> mFrameRenderer;  //문틀
+    std::weak_ptr<class CSpriteComponent> mLayerRenderer1; //그림자
+    std::weak_ptr<class CSpriteComponent> mLayerRenderer2; //문짝
+    std::weak_ptr<class CSpriteComponent> mLayerRenderer3; //문짝
     
     std::weak_ptr<class CRigidBodyComponent> mLayer2Rigid;
     std::weak_ptr<class CRigidBodyComponent> mLayer3Rigid;

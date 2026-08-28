@@ -16,7 +16,7 @@ private:
     float mMass = 5.f;
     float mGravity = 9.8f;
 
-    bool mGravityOn = true;
+    bool mGravityOn = false;
 
     bool mSetMoveRoot = true;
 

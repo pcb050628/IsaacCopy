@@ -24,6 +24,9 @@ protected:
 
     std::weak_ptr<class CTearShooter> mShooter; //기본으로는 생성하지않음, 필요한 경우에만 상속받은 객체에서 생성
 
+    //여러가지 용도로 사용가능한 오버랩 보관
+    std::map<int, std::weak_ptr<class CCollider>> mOverlaps;
+
     //머리 몸이 바라보는 방향
     FVector2 mBodyDirection;
     FVector2 mHeadDirection;
@@ -35,6 +38,7 @@ protected:
     bool mbIsDead = false;
 
     std::vector<std::weak_ptr<class CSound>> mHurtSound;
+
 
 public:
     virtual bool Init();

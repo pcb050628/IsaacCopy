@@ -71,7 +71,7 @@ public: //발동 조건들
 	//챕터 입장
 	const bool bIsEnterChapter;
 
-	virtual void OnHit();
+	virtual void OnGetHit();
 	virtual void OnShot();
 	virtual void OnKill();
 	virtual void OnDead();

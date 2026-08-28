@@ -3,6 +3,8 @@
 
 #include "RenderManager.h"
 #include "World/Input.h"
+
+#include "Manager/GameClassContainer.h"
 #include "Manager/GameRuleManager.h"
 
 #include "Asset/AssetManager.h"
@@ -13,6 +15,7 @@
 
 #include "LogManager.h"
 
+#include "Base/Character.h"
 #include "GameSystemActor.h"
 #include "Door.h"
 
@@ -359,6 +362,15 @@ void CChapter::RegisterGObjToRoom(const std::weak_ptr<CRoomMember>& rm, const FV
 		prevRoom.lock()->DisregisterGObj(rm);
 	}
 	rm.lock()->SetRoom(room);
+}
+
+void CChapter::RegisterCharacter(const int ID)
+{
+	std::shared_ptr<CCharacter> chara = std::dynamic_pointer_cast<CCharacter>(CGameClassContainer::GetInst()->Instantiate(ID, FVector2(mRoomRowMax / 2, mRoomColMax / 2)).lock());
+	
+	assert(chara && "캐릭터 생성 실패: ", ID);
+
+	CGameRuleManager::GetInst()->RegisterPlayerHeartContainer(chara->GetID());
 }
 
 const int CChapter::GetIsValidCoord(const FVector2& Coord)

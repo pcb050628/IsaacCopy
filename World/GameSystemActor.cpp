@@ -1,4 +1,7 @@
 #include "GameSystemActor.h"
+
+#include "Device.h"
+
 #include "World/CameraComponent.h"
 #include "World/SoundComponent.h"
 
@@ -8,8 +11,11 @@
 #include "Asset/AssetManager.h"
 #include "Asset/SoundManager.h"
 
+#include "Manager/GameRuleManager.h"
+
 #include "Chapter.h"
 #include "Component/RigidBodyComponent.h"
+#include "Component/SpriteComponent.h"
 
 CChapterSystemActor::CChapterSystemActor()
 {
@@ -49,6 +55,12 @@ bool CChapterSystemActor::Init()
     input->SetBindFunction("SystemManagerDown", EInputType::Hold, this, &CChapterSystemActor::MoveDown);
     input->SetBindFunction("SystemManagerRight", EInputType::Hold, this, &CChapterSystemActor::MoveRight);
     input->SetBindFunction("SystemManagerLeft", EInputType::Hold, this, &CChapterSystemActor::MoveLeft);
+
+    FResolution resol = CDevice::GetInst()->GetResolution();
+    mHeartSpriteOffset.x = -resol.Width / 2 + mHeartSpriteSpacing;
+    mHeartSpriteOffset.y = resol.Height / 2 - mHeartSpriteSpacing;
+
+    CGameRuleManager::GetInst()->RegisterPlayerHeartOnUpdate("GSA", this, &CChapterSystemActor::UpdateHeart);
 
     return true;
 }
@@ -96,6 +108,94 @@ void CChapterSystemActor::MoveToTarget(float DeltaTime)
         mRb.lock()->SetVelocity(FVector3::Zero);
         mTargetPosition = -FVector3::One;
         mMoveEndFunc();
+    }
+}
+
+void CChapterSystemActor::UpdateHeart(int id, FPlayerHeartContainer container)
+{
+    int length = container.RedContainer.size() + container.OtherContainer.size();
+    if (mHearts.size() < length)
+        mHearts.resize(length);
+
+    for (std::weak_ptr<CSpriteComponent> sp : mHearts)
+    {
+        if (sp.expired())
+            continue;
+        sp.lock()->SetRenderEnable(false);
+    }
+
+    int point = 0;
+    for (FPlayerHeartData d : container.RedContainer)
+    {
+        std::string Name = "UI_Heart_";
+        switch (d.State)
+        {
+        case EPlayerHeartState::Empty:
+            Name += "Empty";
+            break;
+        case EPlayerHeartState::Half:
+            Name += "Red_Half";
+            break;
+        case EPlayerHeartState::Full:
+            Name += "Red_Full";
+            break;
+        }
+
+        std::shared_ptr<CSpriteComponent> comp = mHearts[point].lock();
+        if (!comp)
+        {
+            mHearts[point] = CreateComponent<CSpriteComponent>("HeartSprite");
+            comp = mHearts[point].lock();
+            comp->SetMesh("TexRect"); comp->SetShader("Sprite2D");
+        }
+
+        comp->SetSpriteData(Name);
+        comp->SetRelativePos(mHeartSpriteOffset + FVector3(mHeartSpriteSize * point + mHeartSpritePadding, 0, 0));
+        comp->SetWorldScale(mHeartSpriteSize, mHeartSpriteSize);
+        comp->SetRenderEnable(true);
+        comp->SetRenderLayer("UI");
+        ++point;
+    }
+    for (FPlayerHeartData d : container.OtherContainer)
+    {
+        std::string Name = "UI_Heart_";
+
+        switch (d.Type)
+        {
+        case EPlayerHeartType::Blue:
+            Name += "Blue_";
+            break;
+        case EPlayerHeartType::Black:
+            Name += "Black_";
+            break;
+        }
+
+        switch (d.State)
+        {
+        case EPlayerHeartState::Empty:
+            continue;
+        case EPlayerHeartState::Half:
+            Name += "Red_Half";
+            break;
+        case EPlayerHeartState::Full:
+            Name += "Red_Full";
+            break;
+        }
+
+        std::shared_ptr<CSpriteComponent> comp = mHearts[point].lock();
+        if (!comp)
+        {
+            mHearts[point] = CreateComponent<CSpriteComponent>("HeartSprite");
+            comp = mHearts[point].lock();
+            comp->SetMesh("TexRect"); comp->SetShader("Sprite2D");
+        }
+
+        comp->SetSpriteData(Name);
+        comp->SetRelativePos(mHeartSpriteOffset + FVector3(mHeartSpriteSize * point + mHeartSpritePadding, 0, 0));
+        comp->SetWorldScale(mHeartSpriteSize, mHeartSpriteSize);
+        comp->SetRenderEnable(true);
+        comp->SetRenderLayer("UI");
+        ++point;
     }
 }
 

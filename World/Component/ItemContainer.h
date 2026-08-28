@@ -47,7 +47,7 @@ public:
 public:
 	void UseItem();
 
-	void OnHit();
+	void OnGetHit(std::weak_ptr<class CGameObject> from, int& dmg);
 	void OnShot();
 	void OnDead();
 	void OnKill();

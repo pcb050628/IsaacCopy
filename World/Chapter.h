@@ -162,7 +162,7 @@ public:
 		mPlayerCharacter = std::dynamic_pointer_cast<CUnitbase>(unit.lock());
 		std::shared_ptr<CUnitbase> chara = mPlayerCharacter.lock();
 		chara->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(Coord));
-		chara->SetRoom(mRoomMap[mFocusedRoomHash].lock());
+		chara->SetRoom(mRoomMap[mFocusedRoomHash].lock());		
 		return unit;
 	}
 	template<typename T>
@@ -264,6 +264,40 @@ public:
 		}
 		return pickup;
 	}
+	template<typename T> 
+	std::weak_ptr<T> CreateDoor(const std::string& Name, const int GObjID, FVector2 Coord, bool OnFocus)
+	{
+		return std::weak_ptr<T>();
+		//if (!mPickupsDeactivate[GObjID].empty())
+		//{
+		//	std::shared_ptr<CDoor> pickup = mPickupsDeactivate[GObjID].begin()->second.lock();
+		//	std::shared_ptr<T> pu = std::dynamic_pointer_cast<T>(pickup);
+		//	mPickupsDeactivate[GObjID].erase(pickup->GetID());
+		//	mPickupsActivate[GObjID][pickup->GetID()] = pickup;
+		//
+		//	pickup->Reset(true);
+		//	if (OnFocus)
+		//	{
+		//		pickup->SetRoom(mRoomMap[mFocusedRoomHash]);
+		//		mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(pickup, Coord);
+		//	}
+		//	return pu;
+		//}
+		//
+		//std::weak_ptr<T> pickup = CreateActor<T>(Name);
+		//if (pickup.expired())
+		//	return std::weak_ptr<T>();
+		//
+		//std::shared_ptr<CPickup> pu = std::dynamic_pointer_cast<CPickup>(pickup.lock());
+		//mPickupsActivate[GObjID][pu->GetID()] = pu;
+		//
+		//if (OnFocus)
+		//{
+		//	pu->SetRoom(mRoomMap[mFocusedRoomHash]);
+		//	mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(pu, Coord);
+		//}
+		//return pickup;
+	}
 
 	template<typename T>
 	std::weak_ptr<CGameObject> MakeObject(const std::string& Name, enum class EObjectType Type, const int GObjID, FVector2 Coord, bool OnFocus = true)//좌표는 무조건 받아야 하고, 
@@ -282,6 +316,8 @@ public:
 			return CreateObstacle<T>(Name, GObjID, Coord, OnFocus);
 		case EObjectType::Pickup:
 			return CreatePickup<T>(Name, GObjID, Coord, OnFocus);
+		case EObjectType::Door:
+			return CreateDoor<T>(Name, GObjID, Coord, OnFocus);
 		}
 
 		return std::weak_ptr<CGameObject>();
@@ -324,6 +360,8 @@ public:
 
 	void RegisterRoom(const std::shared_ptr<CRoombase>& room);
 	void RegisterGObjToRoom(const std::weak_ptr<CRoomMember>& rm, const FVector2& Coord, const FVector2& targetRoomCoord);
+	//캐릭터 등록 함수 | 게임 시작 시 방들을 모두 생성 한 후에 캐릭터르를 생성 및 등록한다.
+	void RegisterCharacter(const int ID);
 
 public:
 	//좌표가 잘못됐으면 0 좌표에 방이 있으면 1 아무것도 없으면 2

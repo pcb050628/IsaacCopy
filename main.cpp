@@ -47,21 +47,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 	CLogManager::GetInst()->FlushLog();
 
-	CRenderManager::GetInst()->CreateLayer("Tear", 7, ERenderSortType::None);
-	CRenderManager::GetInst()->CreateLayer("Pickup", 6, ERenderSortType::Y);
-	CRenderManager::GetInst()->CreateLayer("Item", 5, ERenderSortType::None);
-	CRenderManager::GetInst()->CreateLayer("Head", 4, ERenderSortType::Y);
-	CRenderManager::GetInst()->CreateLayer("Body", 3, ERenderSortType::Y);
-	CRenderManager::GetInst()->CreateLayer("Obstacle", 2, ERenderSortType::None);
+	if (!CGameStarter::Start())
+	{
+		assert(false && "게임 스타터 초기화 실패");
+	}
 
 	CGlobalCollision::SetGlobalCollision();
 	if (!CAssetManager::GetInst()->AddSubManager<CGameDataManager>(EAssetType::GameData))
 	{
 		assert(false && "데이터 파일 로드 실패");
-	}
-	if (!CGameStarter::Start())
-	{
-		assert(false && "게임 스타터 초기화 실패");
 	}
 
 	//만들어야하는 레벨
