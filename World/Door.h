@@ -1,9 +1,9 @@
 #pragma once
-#include "Base/GameObject.h"
-#include "../GameObjectEnums.h"
+#include "Base/RoomMember.h"
+#include "../GameObjectStructs.h"
 
 class CDoor :
-    public CGameObject
+    public CRoomMember
 {
     GAMEOBJCLASS(CDoor, 40)
 public:
@@ -19,7 +19,6 @@ public:
 
     virtual void Reset(bool HardReset = false);
 protected:
-    std::weak_ptr<class CRoombase> mRoomOwner;
     std::weak_ptr<class CColliderBox2D> mBoxColComp;
     std::weak_ptr<class CSpriteComponent> mFrameRenderer;  //문틀
     std::weak_ptr<class CSpriteComponent> mLayerRenderer1; //그림자
@@ -31,21 +30,28 @@ protected:
 
     std::weak_ptr<class CSoundComponent> mSound;
 
+    FDoorState mState;
     FVector2 mDirection;
     bool mbIsOpen = false;
-    EOpenRequirement mRequirement = EOpenRequirement::Clear;
 
-    std::weak_ptr<class CUnitbase> mPlayer; //? 이거 왜 들고 있지
+    std::weak_ptr<CRoomMember> mPlayer; //? 이거 왜 들고 있지
 
     std::weak_ptr<class CSound> mOpenSound;
     std::weak_ptr<class CSound> mCloseSound;
 
 public:
+    void SetDoorFrameType(ERoomType Type);
+
+    FVector2 GetDirection() const { return mDirection; }
     void SetDirection(FVector2 Dir) { mDirection = Dir; }
     void SetOpen(bool Val);
     void SetBoxSize(FVector2 size);
     void SetBoxSize(float x, float y);
-    //다른 방 이동 함수 작성 및 연결하기
+
+    void MetRequirement(EOpenRequirement requirement);
+
+    void SetDoorState(FDoorState state);
+    FDoorState GetDoorState() const { return mState; }
 
 private:
     void OnOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);

@@ -1,6 +1,6 @@
 #pragma once
 #include "EngineInfo.h"
-#include "../UnitData.h"
+#include "../../GameObjectStructs.h"
 
 class CGameObject;
 class CGameRuleManager

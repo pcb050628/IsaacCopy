@@ -1,5 +1,6 @@
 #include "DebugChapter.h"
 
+#include "Device.h"
 #include "LogManager.h"
 
 #include "Manager/GameClassContainer.h"
@@ -12,6 +13,7 @@
 #include "World/ColliderBox2D.h"
 #include "World/MeshComponent.h"
 #include "World/Animation2DComponent.h"
+#include "World/FontRenderer.h"
 
 #include "Door.h"
 
@@ -92,12 +94,14 @@ bool CDebugChapter::Init()
 		//	}
 		//}
 		RegisterCharacter(31);
+
+		std::weak_ptr<CActor> actor = CreateActor<CActor>("TEST");
+		std::weak_ptr<CFontRenderer> font = actor.lock()->CreateComponent<CFontRenderer>("Root");
+		font.lock()->SetSize(200.f, 200.f);
+		font.lock()->SetFont("GameDefault");
+		FResolution resol = CDevice::GetInst()->GetResolution();
+		font.lock()->SetRenderPos(resol.Width / 2, resol.Height /2);
 		InitialSetting();
-		for (int i = 0; i < 4; ++i)
-		{
-			std::shared_ptr<CDoor> door = mDoors[i].lock();
-			door->SetOpen(true);
-		}
 
 		//CTimeManager::SetTimer(3.f, true, this, &CDebugChapter::CheckPlayerPos);
 	}

@@ -1,7 +1,6 @@
 #pragma once
 #include "RoomMember.h"
-
-#include "../UnitData.h"
+#include "../../GameObjectStructs.h"
 
 class CUnitbase :
     public CRoomMember 

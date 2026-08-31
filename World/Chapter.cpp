@@ -21,26 +21,25 @@
 
 #include "World/ColliderBox2D.h"
 
-#define WALLSIZE 50.f
-
+const float CChapter::WallSize = 50.f;
 const FVector2 CChapter::FourDirections[4] =
 {
-	FVector2(1, 0),
-	FVector2(-1, 0),
 	FVector2(0, 1),
-	FVector2(0, -1)
+	FVector2(0, -1),
+	FVector2(-1, 0),
+	FVector2(1, 0),
 };
 const FVector2 CChapter::RoomWorldSize = FVector2(1300.f, 700.f);
 const FVector2 CChapter::EightDirections[8] =
 {
-	FVector2(2, -1),	//우측 하단
-	FVector2(2, 1),		//우측 상단
-	FVector2(-2, -1),	//좌측 상단
-	FVector2(-2, 1),	//좌측 상단
-	FVector2(1, 2),		//상단 우측
 	FVector2(-1, 2),	//상단 좌측
+	FVector2(1, 2),		//상단 우측
+	FVector2(2, 1),		//우측 상단
+	FVector2(2, -1),	//우측 하단
 	FVector2(1, -2),	//하단 우측
-	FVector2(-1, -2)	//하단 좌측
+	FVector2(-1, -2),	//하단 좌측
+	FVector2(-2, -1),	//좌측 하단
+	FVector2(-2, 1),	//좌측 상단
 };
 
 CChapter::CChapter()
@@ -137,7 +136,7 @@ void CChapter::GenerateWallAndDoor()
 		auto door = CreateActor<CDoor>("Door");
 		door.lock()->SetEnable(false);
 		door.lock()->SetRenderEnable(false);
-		mDoors.push_back(door);
+		mDoorsDeactive.insert(std::make_pair(door.lock()->GetID(), door));
 	}
 }
 void CChapter::GenerateRoom()
@@ -168,27 +167,15 @@ void CChapter::InitialSetting()
 	//현재 포커스 중인 방으로 벽 이동시키기
 	//기본 방 크기 기준으로만 계산중
 	auto room = mRoomMap[mFocusedRoomHash].lock();
+	ERoomShape shape = room->GetRoomShape();
 	FVector3 center = room->GetWorldPos();
+	FVector2 size = room->GetRoomSize();
 	int wallidx = 0;
 	for (int i = 0; i < 4; ++i)
 	{
 		FVector2 pos = FourDirections[i];
 		pos.x *= 575.f;
 		pos.y *= 290.f;
-		FVector3 doorPos = center + FVector3(pos.x, pos.y, 0);
-		std::shared_ptr<CDoor> door = mDoors[i].lock();
-		door->SetBoxSize(50.f, WALLSIZE);
-		door->SetDirection(FourDirections[i]);
-		if (0 != pos.x)
-			door->SetWorldRotation(FVector3(0, 0, 90 * -FourDirections[i].x));
-		else if (pos.y < 0)
-			door->SetWorldRotation(FVector3(0, 0, 180));
-
-		door->SetWorldPos(doorPos);
-		door->SetEnable(true);
-		bool enable = room->HasNearRoom(FourDirections[i]);
-		door->SetRenderEnable(enable);
-		door->SetOpen(false);
 		for (int j = -1; j < 2; ++j)
 		{
 			if (0 == j)
@@ -206,15 +193,17 @@ void CChapter::InitialSetting()
 		}
 	}
 
-	//우-좌-상-하
-	std::static_pointer_cast<CColliderBox2D>(mWalls[0].lock()->GetRootComponent().lock())->SetBoxSize(WALLSIZE, 250.f);
-	std::static_pointer_cast<CColliderBox2D>(mWalls[1].lock()->GetRootComponent().lock())->SetBoxSize(WALLSIZE, 250.f);
-	std::static_pointer_cast<CColliderBox2D>(mWalls[2].lock()->GetRootComponent().lock())->SetBoxSize(WALLSIZE, 250.f);
-	std::static_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(WALLSIZE, 250.f);
-	std::static_pointer_cast<CColliderBox2D>(mWalls[4].lock()->GetRootComponent().lock())->SetBoxSize(550.f, WALLSIZE);
-	std::static_pointer_cast<CColliderBox2D>(mWalls[5].lock()->GetRootComponent().lock())->SetBoxSize(550.f, WALLSIZE);
-	std::static_pointer_cast<CColliderBox2D>(mWalls[6].lock()->GetRootComponent().lock())->SetBoxSize(550.f, WALLSIZE);
-	std::static_pointer_cast<CColliderBox2D>(mWalls[7].lock()->GetRootComponent().lock())->SetBoxSize(550.f, WALLSIZE);
+	std::static_pointer_cast<CColliderBox2D>(mWalls[0].lock()->GetRootComponent().lock())->SetBoxSize(size.x / 2, WallSize);
+	std::static_pointer_cast<CColliderBox2D>(mWalls[1].lock()->GetRootComponent().lock())->SetBoxSize(size.x / 2, WallSize);
+
+	std::static_pointer_cast<CColliderBox2D>(mWalls[2].lock()->GetRootComponent().lock())->SetBoxSize(size.x / 2, WallSize);
+	std::static_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(size.x / 2, WallSize);
+
+	std::static_pointer_cast<CColliderBox2D>(mWalls[4].lock()->GetRootComponent().lock())->SetBoxSize(WallSize, size.y / 2);
+	std::static_pointer_cast<CColliderBox2D>(mWalls[5].lock()->GetRootComponent().lock())->SetBoxSize(WallSize, size.y / 2);
+
+	std::static_pointer_cast<CColliderBox2D>(mWalls[6].lock()->GetRootComponent().lock())->SetBoxSize(WallSize, size.y / 2);
+	std::static_pointer_cast<CColliderBox2D>(mWalls[7].lock()->GetRootComponent().lock())->SetBoxSize(WallSize, size.y / 2);
 
 	//문에 방 이동 연결해야하는데
 	//방 이동은? 챕터에서 해야겠지
@@ -225,7 +214,8 @@ void CChapter::InitialSetting()
 	room->EnterRoom();
 	LOG_DEBUG("현재 위치: ", mFocusedRoomHash);
 
-	mChapterManagementActor.lock()->SetWorldPos(center);
+	mChapterManagementActor.lock()->SetWorldPos(center); //중앙 이동 말고 내부 함수 따로 작성해서 방 모양에 따라서 이동하게 만드릭
+	//추가로 ChatperSystemActor 내부에 플레이어 따라다니는 함수 작성하기 | 방이 커졌을때 필요함
 }
 void CChapter::SettingFocus() //지금은 벽만 설정하지만 이 함수를 포커스 이동시 초기 설정 함수로 만들기(벽, 문 모두 이동 설정하기)
 {
@@ -242,13 +232,36 @@ void CChapter::SetPlayerPos()
 	FVector2 dir = Hash2Coord(mFocusedRoomHash) - Hash2Coord(mPrevRoomHash);
 	FVector2 dist = -dir * RoomWorldSize / 2;
 	if (0 == dir.x)
-		dist.y += dir.y * WALLSIZE * 2;
+		dist.y += dir.y * WallSize * 2;
 	else
-		dist.x += dir.x * WALLSIZE * 2;
+		dist.x += dir.x * WallSize * 2;
 	mPlayerCharacter.lock()->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->GetWorldPos() + FVector3(dist.x, dist.y, 0));
 	mPlayerCharacter.lock()->SetRoom(mRoomMap[mFocusedRoomHash]);
 	mInput->SetEnable(true);
 	LOG_DEBUG("플레이어의 방 좌표: ", mFocusedRoomHash);
+}
+std::weak_ptr<class CDoor> CChapter::GetDoor(ERoomType roomType)
+{
+	if (mDoorsDeactive.empty())
+	{
+		std::weak_ptr<CDoor> door = CreateActor<CDoor>("Door");
+		if (door.expired())
+			return std::weak_ptr<CDoor>();
+
+		door.lock()->SetDoorFrameType(roomType);
+		mDoorsActive.insert(std::make_pair(door.lock()->GetID(), door));
+		return door;
+	}
+	else
+	{
+		std::weak_ptr<CDoor> door = mDoorsDeactive.begin()->second;
+		mDoorsDeactive.erase(mDoorsDeactive.begin());
+		if (door.expired())
+			return std::weak_ptr<CDoor>();
+		door.lock()->SetDoorFrameType(roomType);
+		mDoorsActive.insert(std::make_pair(door.lock()->GetID(), door));
+		return door;
+	}
 }
 bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 {
@@ -268,6 +281,8 @@ bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 	case EObjectType::Room:
 		break;
 	case EObjectType::Door:
+		mDoorsDeactive[ObjID] = mDoorsActive[ObjID];
+		mDoorsActive.erase(ObjID);
 		break; 
 	case EObjectType::Tear: {
 		mTearsDeactivate[ObjID] = mTearsActivate[ObjID];
@@ -295,11 +310,6 @@ bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 void CChapter::MoveRoom(FVector2 Dir)
 {
 	mChapterManagementActor.lock()->Move(Dir);
-	//mRoomMap[mFocusedRoomHash].lock()->SetEnableAll(false); //RoomExit 으로 변경하기
-	for (std::weak_ptr<CDoor> door : mDoors)
-	{
-		door.lock()->SetEnable(false);
-	}
 	mPrevRoomHash = mFocusedRoomHash;
 	FVector2 coord = Hash2Coord(mFocusedRoomHash) + Dir;
 	LOG_DEBUG("다음 좌표는: ", std::to_string(coord.x), ", ", std::to_string(coord.y));
@@ -307,13 +317,6 @@ void CChapter::MoveRoom(FVector2 Dir)
 	mInput->SetEnable(false);
 	mRoomMap[mPrevRoomHash].lock()->PauseRoom();
 	mRoomMap[mFocusedRoomHash].lock()->PauseRoom();
-}
-void CChapter::OpenDoor() //잠금 해제 조건들 중 어떤 것이 충족되었는지 입력받기
-{
-	for (int i = 0; i < 4; i++)//방 크기 확인하고 반복 횟수 지정하기
-	{
-		mDoors[i].lock()->SetOpen(true); //문 잠금 해제 조건 확인하고 열기
-	}
 }
 void CChapter::RegisterRoom(const std::shared_ptr<CRoombase>& room)
 {

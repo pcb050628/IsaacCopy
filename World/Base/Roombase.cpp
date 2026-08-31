@@ -22,6 +22,28 @@
 #include "../Door.h"
 
 
+FVector2 CRoombase::DirectionV[6] = 
+{
+	FVector2(),
+	FVector2(),
+	FVector2(),
+	FVector2(),
+	FVector2(),
+	FVector2(),
+};
+FVector2 CRoombase::DirectionH[6] = 
+{
+
+};
+FVector2 CRoombase::DirectionL[8] = 
+{
+
+};
+FVector2 CRoombase::DirectionD[8] = 
+{
+
+};
+
 CRoombase::CRoombase(ERoomType Type, ERoomShape Shape)
 	:CGameObject(EObjectType::Room), mRoomType(Type), mShape(Shape)
 {
@@ -64,7 +86,14 @@ void CRoombase::Update(float DeltaTime)
 	{
 		if (WinCheck())
 		{
-			OpenDoor();
+			for (std::pair<int, std::weak_ptr<CRoomMember>> pair : mDoorMap)
+			{
+				if (pair.second.expired())
+					continue;
+				std::shared_ptr<CDoor> door = std::dynamic_pointer_cast<CDoor>(pair.second.lock());
+				assert(door && "문이 아닌 객체가 DoorMap 에 할당되어있음");
+				door->MetRequirement(EOpenRequirement::Clear);
+			}
 			WinRoom();
 		}
 	}
@@ -73,7 +102,7 @@ void CRoombase::Update(float DeltaTime)
 
 void CRoombase::CalculateSize()
 {
-	//1300x700 : 방의 넓이 1100 x 530  : 렌더 넓이 1400 x 800
+	//그리드 넓이 1300x700 : 방 월드 넓이 1100 x 530  : 렌더 넓이 1400 x 800
 	//이미지로 50픽셀 만큼 차이인데 234.f, 155.f  468x310 짜리 이미지를 1400:800으로 폈으니까
 	//3.f x 2.5f 배율 150x125 => 방의 넓이는 1100x550 셀의 크기는 84.61538461538462 x 78.57142857142857
 
@@ -86,6 +115,15 @@ void CRoombase::CalculateSize()
 	mRoomSize = FVector2(resol.Width, resol.Height) - wallSize * 2;
 	mRoomCellSize = mRoomSize / mRoomCellMax;
 }
+//문의 위치와 넓이를 구하는 법
+//-(roomsize.x / 2), (roomsize.y / 2 + roomcellsize.y / 2) => 좌상
+//x => 현재 위치 +- 방의 절반 넓이 | 좌우측인 경우 y += cellsize.y
+//y => 현재 위치 +- 방의 젋반 높이 | 상하측인 경우 x += cellsize.x
+//방향을 구하기는 4방향인 경우에는 문제가 없지만
+//8방향인 경우에는 어떻게 해야할까
+//상하좌우 마다 문의 개수 + 1
+//8방향의 경우 상좌 좌상 이런식으로 나뉘어져 있기 때문에
+//그냥 방 모양마다 따로 대응하는 함수를 하나씩 만들어야 할듯
 
 void CRoombase::AdjustRoomPos()
 {
@@ -153,19 +191,21 @@ void CRoombase::PauseRoom()
 	{
 		auto obj = pair.second.lock();
 		obj->SetEnable(false);
-		obj->SetRenderEnable(true);
 	}
 	for (std::pair<int, std::weak_ptr<CGameObject>> pair : mObstacleMap)
 	{
 		auto obj = pair.second.lock();
 		obj->SetEnable(false);
-		obj->SetRenderEnable(true);
 	}
 	for (std::pair<int, std::weak_ptr<CGameObject>> pair : mPickupMap)
 	{
 		auto obj = pair.second.lock();
 		obj->SetEnable(false);
-		obj->SetRenderEnable(true);
+	}
+	for (std::pair<int, std::weak_ptr<CGameObject>> pair : mDoorMap)
+	{
+		auto obj = pair.second.lock();
+		obj->SetEnable(false);
 	}
 	SetEnable(false);
 	SetRenderEnable(true);
@@ -181,9 +221,32 @@ void CRoombase::RoomDisenable() //방 비활성화 시 아직 등록되어있는
 	ContainMonsterData();
 	ContainObstacleData();
 	ContainPickupData();
+	ContainDoorData();
 
 	SetEnable(false);
 	SetRenderEnable(false);
+}
+
+void CRoombase::CreateDoor()
+{
+	int doorCount = 0;
+	switch (mShape)
+	{
+	case ERoomShape::Normal: //4개
+		CreateDoorNormal();
+		break;
+	case ERoomShape::Vertical: //6개
+		CreateDoorVertical();
+		break;
+	case ERoomShape::Horizontal: //6개
+		CreateDoorHorizontal();
+		break;
+	case ERoomShape::LShape: //8개
+		break;
+	case ERoomShape::Double: //8개
+		break;
+	}
+
 }
 
 void CRoombase::ContainMonsterData()
@@ -252,6 +315,180 @@ void CRoombase::ContainPickupData()
 	mPickupMap.clear();
 }
 
+void CRoombase::ContainDoorData()
+{
+	for (std::pair<int, std::weak_ptr<CRoomMember>> pair : mDoorMap)
+	{
+		if (pair.second.expired())
+			continue;
+		std::shared_ptr<CDoor> door = std::dynamic_pointer_cast<CDoor>(pair.second.lock());
+		assert(door && "문이 아닌 객체가 DoorMap에 할당됨");
+		//assert(mDoorData.find(pair.first) == mDoorData.end() && "이미 존재하는 데이터를 다시 할당하려함");
+		FDoorState state = door->GetDoorState();
+		mDoorData[pair.first] = state;
+		pair.second.lock()->ReturnToChapter();
+	}
+	mDoorMap.clear();
+}
+
+void CRoombase::CreateDoorNormal()
+{
+	FVector3 center = GetWorldPos();
+
+	for (int i = 0; i < 4; ++i)
+	{
+		std::shared_ptr<CDoor> door = mChapter.lock()->GetDoor().lock();
+		assert(door && "문 생성 실패");
+
+		FVector2 pos = CChapter::FourDirections[i];
+		mChapter.lock()->RegisterGObjToRoom(door, pos, mCoord);
+		bool enable = HasNearRoom(pos);
+		if (enable)
+			door->SetDoorState(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
+		else
+			door->SetDoorState(FDoorState(EDoorState::Closed, EOpenRequirement::Wall));
+
+		pos.x *= 575.f; //방 내부 크기 / 2
+		pos.y *= 290.f;
+		FVector3 doorPos = center + FVector3(pos.x, pos.y, 0);
+		door->SetBoxSize(CChapter::WallSize, CChapter::WallSize);
+		if (0 != pos.x)
+			door->SetWorldRotation(FVector3(0, 0, 90 * -CChapter::FourDirections[i].x));
+		else if (pos.y < 0)
+			door->SetWorldRotation(FVector3(0, 0, 180));
+
+		door->SetWorldPos(doorPos);
+		door->SetRenderEnable(enable);
+		door->SetEnable(true);
+	}
+}
+
+void CRoombase::CreateDoorHorizontal()
+{
+	FVector3 center = GetWorldPos();
+	for (int i = 0; i < 4; ++i)
+	{
+		if (i < 2) //상, 하에 해당하는 경우
+		{
+			for (int j = 0; j < 2; j++)
+			{
+				std::shared_ptr<CDoor> door = mChapter.lock()->GetDoor().lock();
+				assert(door && "문 생성 실패");
+
+				FVector2 pos = CChapter::FourDirections[i]; pos.x + j;
+				bool enable = HasNearRoom(pos);
+				mChapter.lock()->RegisterGObjToRoom(door, pos, mCoord);
+				door->SetDoorState(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
+
+				pos.x *= (mRoomSize.x + CChapter::WallSize) / 3;
+				pos.y *= (mRoomSize.y + CChapter::WallSize) / 2;
+				FVector3 doorPos = center + FVector3(pos.x, pos.y, 0);
+				door->SetBoxSize(CChapter::WallSize, CChapter::WallSize);
+				if (0 != pos.x)
+					door->SetWorldRotation(FVector3(0, 0, 90 * -CChapter::FourDirections[i].x));
+				else if (pos.y < 0)
+					door->SetWorldRotation(FVector3(0, 0, 180));
+
+				door->SetWorldPos(doorPos);
+				door->SetRenderEnable(enable);
+				door->SetEnable(true);
+			}
+		}
+		else
+		{
+			std::shared_ptr<CDoor> door = mChapter.lock()->GetDoor().lock();
+			assert(door && "문 생성 실패");
+
+			FVector2 pos = CChapter::FourDirections[i];
+			bool enable = HasNearRoom(pos);
+			mChapter.lock()->RegisterGObjToRoom(door, pos, mCoord);
+			door->SetDoorState(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
+
+			pos.x *= (mRoomSize.x + CChapter::WallSize) / 2; //방 내부 크기 / 2
+			pos.y *= (mRoomSize.y + CChapter::WallSize) / 2;
+			FVector3 doorPos = center + FVector3(pos.x, pos.y, 0);
+			door->SetBoxSize(CChapter::WallSize, CChapter::WallSize);
+			if (0 != pos.x)
+				door->SetWorldRotation(FVector3(0, 0, 90 * -CChapter::FourDirections[i].x));
+			else if (pos.y < 0)
+				door->SetWorldRotation(FVector3(0, 0, 180));
+
+			door->SetWorldPos(doorPos);
+			door->SetRenderEnable(enable);
+			door->SetEnable(true);
+		}
+	}
+}
+
+void CRoombase::CreateDoorVertical()
+{
+	FVector3 center = GetWorldPos();
+	for (int i = 0; i < 4; ++i)
+	{
+		if (i > 1) //좌, 우에 해당하는 경우
+		{
+			for (int j = 0; j < 2; j++)
+			{
+				std::shared_ptr<CDoor> door = mChapter.lock()->GetDoor().lock();
+				assert(door && "문 생성 실패");
+
+				FVector2 pos = CChapter::FourDirections[i]; pos.y + j;
+				bool enable = HasNearRoom(pos);
+				mChapter.lock()->RegisterGObjToRoom(door, pos, mCoord);
+				door->SetDoorState(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
+
+				pos.x *= (mRoomSize.x + CChapter::WallSize) / 2;
+				pos.y *= (mRoomSize.y + CChapter::WallSize) / 3;
+				FVector3 doorPos = center + FVector3(pos.x, pos.y, 0);
+				door->SetBoxSize(CChapter::WallSize, CChapter::WallSize);
+				if (0 != pos.x)
+					door->SetWorldRotation(FVector3(0, 0, 90 * -CChapter::FourDirections[i].x));
+				else if (pos.y < 0)
+					door->SetWorldRotation(FVector3(0, 0, 180));
+
+				door->SetWorldPos(doorPos);
+				door->SetRenderEnable(enable);
+				door->SetEnable(true);
+			}
+		}
+		else
+		{
+			std::shared_ptr<CDoor> door = mChapter.lock()->GetDoor().lock();
+			assert(door && "문 생성 실패");
+
+			FVector2 pos = CChapter::FourDirections[i];
+			bool enable = HasNearRoom(pos);
+			mChapter.lock()->RegisterGObjToRoom(door, pos, mCoord);
+			door->SetDoorState(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
+
+			pos.x *= (mRoomSize.x + CChapter::WallSize) / 2; //방 내부 크기 / 2
+			pos.y *= (mRoomSize.y + CChapter::WallSize) / 2;
+			FVector3 doorPos = center + FVector3(pos.x, pos.y, 0);
+			door->SetBoxSize(CChapter::WallSize, CChapter::WallSize);
+			if (0 != pos.x)
+				door->SetWorldRotation(FVector3(0, 0, 90 * -CChapter::FourDirections[i].x));
+			else if (pos.y < 0)
+				door->SetWorldRotation(FVector3(0, 0, 180));
+
+			door->SetWorldPos(doorPos);
+			door->SetRenderEnable(enable);
+			door->SetEnable(true);
+		}
+	}
+}
+
+void CRoombase::CreateDoorL()
+{
+}
+
+void CRoombase::CreateDoorDouble()
+{
+}
+
+void CRoombase::OpenDoor()
+{
+}
+
 bool CRoombase::SetInitRoom(const std::vector<std::pair<int, FVector2>>& InitData) //모양도 여기서 받아서 초기화 하기	
 {
 	mInitData = InitData;
@@ -291,6 +528,21 @@ void CRoombase::Reset(bool HardReset)
 			chapter->RegisterGObjToRoom(gobj, pair.second, mCoord);
 		}
 		mbIsRoomWin = false;
+		//주변 방 검사 및 문 초기 설정
+		if (mDoorData.empty()) //하드리셋에 영향을 받지 않게 만들기 위해서 문은 최초 1회만 초기화를 한다.
+		{
+			for (std::pair<FVector2, std::weak_ptr<CRoombase>> other : mNearRooms)
+			{
+				if (!other.second.expired())
+				{
+					//방 확인하고 requirement 정하기
+					//지금은 기본 방 뿐이 없기 때문에 전부 Clear로 설정한다.
+					int hash = CChapter::Coord2Hash(other.first + mCoord);
+					assert(mDoorData.find(hash) == mDoorData.end() && "이미 등록한 방향을 재참조 중 | Room 연결 부를 확인하기");
+					mDoorData.insert(std::make_pair(hash, FDoorState()));
+				}
+			}
+		}
 	}
 	else
 	{
@@ -369,6 +621,7 @@ void CRoombase::Reset(bool HardReset)
 			}
 		}
 	}
+	CreateDoor();
 }
 
 void CRoombase::RegisterGObj(const std::weak_ptr<class CRoomMember>& GObj, const FVector2& Coord)
@@ -391,6 +644,12 @@ void CRoombase::RegisterGObj(const std::weak_ptr<class CRoomMember>& GObj, const
 	case EObjectType::Pickup:
 		mPickupMap.insert(std::make_pair(obj->GetID(), obj));
 		break;
+	case EObjectType::Door:
+		std::shared_ptr<CDoor> door = std::dynamic_pointer_cast<CDoor>(obj);
+		assert(door);
+		door->SetDirection(Coord);
+		mDoorMap.insert(std::make_pair(CChapter::Coord2Hash(mCoord + Coord), obj));
+		return;
 	}
 	obj->SetWorldPos(CoordToWorldPos(Coord));
 }
@@ -407,14 +666,19 @@ void CRoombase::DisregisterGObj(const std::weak_ptr<class CRoomMember>& GObj)
 	{
 	case EObjectType::PlayerCharacter:
 		break;
-	case EObjectType::Monster: 
-		mMonsterMap.erase(obj->GetID()); 
+	case EObjectType::Monster:
+		mMonsterMap.erase(obj->GetID());
 		break;
 	case EObjectType::Obstacle:
 		mObstacleMap.erase(obj->GetID());
 		break;
 	case EObjectType::Pickup:
 		mPickupMap.erase(obj->GetID());
+		break;
+	case EObjectType::Door:
+		std::shared_ptr<CDoor> door = std::dynamic_pointer_cast<CDoor>(obj);
+		assert(door && "문이 아닌 객체가 Door열거형을 사용중");
+		mDoorMap.erase(CChapter::Coord2Hash(mCoord + door->GetDirection()));
 		break;
 	}
 }
@@ -724,9 +988,4 @@ void CRoombase::GenerateRoom(FVector2 Direction, int Min, int Max, int& Current)
 	//LShape 인 경우
 	//TR | RT 은 같은 방향을 가리킨다.
 	return;
-}
-
-void CRoombase::OpenDoor()
-{
-	mChapter.lock()->OpenDoor();
 }

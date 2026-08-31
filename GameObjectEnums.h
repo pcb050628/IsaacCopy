@@ -25,6 +25,7 @@ enum class ERoomType
 
 enum class EOpenRequirement
 {
+    Wall,
     Clear,   //클리어시 자동으로 열림
     Key,    //열쇠로 열림
     Key2,   //열쇠 두개로 열림
@@ -72,4 +73,11 @@ enum class EPickupType
     Card,
     Pill,
     None,
+};
+
+enum class EDoorState
+{
+    Closed,
+    Open,
+    Blasted,
 };

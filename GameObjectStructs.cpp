@@ -1,4 +1,4 @@
-#include "UnitData.h"
+#include "GameObjectStructs.h"
 
 EPlayerHeartState operator+(const EPlayerHeartState& from, const EPlayerHeartState& to)
 {

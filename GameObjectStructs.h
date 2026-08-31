@@ -1,5 +1,6 @@
 #pragma once
 #include "EngineInfo.h"
+#include "GameObjectEnums.h"
 
 enum class EUnitImmune
 {
@@ -273,5 +274,29 @@ struct FRoute
 		{
 			Depth = p->Depth + 1;
 		}
+	}
+};
+
+struct FDoorState
+{
+	EDoorState state = EDoorState::Closed;
+	EOpenRequirement originRequirement = EOpenRequirement::Clear;
+	EOpenRequirement remainRequirement = EOpenRequirement::Clear;
+
+	FDoorState()
+		:state(EDoorState::Closed), originRequirement(EOpenRequirement::Clear), remainRequirement(EOpenRequirement::Clear)
+	{
+
+	}
+	FDoorState(const FDoorState& other)
+		:state(other.state), originRequirement(other.originRequirement), remainRequirement(other.remainRequirement)
+	{
+
+	}
+
+	FDoorState(EDoorState state_, EOpenRequirement origin)
+		:state(state_), originRequirement(origin)
+	{
+		remainRequirement = originRequirement;
 	}
 };

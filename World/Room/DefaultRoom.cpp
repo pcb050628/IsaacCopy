@@ -58,7 +58,7 @@ bool CDefaultRoom::Init()
 	mBackgroundSprite[3].lock()->SetSymmetry(true);
 	mBackgroundSprite[3].lock()->SetFlip(true);
 	
-	mRoomImageSize = FVector2(468.f, 310.f);
+	mRoomImageSize = FVector2(468.f, 310.f); //방 스프라이트의 *2
 
 	CalculateSize();
 	return true;

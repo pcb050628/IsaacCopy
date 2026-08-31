@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject.h"
-#include "../UnitData.h"
+#include "../../GameObjectStructs.h"
 
 class CTear :
     public CGameObject

@@ -1,6 +1,6 @@
 #pragma once
 #include "GameDefinition.h"
-#include "../UnitData.h"
+#include "../../GameObjectStructs.h"
 
 class CItem :
 	public CGameDefinition

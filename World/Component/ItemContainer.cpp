@@ -328,6 +328,19 @@ void CItemContainer::SetBodyDirection(FVector2 Dir)
 	}
 }
 
+void CItemContainer::SetHitEffect(bool Enable, float intensity, const FVector4& Color)
+{
+	for (std::weak_ptr<CMeshComponent> mesh : mHeadMesh)
+	{
+		mesh.lock()->SetHitEffect(0, Enable, intensity, Color);
+	}
+
+	for (std::weak_ptr<CMeshComponent> mesh : mBodyMesh)
+	{
+		mesh.lock()->SetHitEffect(0, Enable, intensity, Color);
+	}
+}
+
 void CItemContainer::SetHeadRenderEnable(bool Enable)
 {
 	for (std::weak_ptr<CMeshComponent> mesh : mHeadMesh)

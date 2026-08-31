@@ -58,8 +58,9 @@ protected:
 	//UI On/Off 시 움직이는 효과는 이 객체에 있음
 	//아직 만들지 않았고 만들어야함
 	std::weak_ptr<class CChapterSystemActor> mChapterManagementActor;
-	std::vector<std::weak_ptr<CActor>> mWalls; //벽 12개 만들기
-	std::vector<std::weak_ptr<class CDoor>> mDoors; // 문 8개
+	std::vector<std::weak_ptr<CActor>> mWalls;
+	std::map<int, std::weak_ptr<class CDoor>> mDoorsActive;
+	std::map<int, std::weak_ptr<class CDoor>> mDoorsDeactive;
 
 	/// <summary>
 	/// 문을 게임오브젝트로 해야할까 ? 
@@ -264,41 +265,6 @@ public:
 		}
 		return pickup;
 	}
-	template<typename T> 
-	std::weak_ptr<T> CreateDoor(const std::string& Name, const int GObjID, FVector2 Coord, bool OnFocus)
-	{
-		return std::weak_ptr<T>();
-		//if (!mPickupsDeactivate[GObjID].empty())
-		//{
-		//	std::shared_ptr<CDoor> pickup = mPickupsDeactivate[GObjID].begin()->second.lock();
-		//	std::shared_ptr<T> pu = std::dynamic_pointer_cast<T>(pickup);
-		//	mPickupsDeactivate[GObjID].erase(pickup->GetID());
-		//	mPickupsActivate[GObjID][pickup->GetID()] = pickup;
-		//
-		//	pickup->Reset(true);
-		//	if (OnFocus)
-		//	{
-		//		pickup->SetRoom(mRoomMap[mFocusedRoomHash]);
-		//		mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(pickup, Coord);
-		//	}
-		//	return pu;
-		//}
-		//
-		//std::weak_ptr<T> pickup = CreateActor<T>(Name);
-		//if (pickup.expired())
-		//	return std::weak_ptr<T>();
-		//
-		//std::shared_ptr<CPickup> pu = std::dynamic_pointer_cast<CPickup>(pickup.lock());
-		//mPickupsActivate[GObjID][pu->GetID()] = pu;
-		//
-		//if (OnFocus)
-		//{
-		//	pu->SetRoom(mRoomMap[mFocusedRoomHash]);
-		//	mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(pu, Coord);
-		//}
-		//return pickup;
-	}
-
 	template<typename T>
 	std::weak_ptr<CGameObject> MakeObject(const std::string& Name, enum class EObjectType Type, const int GObjID, FVector2 Coord, bool OnFocus = true)//좌표는 무조건 받아야 하고, 
 	{
@@ -316,8 +282,6 @@ public:
 			return CreateObstacle<T>(Name, GObjID, Coord, OnFocus);
 		case EObjectType::Pickup:
 			return CreatePickup<T>(Name, GObjID, Coord, OnFocus);
-		case EObjectType::Door:
-			return CreateDoor<T>(Name, GObjID, Coord, OnFocus);
 		}
 
 		return std::weak_ptr<CGameObject>();
@@ -349,6 +313,7 @@ public:
 
 		return std::weak_ptr<CTear>();
 	}
+	std::weak_ptr<class CDoor> GetDoor(ERoomType roomType = ERoomType::Normal);
 
 	//받은 오브젝트 반납하기 - 오브젝트 비활성화하고 방에서 분리한 해제안하고 들고있음
 	//눈물은 ClassID 가 아니라 오브젝트 아이디
@@ -356,7 +321,6 @@ public:
 
 public:
 	void MoveRoom(FVector2 Dir);
-	void OpenDoor(); //<= 이거 꼭 지우고 문 방에 할당한 후에 방에서 여는 함수 다시 작성하기 | 이건 잘못된 구조임
 
 	void RegisterRoom(const std::shared_ptr<CRoombase>& room);
 	void RegisterGObjToRoom(const std::weak_ptr<CRoomMember>& rm, const FVector2& Coord, const FVector2& targetRoomCoord);
@@ -379,8 +343,9 @@ public:
 	const FVector2 GetFocusedRoomCoord() const { return Hash2Coord(mFocusedRoomHash); }
 
 public:
-	static const FVector2 FourDirections[4];
+	static const float WallSize;
 	static const FVector2 RoomWorldSize;
-	static const FVector2 EightDirections[8];
+	static const FVector2 FourDirections[4]; //상, 하, 좌, 우
+	static const FVector2 EightDirections[8]; //상좌, 상우, 우상, 우하, 하우, 하좌, 좌하, 좌상
 };
 

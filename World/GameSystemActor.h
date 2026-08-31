@@ -1,6 +1,6 @@
 #pragma once
 #include "World\Actor.h"
-#include "UnitData.h"
+#include "../GameObjectStructs.h"
 
 //방에 종속되지않는 객체
 //카메라 및 UI 역할을 겸함 / 각각의 역할을 하는 액터 컴포넌트를 각각 지님 각각각각각각각각

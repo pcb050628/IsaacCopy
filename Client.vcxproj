@@ -155,6 +155,7 @@
     <ClCompile Include="Debug\ImGuiAnimationMaker.cpp" />
     <ClCompile Include="Debug\ImGuiRoomMaker.cpp" />
     <ClCompile Include="Debug\ImGuiSpriteMaker.cpp" />
+    <ClCompile Include="GameObjectStructs.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="World\Base\Character.cpp" />
     <ClCompile Include="World\Base\GameClass.cpp" />
@@ -197,13 +198,13 @@
     <ClCompile Include="World\Obstacle\RockObstacle.cpp" />
     <ClCompile Include="World\Pickup\PickupRedHeart.cpp" />
     <ClCompile Include="World\Room\DefaultRoom.cpp" />
-    <ClCompile Include="World\UnitData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Debug\ImGuiAnimationMaker.h" />
     <ClInclude Include="Debug\ImGuiRoomMaker.h" />
     <ClInclude Include="Debug\ImGuiSpriteMaker.h" />
     <ClInclude Include="GameObjectEnums.h" />
+    <ClInclude Include="GameObjectStructs.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rooms.h" />
     <ClInclude Include="World\Base\Character.h" />
@@ -248,7 +249,6 @@
     <ClInclude Include="World\Obstacle\RockObstacle.h" />
     <ClInclude Include="World\Pickup\PickupRedHeart.h" />
     <ClInclude Include="World\Room\DefaultRoom.h" />
-    <ClInclude Include="World\UnitData.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc" />

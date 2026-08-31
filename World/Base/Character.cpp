@@ -224,6 +224,8 @@ void CCharacter::Update(float DeltaTime)
 		}
 		mHeadMesh.lock()->SetHitIntensity(0, mInvincibleEffectIntensity);
 		mBodyMesh.lock()->SetHitIntensity(0, mInvincibleEffectIntensity);
+		if (!mItemContainer.expired())
+			mItemContainer.lock()->SetHitEffect(true, mInvincibleEffectIntensity, FVector4(1, 1, 1, 0));
 	}
 
 	mMoveDirection = FVector3::Zero;
@@ -655,4 +657,6 @@ void CCharacter::InvincibleEnd()
 	mbIsInvincible = false;
 	mHeadMesh.lock()->SetHitEffect(0, false, 0, FVector4::Zero);
 	mBodyMesh.lock()->SetHitEffect(0, false, 0, FVector4::Zero);
+	if (!mItemContainer.expired())
+		mItemContainer.lock()->SetHitEffect(false, mInvincibleEffectIntensity, FVector4(1, 1, 1, 0));
 }

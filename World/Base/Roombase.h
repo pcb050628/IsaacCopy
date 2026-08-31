@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "World\WorldManager.h"
-#include "../../GameObjectEnums.h"
+#include "../../GameObjectStructs.h"
 
 //13 x 7 : 14 x 9
 //117 : 98
@@ -53,12 +53,14 @@ protected:
 	std::map<int, std::weak_ptr<class CRoomMember>> mMonsterMap;
 	std::map<int, std::weak_ptr<class CRoomMember>> mObstacleMap;
 	std::map<int, std::weak_ptr<class CRoomMember>> mPickupMap;
+	std::map<int, std::weak_ptr<class CRoomMember>> mDoorMap; //문은 아이디가 아니라 좌표로 관리
 	//위치 저장용 | Coord, Type
 	std::unordered_map<int, EObstacleType> mObstacleGridMap;
 	//객체 저장 및 생성용 | 좌표, 아이디
 	std::unordered_map<int, std::list<FVector2>> mMonsterData;
 	std::unordered_map<int, std::list<FVector2>> mObstacleData;
 	std::unordered_map<int, std::list<FVector2>> mPickupData;
+	std::unordered_map<int, FDoorState> mDoorData;
 
 	bool mbIsRoomWin = false;
 	//보상 / 해당 클래스는 아직 작성하지 않았으므로 나중에 작성 후 적용하기
@@ -80,6 +82,7 @@ protected:
 
 	void CalculateSize();
 public:
+	virtual void Reset(bool HardReset = false) override; //방 초기화(클리어 상태는 초기화 x) / 하드 리셋시 클리어도 초기화 몬스터 전부 생성
 	virtual bool WinCheck() = 0;
 
 	void AdjustRoomPos();
@@ -94,15 +97,25 @@ protected:
 	void RoomDisenable();
 
 private:
+	void CreateDoor();
+
 	void ContainMonsterData();
 	void ContainObstacleData();
 	void ContainPickupData();
+	void ContainDoorData();
+
+	void CreateDoorNormal();
+	void CreateDoorHorizontal();
+	void CreateDoorVertical();
+	void CreateDoorL();
+	void CreateDoorDouble();
+
+	void OpenDoor();
 
 public:
 	void SetCoord(FVector2 Coord) { mCoord = Coord; }
 	FVector2 GetCoord() { return mCoord; }
 	bool SetInitRoom(const std::vector<std::pair<int, FVector2>>& Objs);//여기에 정보를 넣어서 방 초기화하기 / 지금은 방의 좌표 정보만 들어가지만 나중에는 방 내부의 정보들도 포함되어야 함
-	virtual void Reset(bool HardReset = false) override; //방 초기화(클리어 상태는 초기화 x) / 하드 리셋시 클리어도 초기화 몬스터 전부 생성
 
 	void RegisterGObj(const std::weak_ptr<class CRoomMember>& GObj, const FVector2& Coord);
 	void DisregisterGObj(const std::weak_ptr<class CRoomMember>& GObj);
@@ -124,6 +137,7 @@ public:
 	bool CheckCell(FVector2 Coord);
 
 	FVector2 GetRoomCellSize() { return mRoomCellSize; }
+	FVector2 GetRoomSize() { return mRoomSize; }
 
 	void ConnectRoom(std::weak_ptr<CRoombase> Room);
 	bool HasNearRoom(FVector2 Dir);
@@ -134,7 +148,10 @@ public:
 	const ERoomType GetRoomType() const { return mRoomType; }
 	const ERoomShape GetRoomShape() const { return mShape; }
 
-private:
-	void OpenDoor();
+protected:
+	static FVector2 DirectionV[6];
+	static FVector2 DirectionH[6];
+	static FVector2 DirectionL[8];
+	static FVector2 DirectionD[8];
 
 };

@@ -1,6 +1,6 @@
 #pragma once
 #include "World\ActorComponent.h"
-#include "../UnitData.h"
+#include "../../GameObjectStructs.h"
 
 class CRouteMaker :
     public CActorComponent

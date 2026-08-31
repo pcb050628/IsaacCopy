@@ -62,6 +62,8 @@ public:
 	void SetHeadDirection(FVector2 Dir);
 	void SetBodyDirection(FVector2 Dir);
 
+	void SetHitEffect(bool Enable, float intensity, const FVector4& Color);
+
 	void SetHeadAnimPlayTime(float Time);
 	void SetBodyAnimPlayTime(float Time);
 

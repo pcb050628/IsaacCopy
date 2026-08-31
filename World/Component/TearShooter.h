@@ -1,7 +1,7 @@
 #pragma once
 #include "World\ActorComponent.h"
 #include "../Base/GameObject.h"
-#include "../UnitData.h"
+#include "../../GameObjectStructs.h"
 
 class CTearShooter :
     public CActorComponent
