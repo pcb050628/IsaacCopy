@@ -22,20 +22,21 @@ CTearShooter::~CTearShooter()
 
 bool CTearShooter::Init()
 {
-	std::weak_ptr<CUnitbase> obj = std::dynamic_pointer_cast<CUnitbase>(mOwner.lock());
+	std::weak_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(mOwner.lock());
 	if (obj.expired())
 		return false;
 
-	if (EObjectType::PlayerCharacter == obj.lock()->GetObjType())
-		mbIsOwnerPlayer = true;
+	std::weak_ptr<CUnitbase> un = std::dynamic_pointer_cast<CUnitbase>(mOwner.lock());
+	if (!un.expired())
+	{
+		if (EObjectType::PlayerCharacter == obj.lock()->GetObjType())
+			mbIsOwnerPlayer = true;
 
-	mOwnerUnit = obj;
-	mOwnerUnitHead = mOwnerUnit.lock()->GetHeadComp();
-	mOwnerUnitBody = mOwnerUnit.lock()->GetBodyComp();
-	if (mOwnerUnitHead.expired() || mOwnerUnitBody.expired())
-		return false;
+		mOwnerUnit = un;
+	}
 
-	mOwnerObjType = mOwnerUnit.lock()->GetObjType();
+	mOwnerCenterComp = obj.lock()->GetRootComponent();
+	mOwnerObjType = obj.lock()->GetObjType();
 
 	mSounds.resize(2);
 
@@ -92,7 +93,7 @@ void CTearShooter::Fire()
 			assert("ERROR: TEAR IS EMPTY");
 			return;
 		}
-		tear->Set(mbIsOwnerPlayer, mOwnerUnitHead.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
+		tear->Set(mbIsOwnerPlayer, mOwnerCenterComp.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
 		mFirePointIndex = (mFirePointIndex + 1) % mFirePoints.size();
 	}
 }
@@ -143,7 +144,7 @@ void CTearShooter::Fire(FVector3 firePoint, bool IsSet)
 				assert("ERROR: TEAR IS EMPTY");
 				return;
 			}
-			tear->Set(mbIsOwnerPlayer, firePoint + mOwnerUnitHead.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
+			tear->Set(mbIsOwnerPlayer, firePoint + mOwnerCenterComp.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
 		}
 		mFirePointIndex = (mFirePointIndex + 1) % mFirePoints.size();
 	}
@@ -184,7 +185,7 @@ bool CTearShooter::FireWithVelocityOffset(FVector2 vOffset)
 			assert(false && "ERROR: TEAR IS EMPTY");
 			return false;
 		}
-		tear->Set(mbIsOwnerPlayer, mOwnerUnitHead.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
+		tear->Set(mbIsOwnerPlayer, mOwnerCenterComp.lock()->GetWorldPos() + FirePointCalculate(mFirePointIndex), mTearAttribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
 		mFirePointIndex = (mFirePointIndex + 1) % mFirePoints.size();
 	}
 

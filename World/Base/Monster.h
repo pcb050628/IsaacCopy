@@ -15,8 +15,6 @@ protected:
     float mMaxHP = 10.f;
     float mCurrentHP = mMaxHP;
 
-    std::unordered_map<std::string, std::string> mAnimMap; //애니메이션 이름, 애니메이션 파일이름
-
     std::weak_ptr<class CSound> mMumblingSound;
     FTimerHandle mMumblingTimer;
 

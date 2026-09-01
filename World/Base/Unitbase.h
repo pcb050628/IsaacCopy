@@ -42,9 +42,7 @@ protected:
 public:
     virtual bool Init();
     virtual void Update(float DeltaTime);
-    //virtual void UnitUpdate(float DeltaTime, float GameTimeScale) = 0;
     virtual void Destroy();
-
 
     virtual void GetHit(std::weak_ptr<CGameObject> From) = 0;
 

@@ -145,12 +145,6 @@
     <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster">
       <UniqueIdentifier>{615cab64-f73b-4f21-9df9-42927a479e6f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\Base">
-      <UniqueIdentifier>{2fa46ce5-1063-4343-b360-1ea3af116042}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\Gaper">
-      <UniqueIdentifier>{38a171e8-0195-4bcc-b154-c42e5e9de14a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup">
       <UniqueIdentifier>{f8ae1d4e-f75c-4040-b06f-55be244b5bc6}</UniqueIdentifier>
     </Filter>
@@ -175,6 +169,24 @@
     <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Door">
       <UniqueIdentifier>{4e61cb1a-6a28-4003-b124-2fb6c8405b56}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob">
+      <UniqueIdentifier>{4e029a70-56f0-43bc-8922-40db5f59eade}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob\1.Gaper">
+      <UniqueIdentifier>{38a171e8-0195-4bcc-b154-c42e5e9de14a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob\0.Base">
+      <UniqueIdentifier>{7b292ea7-d6b6-4dc5-a1f2-af5cf5412927}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\0.Base">
+      <UniqueIdentifier>{2fa46ce5-1063-4343-b360-1ea3af116042}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Boss">
+      <UniqueIdentifier>{16437998-c2ad-4a98-87a0-233dc8ec1104}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Boss\Base">
+      <UniqueIdentifier>{68fb72d2-3656-4906-bb72-bfc22253c7f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -193,10 +205,7 @@
       <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\0.Base</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\Monster.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="World\Monster\Walker.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\Base</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\0.Base</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\Obstaclebase.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle\Base</Filter>
@@ -232,7 +241,7 @@
       <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Anim</Filter>
     </ClCompile>
     <ClCompile Include="World\Monster\Gaper.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\Gaper</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob\1.Gaper</Filter>
     </ClCompile>
     <ClCompile Include="World\DebugChapter.cpp">
       <Filter>소스 파일\2.World\0.Debug</Filter>
@@ -315,6 +324,15 @@
     <ClCompile Include="GameObjectStructs.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="World\Monster\Walker.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob\0.Base</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Monster\BossGemini.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Base\Boss.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Boss\Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -333,10 +351,7 @@
       <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\0.Base</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\Monster.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="World\Monster\Walker.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\Base</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\0.Base</Filter>
     </ClInclude>
     <ClInclude Include="Rooms.h">
       <Filter>헤더 파일</Filter>
@@ -378,7 +393,7 @@
       <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Anim</Filter>
     </ClInclude>
     <ClInclude Include="World\Monster\Gaper.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\Gaper</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob\1.Gaper</Filter>
     </ClInclude>
     <ClInclude Include="World\DebugChapter.h">
       <Filter>소스 파일\2.World\0.Debug</Filter>
@@ -463,6 +478,15 @@
     </ClInclude>
     <ClInclude Include="World\Door.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Door</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Monster\Walker.h">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob\0.Base</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Monster\BossGemini.h">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Base\Boss.h">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Boss\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

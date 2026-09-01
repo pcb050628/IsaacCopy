@@ -66,8 +66,8 @@ bool CChapter::Init()
 
 	GenerateWallAndDoor();
 
-	mRoomRowMax = 10;
-	mRoomColMax = 10;
+	mRoomMapRowMax = 10;
+	mRoomMapColMax = 10;
 	GenerateRoom();
 	//다시 적는 생성 규칙
 	//1. 시작 방 생성
@@ -141,7 +141,7 @@ void CChapter::GenerateWallAndDoor()
 }
 void CChapter::GenerateRoom()
 {
-	FVector2 StartCoord(static_cast<float>(mRoomRowMax / 2), static_cast<float>(mRoomColMax / 2));
+	FVector2 StartCoord(static_cast<float>(mRoomMapRowMax / 2), static_cast<float>(mRoomMapColMax / 2));
 	std::weak_ptr<CRoombase> generatedRoom = CreateRoom<class CDefaultRoom>("Start", StartCoord);
 	std::shared_ptr<CRoombase> room = generatedRoom.lock();
 	if (!room)
@@ -214,7 +214,8 @@ void CChapter::InitialSetting()
 	room->EnterRoom();
 	LOG_DEBUG("현재 위치: ", mFocusedRoomHash);
 
-	mChapterManagementActor.lock()->SetWorldPos(center); //중앙 이동 말고 내부 함수 따로 작성해서 방 모양에 따라서 이동하게 만드릭
+	mChapterManagementActor.lock()->SetWorldPos(center);
+	mPlayerCharacter.lock()->SetEnable(true); //중앙 이동 말고 내부 함수 따로 작성해서 방 모양에 따라서 이동하게 만드릭
 	//추가로 ChatperSystemActor 내부에 플레이어 따라다니는 함수 작성하기 | 방이 커졌을때 필요함
 }
 void CChapter::SettingFocus() //지금은 벽만 설정하지만 이 함수를 포커스 이동시 초기 설정 함수로 만들기(벽, 문 모두 이동 설정하기)
@@ -315,6 +316,7 @@ void CChapter::MoveRoom(FVector2 Dir)
 	LOG_DEBUG("다음 좌표는: ", std::to_string(coord.x), ", ", std::to_string(coord.y));
 	mFocusedRoomHash = Coord2Hash(coord);
 	mInput->SetEnable(false);
+	mPlayerCharacter.lock()->SetEnable(false);
 	mRoomMap[mPrevRoomHash].lock()->PauseRoom();
 	mRoomMap[mFocusedRoomHash].lock()->PauseRoom();
 }
@@ -369,7 +371,11 @@ void CChapter::RegisterGObjToRoom(const std::weak_ptr<CRoomMember>& rm, const FV
 
 void CChapter::RegisterCharacter(const int ID)
 {
-	std::shared_ptr<CCharacter> chara = std::dynamic_pointer_cast<CCharacter>(CGameClassContainer::GetInst()->Instantiate(ID, FVector2(mRoomRowMax / 2, mRoomColMax / 2)).lock());
+	FVector2 startCoord(6, 3);
+	if (-1 != mFocusedRoomHash)
+		startCoord = mRoomMap[mFocusedRoomHash].lock()->GetRoomCellMax() / 2;
+
+	std::shared_ptr<CCharacter> chara = std::dynamic_pointer_cast<CCharacter>(CGameClassContainer::GetInst()->Instantiate(ID, startCoord).lock());
 	
 	assert(chara && "캐릭터 생성 실패: ", ID);
 
@@ -378,7 +384,7 @@ void CChapter::RegisterCharacter(const int ID)
 
 const int CChapter::GetIsValidCoord(const FVector2& Coord)
 {
-	if (Coord.x >= mRoomRowMax || Coord.x < 0 || Coord.y >= mRoomColMax || Coord.y < 0)
+	if (Coord.x >= mRoomMapRowMax || Coord.x < 0 || Coord.y >= mRoomMapColMax || Coord.y < 0)
 		return 0;
 
 	if (!mRoomMap[Coord2Hash(Coord)].expired())
@@ -388,7 +394,7 @@ const int CChapter::GetIsValidCoord(const FVector2& Coord)
 }
 std::weak_ptr<CRoombase> CChapter::GetRoom(FVector2 Coord)
 {
-	if (Coord.x >= mRoomRowMax || Coord.x < 0 || Coord.y >= mRoomColMax || Coord.y < 0)
+	if (Coord.x >= mRoomMapRowMax || Coord.x < 0 || Coord.y >= mRoomMapColMax || Coord.y < 0)
 		return std::weak_ptr<CRoombase>();
 	return mRoomMap[Coord2Hash(Coord)];
 }

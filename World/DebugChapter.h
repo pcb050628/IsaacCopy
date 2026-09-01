@@ -24,5 +24,7 @@ private:
 	EGDataType dataType = EGDataType::Anim;
 
 	void CheckPlayerPos();
+
+	void DebugDrawTogle();
 };
 

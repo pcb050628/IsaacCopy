@@ -11,10 +11,9 @@ public:
     virtual ~CTearShooter();
 
 protected:
-    EObjectType mOwnerObjType;
+    EObjectType mOwnerObjType = EObjectType::End;
     std::weak_ptr<class CUnitbase> mOwnerUnit;
-    std::weak_ptr<class CSceneComponent> mOwnerUnitHead;
-    std::weak_ptr<class CSceneComponent> mOwnerUnitBody;
+    std::weak_ptr<class CSceneComponent> mOwnerCenterComp;
     bool mbIsOwnerPlayer = false;
     //발사 위치들 | 당연히 offset 개념으로 작동함
     std::vector<FVector2> mFirePoints;
@@ -50,6 +49,7 @@ public:
     void UpdateAttributeData(FUnitAttribute Unit, FTearAttribute Tear);
     //싱크로나이즈 설정
     void SetSynchro(const bool Val) { mbIsSynchronized = Val; }
+    void SetCenterComponent(std::weak_ptr<CSceneComponent> SceneComp) { mOwnerCenterComp = SceneComp; }
     //발사 위치 등록 | 항상 아래쪽을 기준으로 추가하기
     void AddFirePoint(const FVector2& Point);
     void RemoveFirePoint(const FVector2& Point);

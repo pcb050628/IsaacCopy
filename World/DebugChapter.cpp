@@ -9,6 +9,7 @@
 
 #include "GameSystemActor.h"
 
+#include "World/Input.h"
 #include "RenderManager.h"
 #include "World/ColliderBox2D.h"
 #include "World/MeshComponent.h"
@@ -50,7 +51,7 @@ bool CDebugChapter::Init()
 
 	debugMode = false;
 	dataType = EGDataType::Sprite;
-
+	
 	if (debugMode) //애니메이션 만들기
 	{
 		//애니메이션 만들때 명심할것
@@ -66,6 +67,8 @@ bool CDebugChapter::Init()
 		case EGDataType::Room:
 			roomMaker.Init();
 			break;
+		default:
+			return false;
 		}
 		//roomMaker.Init();
 	}
@@ -93,14 +96,22 @@ bool CDebugChapter::Init()
 		//		CGameClassContainer::GetInst()->Instantiate(41, FVector2(x, y));
 		//	}
 		//}
+
+		mInput->AddBindKey("DebugKey", VK_NUMPAD0);
+		mInput->SetBindFunction("DebugKey", EInputType::Press, this, &CDebugChapter::DebugDrawTogle);
+
 		RegisterCharacter(31);
+		CGameClassContainer::GetInst()->Instantiate(91, FVector2(1, 1));
 
 		std::weak_ptr<CActor> actor = CreateActor<CActor>("TEST");
 		std::weak_ptr<CFontRenderer> font = actor.lock()->CreateComponent<CFontRenderer>("Root");
-		font.lock()->SetSize(200.f, 200.f);
+		font.lock()->SetSize(400.f, 400.f);
+		font.lock()->SetFontSize(32.f);
 		font.lock()->SetFont("GameDefault");
+		font.lock()->SetText(L"Another One Bites The Dust");
 		FResolution resol = CDevice::GetInst()->GetResolution();
 		font.lock()->SetRenderPos(resol.Width / 2, resol.Height /2);
+
 		InitialSetting();
 
 		//CTimeManager::SetTimer(3.f, true, this, &CDebugChapter::CheckPlayerPos);
@@ -183,4 +194,12 @@ void CDebugChapter::CheckPlayerPos()
 
 	FVector3 pos = player->GetWorldPos();
 	LOG_DEBUG("PLAYER POS: ", std::to_string(pos.x), ", ", std::to_string(pos.y), ", ", std::to_string(pos.z));
+}
+
+void CDebugChapter::DebugDrawTogle()
+{
+	static bool val = true;
+
+	val = !val;
+	CRenderManager::GetInst()->SetLayerEnable(10, val);
 }

@@ -45,6 +45,7 @@ enum class EObjectType
     Monster,
     Obstacle,
     Pickup,
+    Boss,
     End,
 };
 

@@ -42,11 +42,16 @@ void CGlobalCollision::SetGlobalCollision()
 		InfoManager->CreateChannel("Wall");
 		InfoManager->CreateProfile("Wall", "Wall", true, ECollisionInteraction::Block);
 
+		InfoManager->CreateChannel("Fly");
+		InfoManager->CreateProfile("Fly", "Fly", true, ECollisionInteraction::Overlap);
 		//몬스터 히트박스
 		InfoManager->SetProfileInteraction("Monster", "ContactHit_Monster", ECollisionInteraction::Ignore);
 		InfoManager->SetProfileInteraction("ContactHit_Monster", "Monster", ECollisionInteraction::Ignore);
 
 		InfoManager->SetProfileInteraction("Monster", "Monster", ECollisionInteraction::Block);
+
+		InfoManager->SetProfileInteraction("Monster", "Player", ECollisionInteraction::Ignore);
+		InfoManager->SetProfileInteraction("Player", "Monster", ECollisionInteraction::Ignore);
 
 		//픽업
 		InfoManager->SetProfileInteraction("Door", "PickUp", ECollisionInteraction::Block);

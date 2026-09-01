@@ -37,14 +37,16 @@ protected:
 	//이거 그냥 통합해버릴까? 어짜피 전부 GameObject 상속받는데
 	//구분도 내부에서 클래스 아이디로 구분하면 그냥 해도 되는거 아닌가
 	std::weak_ptr<CUnitbase> mPlayerCharacter;
-	std::unordered_map<int, std::map<int, std::weak_ptr<CUnitbase>>> mUnitsActivate;
-	std::unordered_map<int, std::map<int, std::weak_ptr<CUnitbase>>> mUnitsDeactivate;
-	std::unordered_map<int, std::map<int, std::weak_ptr<CObstaclebase>>> mObstaclesActivate;
-	std::unordered_map<int, std::map<int, std::weak_ptr<CObstaclebase>>> mObstaclesDeactivate;
-	std::unordered_map<int, std::map<int, std::weak_ptr<CPickup>>> mPickupsActivate;
-	std::unordered_map<int, std::map<int, std::weak_ptr<CPickup>>> mPickupsDeactivate;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mUnitsActivate;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mUnitsDeactivate;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mObstaclesActivate;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mObstaclesDeactivate;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mPickupsActivate;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mPickupsDeactivate;
 	std::unordered_map<int, std::weak_ptr<CTear>> mTearsActivate;
 	std::unordered_map<int, std::weak_ptr<CTear>> mTearsDeactivate;
+	std::map<int, std::weak_ptr<class CDoor>> mDoorsActive;
+	std::map<int, std::weak_ptr<class CDoor>> mDoorsDeactive;
 
 	//눈물 발사기(컴포넌트) <- 이거 필요한가? 어짜피 보관되는 위치도 Chapter 고 다 여기서 받아오는데 기능도 전부 Chapter 에 의탁해버리면?
 	//							챕터가 너무 방대해지긴하네 이미 다른 유닛들의 관리도 책임지고 있는데 책임을 합치는것이면 모르겠지만 다른 객체들과 다르게
@@ -59,8 +61,6 @@ protected:
 	//아직 만들지 않았고 만들어야함
 	std::weak_ptr<class CChapterSystemActor> mChapterManagementActor;
 	std::vector<std::weak_ptr<CActor>> mWalls;
-	std::map<int, std::weak_ptr<class CDoor>> mDoorsActive;
-	std::map<int, std::weak_ptr<class CDoor>> mDoorsDeactive;
 
 	/// <summary>
 	/// 문을 게임오브젝트로 해야할까 ? 
@@ -75,8 +75,8 @@ protected:
 	/// </summary>
 
 	int mChapterLevel = 1;
-	int mRoomRowMax = 0;
-	int mRoomColMax = 0;
+	int mRoomMapRowMax = 0;
+	int mRoomMapColMax = 0;
 
 	FTimerHandle mRoomEnterTimer;
 
@@ -131,7 +131,7 @@ public:
 	template<typename T>
 	std::weak_ptr<CRoombase> CreateRoom(std::string Name, FVector2 Coord)
 	{
-		if (Coord.x >= mRoomRowMax || Coord.x < 0 || Coord.y >= mRoomColMax || Coord.y < 0 || !GetRoom(Coord).expired())
+		if (Coord.x >= mRoomMapRowMax || Coord.x < 0 || Coord.y >= mRoomMapColMax || Coord.y < 0 || !GetRoom(Coord).expired())
 		{
 			return std::weak_ptr<CRoombase>();
 		}
@@ -171,7 +171,7 @@ public:
 	{
 		if (!mUnitsDeactivate[GObjID].empty())
 		{
-			std::shared_ptr<CUnitbase> unit = mUnitsDeactivate[GObjID].begin()->second.lock();
+			std::shared_ptr<CRoomMember> unit = mUnitsDeactivate[GObjID].begin()->second.lock();
 			std::shared_ptr<T> mon = std::dynamic_pointer_cast<T>(unit);
 			mUnitsDeactivate[GObjID].erase(unit->GetID());
 			mUnitsActivate[GObjID][unit->GetID()] = unit;
@@ -189,13 +189,13 @@ public:
 		if (unit.expired())
 			return std::weak_ptr<T>();
 
-		std::shared_ptr<CUnitbase> ub = std::dynamic_pointer_cast<CUnitbase>(unit.lock());
-		mUnitsActivate[GObjID][ub->GetID()] = ub;
+		std::shared_ptr<CRoomMember> rm = std::dynamic_pointer_cast<CRoomMember>(unit.lock());
+		mUnitsActivate[GObjID][rm->GetID()] = rm;
 
 		if (OnFocus)
 		{
-			ub->SetRoom(mRoomMap[mFocusedRoomHash].lock());
-			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(ub, Coord);
+			rm->SetRoom(mRoomMap[mFocusedRoomHash].lock());
+			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(rm, Coord);
 		}
 		return unit;
 	}
@@ -204,7 +204,7 @@ public:
 	{
 		if (!mObstaclesDeactivate[GObjID].empty())
 		{
-			std::shared_ptr<CObstaclebase> obstacle = mObstaclesDeactivate[GObjID].begin()->second.lock();
+			std::shared_ptr<CRoomMember> obstacle = mObstaclesDeactivate[GObjID].begin()->second.lock();
 			std::shared_ptr<T> ob = std::dynamic_pointer_cast<T>(obstacle);
 			mObstaclesDeactivate[GObjID].erase(obstacle->GetID());
 			mObstaclesActivate[GObjID][obstacle->GetID()] = obstacle;
@@ -222,13 +222,13 @@ public:
 		if (obstacle.expired())
 			return std::weak_ptr<T>();
 		
-		std::shared_ptr<CObstaclebase> ob = std::dynamic_pointer_cast<CObstaclebase>(obstacle.lock());
-		mObstaclesActivate[GObjID][ob->GetID()] = ob;
+		std::shared_ptr<CRoomMember> rm = std::dynamic_pointer_cast<CRoomMember>(obstacle.lock());
+		mObstaclesActivate[GObjID][rm->GetID()] = rm;
 
 		if(OnFocus)
 		{
-			ob->SetRoom(mRoomMap[mFocusedRoomHash].lock());
-			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(ob, Coord);
+			rm->SetRoom(mRoomMap[mFocusedRoomHash].lock());
+			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(rm, Coord);
 		}
 		return obstacle;
 	}
@@ -237,7 +237,7 @@ public:
 	{
 		if (!mPickupsDeactivate[GObjID].empty())
 		{
-			std::shared_ptr<CPickup> pickup = mPickupsDeactivate[GObjID].begin()->second.lock();
+			std::shared_ptr<CRoomMember> pickup = mPickupsDeactivate[GObjID].begin()->second.lock();
 			std::shared_ptr<T> pu = std::dynamic_pointer_cast<T>(pickup);
 			mPickupsDeactivate[GObjID].erase(pickup->GetID());
 			mPickupsActivate[GObjID][pickup->GetID()] = pickup;
@@ -255,13 +255,13 @@ public:
 		if (pickup.expired())
 			return std::weak_ptr<T>();
 
-		std::shared_ptr<CPickup> pu = std::dynamic_pointer_cast<CPickup>(pickup.lock());
-		mPickupsActivate[GObjID][pu->GetID()] = pu;
+		std::shared_ptr<CRoomMember> rm = std::dynamic_pointer_cast<CRoomMember>(pickup.lock());
+		mPickupsActivate[GObjID][rm->GetID()] = rm;
 
 		if(OnFocus)
 		{
-			pu->SetRoom(mRoomMap[mFocusedRoomHash]);
-			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(pu, Coord);
+			rm->SetRoom(mRoomMap[mFocusedRoomHash]);
+			mRoomMap[mFocusedRoomHash].lock()->RegisterGObj(rm, Coord);
 		}
 		return pickup;
 	}
@@ -332,12 +332,12 @@ public:
 	const int GetIsValidCoord(const FVector2& Coord);
 	std::weak_ptr<CRoombase> GetRoom(FVector2 Coord);
 	std::weak_ptr<CRoombase> GetFocusedRoom();
-	const int GetRowMax() const { return mRoomRowMax; }
-	const int GetColMax() const { return mRoomColMax; }
+	const int GetRowMax() const { return mRoomMapRowMax; }
+	const int GetColMax() const { return mRoomMapColMax; }
 
 	const int GetLevel() const { return mChapterLevel; }
 
-	const FVector2 GetStartRoomCoord() { return FVector2(static_cast<float>(mRoomRowMax / 2), static_cast<float>(mRoomColMax / 2)); }
+	const FVector2 GetStartRoomCoord() { return FVector2(static_cast<float>(mRoomMapRowMax / 2), static_cast<float>(mRoomMapColMax / 2)); }
 
 	std::weak_ptr<CActor> GetPlayerCharacter() { return mPlayerCharacter; }
 	const FVector2 GetFocusedRoomCoord() const { return Hash2Coord(mFocusedRoomHash); }

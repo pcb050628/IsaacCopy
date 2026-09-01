@@ -64,6 +64,8 @@ bool CAnimGData::Read(const TCHAR* FileName)
 		frame.Size = FVector2(static_cast<float>(item["SizeX"].GetDouble()), static_cast<float>(item["SizeY"].GetDouble()));
 		mData.Frames.push_back(frame);
 	}
+
+	MakeAnim();
 	return true;
 }
 
@@ -82,6 +84,8 @@ bool CAnimGData::Read(const rapidjson::Value& Val)
 		frame.Size = FVector2(static_cast<float>(f["SizeX"].GetDouble()), static_cast<float>(f["SizeY"].GetDouble()));
 		mData.Frames.push_back(frame);
 	}
+
+	MakeAnim();
 	return true;
 }
 

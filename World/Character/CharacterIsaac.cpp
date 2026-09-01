@@ -8,6 +8,7 @@
 #include "../Manager/GameClassContainer.h"
 #include "../Chapter.h"
 
+#include "World/MeshComponent.h"
 #include "World/ColliderSphere2D.h"
 
 #include "../Component/TearShooter.h"
@@ -60,6 +61,7 @@ bool CCharacterIsaac::Init()
     mAttribute.Speed = 30.f;
 
     mShooter.lock()->UpdateUnitAttributeData(false, mAttribute);
+    mShooter.lock()->SetCenterComponent(mHeadMesh);
 
     auto input = mWorld.lock()->GetInput().lock();
     input->AddBindKey("TestFunc", 'J');

@@ -136,8 +136,9 @@ public:
 	bool CheckNearCell(FVector2 Coord);
 	bool CheckCell(FVector2 Coord);
 
-	FVector2 GetRoomCellSize() { return mRoomCellSize; }
-	FVector2 GetRoomSize() { return mRoomSize; }
+	const FVector2 GetRoomCellMax() const { return mRoomCellMax; }
+	const FVector2 GetRoomCellSize() const { return mRoomCellSize; }
+	const FVector2 GetRoomSize() const { return mRoomSize; }
 
 	void ConnectRoom(std::weak_ptr<CRoombase> Room);
 	bool HasNearRoom(FVector2 Dir);

@@ -157,6 +157,7 @@
     <ClCompile Include="Debug\ImGuiSpriteMaker.cpp" />
     <ClCompile Include="GameObjectStructs.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="World\Base\Boss.cpp" />
     <ClCompile Include="World\Base\Character.cpp" />
     <ClCompile Include="World\Base\GameClass.cpp" />
     <ClCompile Include="World\Base\GameDefinition.cpp" />
@@ -193,6 +194,7 @@
     <ClCompile Include="World\Manager\GameClassContainer.cpp" />
     <ClCompile Include="World\Manager\GameRuleManager.cpp" />
     <ClCompile Include="World\Manager\GameStarter.cpp" />
+    <ClCompile Include="World\Monster\BossGemini.cpp" />
     <ClCompile Include="World\Monster\Gaper.cpp" />
     <ClCompile Include="World\Monster\Walker.cpp" />
     <ClCompile Include="World\Obstacle\RockObstacle.cpp" />
@@ -207,6 +209,7 @@
     <ClInclude Include="GameObjectStructs.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rooms.h" />
+    <ClInclude Include="World\Base\Boss.h" />
     <ClInclude Include="World\Base\Character.h" />
     <ClInclude Include="World\Base\GameClass.h" />
     <ClInclude Include="World\Base\GameDefinition.h" />
@@ -244,6 +247,7 @@
     <ClInclude Include="World\Manager\GameClassContainer.h" />
     <ClInclude Include="World\Manager\GameRuleManager.h" />
     <ClInclude Include="World\Manager\GameStarter.h" />
+    <ClInclude Include="World\Monster\BossGemini.h" />
     <ClInclude Include="World\Monster\Gaper.h" />
     <ClInclude Include="World\Monster\Walker.h" />
     <ClInclude Include="World\Obstacle\RockObstacle.h" />
