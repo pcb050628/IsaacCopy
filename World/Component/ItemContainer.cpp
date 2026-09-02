@@ -10,6 +10,7 @@
 #include "World/Animation2DComponent.h"
 
 #include "../Manager/GameClassContainer.h"
+#include "../Chapter.h"
 #include "../Base/Character.h"
 #include "../Base/Item.h"
 
@@ -160,6 +161,10 @@ void CItemContainer::ContainItem(int ID)
 	}
 
 	item->OnGetItem(mOwnerCharacter);
+
+	std::wstring title(item->GetName().begin(), item->GetName().end());
+	std::wstring quato(item->GetQuato().begin(), item->GetQuato().end());
+	std::dynamic_pointer_cast<CChapter>(mWorld.lock())->RenderTitleWithQuato(title.c_str(), quato.c_str());
 }
 
 bool CItemContainer::IsContained(int ID)

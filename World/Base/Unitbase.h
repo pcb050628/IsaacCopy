@@ -17,7 +17,7 @@ protected:
     std::weak_ptr<class CMeshComponent> mBodyMesh;
     std::weak_ptr<class CAnimation2DComponent> mHead;
     std::weak_ptr<class CAnimation2DComponent> mBody;
-    std::weak_ptr<class CColliderSphere2D> mHurtBox; //피격체 | 피격을 당하지 않는 경우에는 기본 충돌체로 사용됨
+    std::weak_ptr<class CColliderBox2D> mHurtBox; //피격체 | 피격을 당하지 않는 경우에는 기본 충돌체로 사용됨
     std::weak_ptr<class CColliderSphere2D> mHitBox; //기본으로는 생성하지 않음, 필요한 경우에만 상속받은 객체에서 생성
     std::weak_ptr<class CSoundComponent> mSoundPlayer;
 
@@ -32,7 +32,7 @@ protected:
 
     FUnitAttribute mAttribute; //능력치
     FUnitAttribute mMagnification; // 능력치 배율
-    std::vector<std::pair<EUnitEffect, float>> mStatusQueue; //상태와 유지시간
+    std::vector<std::pair<EUnitEffect, float>> mStatusQueue; //상태와 유지시간 
 
     bool mbIsDead = false;
 
@@ -44,9 +44,9 @@ public:
     virtual void Update(float DeltaTime);
     virtual void Destroy();
 
-    virtual void GetHit(std::weak_ptr<CGameObject> From) = 0;
 
     virtual void Reset(bool HardReset = false) = 0;
+    virtual void GetHit(std::weak_ptr<CGameObject> From) = 0;
 protected:
     bool AddAnim(const std::string& Name, const TCHAR* FilePath, bool Upper = false, float PlayTime = 1.f, float PlayRate = 1.f, bool Loop = false, bool Reverse = false, bool Symmetry = false);
     virtual void Move(const FVector3& Force) const;
@@ -88,5 +88,7 @@ public:
     FUnitAttribute GetMagnification() { return mMagnification; }
     void AddMagnification(FUnitAttribute magnification) { mMagnification += magnification; }
     void SetMagnification(FUnitAttribute magnification) { mMagnification = magnification; }
+
+    FUnitAttribute GetTotalAttribute() { return mAttribute * mMagnification; }
 };                                              
 

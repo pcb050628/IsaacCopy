@@ -4,6 +4,7 @@
 
 #include "World/CameraComponent.h"
 #include "World/SoundComponent.h"
+#include "World/FontRenderer.h"
 
 #include "World/World.h"
 #include "World/Input.h"
@@ -30,7 +31,9 @@ bool CChapterSystemActor::Init()
     mRb = CreateComponent<CRigidBodyComponent>("Root");
     mSound = CreateComponent<CSoundComponent>("SystemSound");
     mCam = CreateComponent<CCameraComponent>("SystemCam");
-    if (mCam.expired() || mSound.expired() || mRb.expired())
+    mTitleRenderer = CreateComponent<CFontRenderer>("Title");
+    mQuatoRenderer = CreateComponent<CFontRenderer>("Quato");
+    if (mCam.expired() || mSound.expired() || mRb.expired() || mTitleRenderer.expired() || mQuatoRenderer.expired())
         return false;
 
     mRb.lock()->SetLimit(5000.f);
@@ -61,6 +64,23 @@ bool CChapterSystemActor::Init()
     mHeartSpriteOffset.y = resol.Height / 2 - mHeartSpriteSpacing;
 
     CGameRuleManager::GetInst()->RegisterPlayerHeartOnUpdate("GSA", this, &CChapterSystemActor::UpdateHeart);
+
+    std::shared_ptr<CFontRenderer> title = mTitleRenderer.lock();
+    title->SetSize(400.f, 400.f);
+    title->SetFontSize(32.f);
+    title->SetFont("GameDefault");
+    title->SetRenderPos(resol.Width / 2 - 200.f, resol.Height / 2 - 300.f);
+    title->SetAlignH(ETextAlignH::Center);
+
+    std::shared_ptr<CFontRenderer> quato = mQuatoRenderer.lock();
+    quato->SetSize(400.f, 400.f);
+    quato->SetFontSize(28.f);
+    quato->SetFont("GameDefault");
+    quato->SetRenderPos(resol.Width / 2 - 200.f, resol.Height / 2 - 250.f);
+    quato->SetAlignH(ETextAlignH::Center);
+
+    title->SetRenderEnable(false);
+    quato->SetRenderEnable(false);
 
     return true;
 }
@@ -199,6 +219,12 @@ void CChapterSystemActor::UpdateHeart(int id, FPlayerHeartContainer container)
     }
 }
 
+void CChapterSystemActor::StopDrawText()
+{
+    mTitleRenderer.lock()->SetRenderEnable(false);
+    mQuatoRenderer.lock()->SetRenderEnable(false);
+}
+
 void CChapterSystemActor::Move(FVector2 dir)
 {
     std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
@@ -209,4 +235,13 @@ void CChapterSystemActor::Move(FVector2 dir)
     mTargetPosition = targetRoom->GetWorldPos();
     mCompareDist = 10.f;
     mbIsMoving = true;
+}
+
+void CChapterSystemActor::DrawTitleWithQuato(const TCHAR* title, const TCHAR* quato, float time)
+{
+    mTitleRenderer.lock()->SetText(title);
+    mQuatoRenderer.lock()->SetText(quato);
+    mTitleRenderer.lock()->SetRenderEnable(true);
+    mQuatoRenderer.lock()->SetRenderEnable(true);
+    CTimeManager::SetTimer(time, false, this, &CChapterSystemActor::StopDrawText);
 }

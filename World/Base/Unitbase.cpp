@@ -5,6 +5,7 @@
 #include "Asset/TextureManager.h"
 
 #include "World/MeshComponent.h"
+#include "World/ColliderBox2D.h"
 #include "World/ColliderSphere2D.h"
 #include "World/SoundComponent.h"
 #include "World/Animation2DComponent.h"
@@ -76,11 +77,11 @@ bool CUnitbase::Init()
 	mHeadMesh.lock()->SetRelativeScale(FVector2(7.f, 7.f));
 	mBodyMesh.lock()->SetRelativeScale(FVector2(5.5f, 5.5f));
 
-	mHurtBox = CreateComponent<CColliderSphere2D>("HurtBox");
+	mHurtBox = CreateComponent<CColliderBox2D>("HurtBox");
 	if (mHurtBox.expired())
 		return false;
 
-	std::shared_ptr<CColliderSphere2D> hurtbox = mHurtBox.lock();
+	std::shared_ptr<CColliderBox2D> hurtbox = mHurtBox.lock();
 	hurtbox->SetBeginOverlapFunc(this, &CUnitbase::OnHurtOverlaps);
 	hurtbox->SetEndOverlapFunc(this, &CUnitbase::ExitHurtOverlaps);
 

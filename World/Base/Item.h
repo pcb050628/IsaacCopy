@@ -83,6 +83,7 @@ public: //발동 조건들
 	virtual void OnUpdatecShooter(const std::weak_ptr<class CCharacter>& character);
 
 public:
+	const std::string& GetQuato() const { return mQuote; }
 	const EItemType GetItemType() const { return mItemType; }
 	const bool HasAttribute() const { return mbIsHasAttribute; }
 	const bool GetIsMagnification() const { return mbIsAttributeMagnification; }

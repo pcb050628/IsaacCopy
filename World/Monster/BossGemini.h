@@ -12,10 +12,12 @@ public:
 protected:
     bool mbIsAttached = true;
     //Contusion
-    float mContusionHP = 140.f;
+    float mContusionHP = 10.f;
     float mMovingTimeStack = 0.f;
     float mBreathingTime = 5.f;
     bool mbIsBreathing = false;
+    bool mbContusionJustHit = false;
+    bool mbContusionDead = false;
     std::weak_ptr<class CRigidBodyComponent> mContusionRigidbody;
     std::weak_ptr<class CMeshComponent> mContusionFullBodyMesh;
     std::weak_ptr<class CMeshComponent> mContusionHeadMesh;
@@ -26,10 +28,14 @@ protected:
     std::weak_ptr<class CColliderSphere2D> mContusionHitBox;
     std::weak_ptr<class CColliderBox2D> mContusionHurtBox;
     std::weak_ptr<class CRouteMaker> mRouteMaker;
+    uint64_t mBreathingStartTimerHandle = 0;
+    uint64_t mBreathingEndTimerHandle = 0;
 
     //Suture
     float mSutureHP = 140.f;
     float mAttachDistLimit = 100.f;
+    bool mbSutureJustHit = false;
+    bool mbSutureDead = false;
     std::weak_ptr<class CRigidBodyComponent> mSutureRigidbody;
     std::weak_ptr<class CMeshComponent> mSutureMesh;
     std::weak_ptr<class CAnimation2DComponent> mSutureAnimator;
@@ -63,5 +69,8 @@ private:
     void OnSutureHurtOverlap(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
 
     void UpdateRopePosition();
+
+    void CheckIsDie();
+    void Dettach();
 };
 

@@ -112,5 +112,7 @@ public:
     void SetBoomerang(const bool Val) { mTearAttribute.Boomerang = Val; }
     void SetShield(const bool Val) { mTearAttribute.Shield = Val; }
     void SetBouncing(const bool Val) { mTearAttribute.Bouncing = Val; }
+
+    EObjectType GetOwnerType() const { return mOwnerObjType; }
 };
 

@@ -18,6 +18,7 @@
 #include "../Chapter.h"
 #include "../Component/RigidBodyComponent.h"
 
+#include "Boss.h"
 #include "../Component/TearShooter.h"
 
 REGISTER_GAMEOBJCLASS(CTear, "Tear", EObjectType::Tear)
@@ -149,9 +150,7 @@ void CTear::Reset(bool HardReset)
 	SetEnable(true);
 	SetRenderEnable(true);
 	mAnimator.lock()->ChangeAnimation("Tear_Default");
-	mAnimator.lock()->SetFrame(3);
-
-	
+	mAnimator.lock()->SetFrame(3);	
 }
 
 //생각해보니까 텍스쳐도 골라줘야함
@@ -256,6 +255,51 @@ void CTear::OnCollision(const FVector3& HitPoint, const FVector3& Normal, std::w
 {
 	if (Collider.lock()->GetOwner().lock() == mShooter.lock()->GetOwner().lock())
 		return;
+	std::shared_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
+	if (!obj)
+	{
+		TearDying();
+		return;
+	}
+
+	EObjectType objt = obj->GetObjType();
+	EObjectType ownert = mShooter.lock()->GetOwnerType();
+	if (objt == ownert)
+		return;
+
+	switch (objt)
+	{
+	case EObjectType::Tear:
+		if (mTearAttribute.Shield || std::dynamic_pointer_cast<CTear>(obj)->GetIsShield())
+			break;
+		else
+			return;
+		break;
+	case EObjectType::Obstacle:
+		if (mTearAttribute.Spectral)
+			return;
+		break;
+	case EObjectType::PlayerCharacter:
+		std::dynamic_pointer_cast<CUnitbase>(obj)->GetHit(GetThisPtr<CGameObject>());
+		break;
+	case EObjectType::Monster:
+		if (EObjectType::Monster == ownert || EObjectType::Boss == ownert)
+			return;
+		std::dynamic_pointer_cast<CUnitbase>(obj)->GetHit(GetThisPtr<CGameObject>());
+		break;
+	case EObjectType::Boss:
+		if (EObjectType::Monster == ownert || EObjectType::Boss == ownert)
+			return;
+		std::dynamic_pointer_cast<CBoss>(obj)->GetHit(GetThisPtr<CGameObject>());
+		break;
+	case EObjectType::Room:
+	case EObjectType::Door:
+	case EObjectType::Item:
+	case EObjectType::Pickup:
+	case EObjectType::End:
+	default:
+		return;
+	}
 
 	TearDying();
 }
@@ -264,4 +308,9 @@ std::weak_ptr<CGameObject> CTear::GetShooterOwner()
 {
 	std::shared_ptr<CActor> act = mShooter.lock()->GetOwner().lock();
 	return std::dynamic_pointer_cast<CGameObject>(act);
+}
+
+EObjectType CTear::GetOwnerType()
+{
+	return  mShooter.lock()->GetOwnerType();
 }

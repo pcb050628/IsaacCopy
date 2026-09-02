@@ -4,7 +4,7 @@
 class CItemCroockedPenny :
     public CItem
 {
-    GAMEDEFCLASS(CItemCroockedPenny, 93)
+    GAMEDEFCLASS(CItemCroockedPenny, 103)
 public:
     CItemCroockedPenny();
     virtual ~CItemCroockedPenny();

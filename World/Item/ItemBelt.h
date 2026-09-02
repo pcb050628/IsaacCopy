@@ -4,7 +4,7 @@
 class CItemBelt :
     public CItem
 {
-    GAMEDEFCLASS(CItemBelt, 91)
+    GAMEDEFCLASS(CItemBelt, 101)
 public:
     CItemBelt();
     virtual ~CItemBelt();

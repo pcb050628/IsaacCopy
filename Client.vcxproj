@@ -197,9 +197,12 @@
     <ClCompile Include="World\Monster\BossGemini.cpp" />
     <ClCompile Include="World\Monster\Gaper.cpp" />
     <ClCompile Include="World\Monster\Walker.cpp" />
+    <ClCompile Include="World\Obstacle\PedestalObstacle.cpp" />
     <ClCompile Include="World\Obstacle\RockObstacle.cpp" />
+    <ClCompile Include="World\Obstacle\ShopSlotObstacle.cpp" />
     <ClCompile Include="World\Pickup\PickupRedHeart.cpp" />
     <ClCompile Include="World\Room\DefaultRoom.cpp" />
+    <ClCompile Include="World\Room\TreasureRoom.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Debug\ImGuiAnimationMaker.h" />
@@ -250,9 +253,12 @@
     <ClInclude Include="World\Monster\BossGemini.h" />
     <ClInclude Include="World\Monster\Gaper.h" />
     <ClInclude Include="World\Monster\Walker.h" />
+    <ClInclude Include="World\Obstacle\PedestalObstacle.h" />
     <ClInclude Include="World\Obstacle\RockObstacle.h" />
+    <ClInclude Include="World\Obstacle\ShopSlotObstacle.h" />
     <ClInclude Include="World\Pickup\PickupRedHeart.h" />
     <ClInclude Include="World\Room\DefaultRoom.h" />
+    <ClInclude Include="World\Room\TreasureRoom.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc" />

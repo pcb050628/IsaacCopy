@@ -1,34 +1,30 @@
-#include "DefaultRoom.h"
-#include "../Base/Unitbase.h"
-
-#include "LogManager.h"
-#include "../Manager/GameClassContainer.h"
+#include "TreasureRoom.h"
 
 #include "Asset/PathManager.h"
 #include "Asset/AssetManager.h"
 #include "Asset/TextureManager.h"
-#include "Asset/AnimationManager.h"
-#include "World/WorldManager.h"
+
+#include "../Manager/GameRuleManager.h"
+#include "../Manager/GameClassContainer.h"
 #include "../Chapter.h"
 
-#include "World/MeshComponent.h"
-#include "World/Animation2DComponent.h"
+#include "../Base/RoomMember.h"
+#include "../Obstacle/PedestalObstacle.h"
 
 #include "../Component/SpriteComponent.h"
 
-REGISTER_GAMEOBJCLASS(CDefaultRoom, "Room_Default", EObjectType::Room);
+REGISTER_GAMEOBJCLASS(CTreasureRoom, "TreasureRoom", EObjectType::Room);
 
-CDefaultRoom::CDefaultRoom()
-	:CRoombase(ERoomType::Normal, ERoomShape::Normal)
-{
-	
-}
-
-CDefaultRoom::~CDefaultRoom()
+CTreasureRoom::CTreasureRoom()
+	:CRoombase(ERoomType::Treasure, ERoomShape::Normal)
 {
 }
 
-bool CDefaultRoom::Init()
+CTreasureRoom::~CTreasureRoom()
+{
+}
+
+bool CTreasureRoom::Init()
 {
 	if (!CRoombase::Init())
 		return false;
@@ -57,38 +53,48 @@ bool CDefaultRoom::Init()
 	mBackgroundSprite[2].lock()->SetFlip(true);
 	mBackgroundSprite[3].lock()->SetSymmetry(true);
 	mBackgroundSprite[3].lock()->SetFlip(true);
-	
+
 	mRoomImageSize = FVector2(468.f, 310.f); //방 스프라이트의 *2
 
 	CalculateSize();
+
+	mItemID = CGameRuleManager::GetInst()->GenerateRandomI() % 3 + 101;
+
 	return true;
 }
 
-void CDefaultRoom::Update(float DeltaTime)
+void CTreasureRoom::Update(float DeltaTime)
 {
 	CRoombase::Update(DeltaTime);
 }
 
-void CDefaultRoom::Destroy()
+void CTreasureRoom::Destroy()
 {
 	CActor::Destroy();
 }
 
-void CDefaultRoom::OnEnterRoom()
+void CTreasureRoom::OnEnterRoom()
+{
+	for (std::pair<int, std::weak_ptr<CRoomMember>> pair : mObstacleMap)
+	{
+		std::shared_ptr<CObstaclebase> ob = std::dynamic_pointer_cast<CObstaclebase>(pair.second.lock());
+		if (ob->GetObstacleType() == EObstacleType::Pedestal)
+		{
+			std::shared_ptr<CPedestalObstacle> pedestal = std::dynamic_pointer_cast<CPedestalObstacle>(ob);
+			pedestal->SetItemID(mItemID);
+		}
+	}
+}
+
+void CTreasureRoom::WinRoom()
 {
 }
 
-void CDefaultRoom::WinRoom()
-{
-	//보상 스폰하기
-}
-
-void CDefaultRoom::OnExitRoom()
+void CTreasureRoom::OnExitRoom()
 {
 }
 
-bool CDefaultRoom::WinCheck()
+bool CTreasureRoom::WinCheck()
 {
-	bool flag = false;
-	return mMonsterMap.empty();
+	return true;
 }

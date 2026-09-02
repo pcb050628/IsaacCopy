@@ -5,7 +5,7 @@
 class CDoor :
     public CRoomMember
 {
-    GAMEOBJCLASS(CDoor, 40)
+    GAMEOBJCLASS(CDoor, 4000)
 public:
     CDoor();
     CDoor(const CDoor& src);

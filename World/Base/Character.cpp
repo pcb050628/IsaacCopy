@@ -9,7 +9,7 @@
 #include "Asset/AnimationManager.h"
 #include "Asset/Animation2D.h"
 
-#include "World/Collider.h"
+#include "World/ColliderBox2D.h"
 #include "World/ColliderSphere2D.h"
 #include "World/SoundComponent.h"
 #include "World/Animation2DComponent.h"
@@ -182,38 +182,6 @@ void CCharacter::Update(float DeltaTime)
 		PlayHeadAnim(true, true);
 	}
 
-	if(!mOverlaps.empty())
-	{
-		std::map<int, std::weak_ptr<CCollider>>::iterator iter = mOverlaps.begin();
-		std::map<int, std::weak_ptr<CCollider>>::iterator iterEnd = mOverlaps.end();
-		for (; iter != iterEnd;)
-		{
-			if (iter->second.expired() || iter->second.lock()->GetOwner().expired() || !iter->second.lock()->GetOwner().lock()->IsEnable())
-			{
-				iter = mOverlaps.erase(iter);
-				iterEnd = mOverlaps.end();
-				continue;
-			}
-
-			std::shared_ptr<CCollider> col = iter->second.lock();
-			std::shared_ptr<CGameClass> gc = std::dynamic_pointer_cast<CGameClass>(col->GetOwner().lock());
-			if (!mbIsInvincible)
-			{
-				LOG_DEBUG(CGameClassContainer::GetInst()->GetName(gc->GetGClassID()), "가 캐릭터를 공격했습니다.");
-				FVector3 Normal = col->GetWorldPos() - GetWorldPos();
-				Normal.Normalize();
-				mRigidBody.lock()->AddForce(-Normal * 3000.f);
-				GetHit(std::static_pointer_cast<CGameObject>(gc));
-				mbIsInvincible = true;
-				mHeadMesh.lock()->SetHitEffect(0, true, 0, FVector4(1, 1, 1, 0));
-				mBodyMesh.lock()->SetHitEffect(0, true, 0, FVector4(1, 1, 1, 0));
-				CTimeManager::SetTimer(mInvincibleDuration, false, this, &CCharacter::InvincibleEnd);
-				break;
-			}
-			++iter;
-		}
-	}
-
 	if (mbIsInvincible)
 	{
 		//intensity 계산해서 material 업데이트
@@ -242,7 +210,7 @@ void CCharacter::Destroy()
 
 void CCharacter::GetHit(std::weak_ptr<CGameObject> From)
 {
-	if (From.expired())
+	if (mbIsInvincible || From.expired())
 		return;
 
 	//int dmg = static_cast<int>(Dmg);
@@ -288,6 +256,19 @@ void CCharacter::GetHit(std::weak_ptr<CGameObject> From)
 	if (!mItemContainer.expired())
 		mItemContainer.lock()->OnGetHit(From, dmg);
 
+	std::shared_ptr<CGameObject> gc = From.lock();
+	if (!mbIsInvincible)
+	{
+		LOG_DEBUG(CGameClassContainer::GetInst()->GetName(gc->GetGClassID()), "가 캐릭터를 공격했습니다.");
+		FVector3 Normal = gc->GetWorldPos() - GetWorldPos();
+		Normal.Normalize();
+		mRigidBody.lock()->AddForce(-Normal * 3000.f);
+		mbIsInvincible = true;
+		mHeadMesh.lock()->SetHitEffect(0, true, 0, FVector4(1, 1, 1, 0));
+		mBodyMesh.lock()->SetHitEffect(0, true, 0, FVector4(1, 1, 1, 0));
+		CTimeManager::SetTimer(mInvincibleDuration, false, this, &CCharacter::InvincibleEnd);
+	}
+
 	while (dmg > 0)
 	{
 		int drain = dmg % 2;
@@ -304,46 +285,10 @@ void CCharacter::Reset(bool hard) //캐릭터는 사용할 일이 없음
 
 void CCharacter::OnHurtOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
 {
-	if (Collider.expired() || Collider.lock()->GetOwner().expired())
-		return;
-
-	std::shared_ptr<CGameClass> gc = std::dynamic_pointer_cast<CGameClass>(Collider.lock()->GetOwner().lock());
-	if (!gc)
-		return;
-
-	switch (gc->GetObjType())
-	{
-	case EObjectType::PlayerCharacter:
-	case EObjectType::Room:
-	case EObjectType::Door:
-	case EObjectType::Pickup:
-	case EObjectType::End:
-		return;
-	default:
-	case EObjectType::Item:
-	case EObjectType::Monster:
-	case EObjectType::Obstacle:
-		break;
-	case EObjectType::Tear:
-		if (EObjectType::PlayerCharacter == std::static_pointer_cast<CTear>(gc)->GetShooterOwner().lock()->GetObjType())
-			return;
-		break;
-	}
-
-	mOverlaps.insert(std::make_pair(gc->GetID(), Collider));
 }
 
 void CCharacter::ExitHurtOverlaps(std::weak_ptr<CCollider> Collider)
 {
-	if (Collider.expired() || Collider.lock()->GetOwner().expired())
-		return;
-
-	std::shared_ptr<CGameClass> gc = std::dynamic_pointer_cast<CGameClass>(Collider.lock()->GetOwner().lock());
-	if (!gc)
-		return;
-
-	if (mOverlaps.find(gc->GetID()) != mOverlaps.end())
-		mOverlaps.erase(gc->GetID());
 }
 
 void CCharacter::OnHitOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
@@ -352,6 +297,13 @@ void CCharacter::OnHitOverlaps(const FVector3& HitPoint, const FVector3& Normal,
 
 void CCharacter::ExitHitOverlaps(std::weak_ptr<CCollider> Collider)
 {
+}
+
+void CCharacter::ContainItem(const int ID)
+{
+	if (mItemContainer.expired())
+		return;
+	mItemContainer.lock()->ContainItem(ID);
 }
 
 void CCharacter::OverrideHeadAnim(const std::string& Name)

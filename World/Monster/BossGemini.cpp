@@ -114,6 +114,10 @@ bool CBossGemini::Init()
     cHurt->SetBoxSize(80.f, 80.f);
     cHurt->SetRelativePos(0.f, 20.f);
 
+    sHurt->SetDebugDraw(true);
+    sHurt->SetBoxSize(40.f, 40.f);
+    sHurt->SetRelativePos(0.f, 5.f);
+
     cHurt->SetCollisionProfile("Monster"); cHurt->SetBeginOverlapFunc(this, &CBossGemini::OnContusionHurtOverlap);
     sHurt->SetCollisionProfile("Monster"); sHurt->SetBeginOverlapFunc(this, &CBossGemini::OnSutureHurtOverlap);
 
@@ -132,7 +136,7 @@ bool CBossGemini::Init()
 
     //기능 컴포넌트 설정
     mContusionRigidbody.lock()->SetLimit(200.f);
-    mSutureRigidbody.lock()->SetLimit(1000.f);
+    mSutureRigidbody.lock()->SetLimit(300.f);
     mRouteMaker.lock()->SetChapter(mChapter);
     mRouteMaker.lock()->SetRoom(mRoomOwner);
 
@@ -148,7 +152,7 @@ bool CBossGemini::Init()
 
     mShooterTimerHandle = CTimeManager::SetTimer(5.f, true, this, &CBossGemini::ShootToPlayer).GetID();
     float timeOffset = CGameRuleManager::GetInst()->GenerateRandomF() * 10 - 2;
-    CTimeManager::SetTimer(mBreathingTime + timeOffset, false, this, &CBossGemini::StartBreathing).GetID();
+    mBreathingStartTimerHandle = CTimeManager::SetTimer(mBreathingTime + timeOffset, false, this, &CBossGemini::StartBreathing).GetID();
 
     return true;
 }
@@ -168,42 +172,99 @@ void CBossGemini::Reset(bool HardReset)
 
 void CBossGemini::GetHit(std::weak_ptr<CGameObject> From)
 {
+    if (From.expired())
+        return;
+    auto t = From.lock()->GetObjType();
+    if (EObjectType::Tear == t)
+    {
+        std::shared_ptr<CTear> tear = std::dynamic_pointer_cast<CTear>(From.lock());
+        t = tear->GetShooterOwner().lock()->GetObjType();
+        From = tear->GetShooterOwner().lock();
+    }
+
+    switch (t)
+    {
+    case EObjectType::PlayerCharacter:
+    {
+        FUnitAttribute attribute = std::dynamic_pointer_cast<CUnitbase>(From.lock())->GetTotalAttribute();
+         if (mbContusionJustHit)
+         {
+             mContusionHP -= attribute.Damage;
+             attribute.knockback;
+             mbContusionJustHit = false;
+         }
+         if (mbSutureJustHit)
+         {
+             mSutureHP -= attribute.Damage;
+             attribute.knockback;
+             mbSutureJustHit = false;
+         }
+    }break;
+    case EObjectType::Obstacle:
+        return; //현재는 리턴이지만 나중에 충돌시 피격효과가 있는 오브젝트 작성시 수정하기
+    case EObjectType::Tear:
+        assert(false && "눈물 발사기 구조의 문제가 있습니다");
+        return;
+    case EObjectType::Room:
+    case EObjectType::Monster:
+    case EObjectType::Boss:
+    case EObjectType::Door:
+    case EObjectType::Item:
+    case EObjectType::Pickup:
+    case EObjectType::End:
+    default:
+        assert(false && "충돌 프로파일에 오류가 있습니다.");
+        return;
+    }
+
+    //여기서 피격 효과 작성하기
+
+    CheckIsDie();
 }
 
 void CBossGemini::MoveToPlayer()
 {
     if (mbIsAttached)
     {
-        FVector2 coord = mRouteMaker.lock()->MakeRoute();
+        FVector3 pos = mContusionRigidbody.lock()->GetWorldPos();
+        FVector2 coord = mRouteMaker.lock()->MakeRoute(pos);
         if (-FVector2::One == coord)
+            return;
+        FVector3 dir = mRoomOwner.lock()->CoordToWorldPos(coord) - pos;
+        dir.Normalize();
+        mContusionRigidbody.lock()->AddForce(dir * 100.f);
+        if (fabs(dir.x) > fabs(dir.y))
         {
-
+            mContusionBodyAnimator.lock()->ChangeAnimation("Contusion_Body_Walk_H");
+            bool symmetry = dir.x < 0;
+            mContusionBodyAnimator.lock()->SetSymmetry("Contusion_Body_Walk_H", symmetry);
         }
         else
         {
-            FVector3 dir = mRoomOwner.lock()->CoordToWorldPos(coord) - mContusionRigidbody.lock()->GetWorldPos();
-            dir.Normalize();
-            mContusionRigidbody.lock()->AddForce(dir * 100.f);
-            if (fabs(dir.x) > fabs(dir.y))
-            {
-                mContusionBodyAnimator.lock()->ChangeAnimation("Contusion_Body_Walk_H");
-                bool symmetry = dir.x < 0;
-				mContusionBodyAnimator.lock()->SetSymmetry("Contusion_Body_Walk_H", symmetry);
-            }
-            else
-            {
-                mContusionBodyAnimator.lock()->ChangeAnimation("Contusion_Body_Walk_V");
-            }
+            mContusionBodyAnimator.lock()->ChangeAnimation("Contusion_Body_Walk_V");
         }
     }
     else
     {
-
+        FVector3 pos = mSutureRigidbody.lock()->GetWorldPos();
+        FVector3 p = mChapter.lock()->GetPlayerCharacter().lock()->GetWorldPos();
+        FVector3 dir = p - pos;
+        float dist = p.Distance(pos);
+        dir.Normalize();
+        mSutureRigidbody.lock()->AddForce(dir * 150 / dist + dir * 25.f);
+        if (fabs(dir.x) > fabs(dir.y))
+        {
+            bool symmetry = dir.x < 0;
+            mSutureAnimator.lock()->SetSymmetry("Suture_Move", symmetry);
+        }
     }
 }
 
 void CBossGemini::UpdateContusion(float DeltaTime)
 {
+    if (mbContusionDead)
+        return;
+
     if (!mbIsBreathing)
     {
         MoveToPlayer();
@@ -219,7 +280,7 @@ void CBossGemini::StartBreathing()
     mContusionFullBodyMesh.lock()->SetRenderEnable(true);
 
     mContusionFullBodyAnimator.lock()->Play(true);
-    CTimeManager::SetTimer(5.f, false, this, &CBossGemini::BreathingEnd).GetID();
+    mBreathingStartTimerHandle = CTimeManager::SetTimer(5.f, false, this, &CBossGemini::BreathingEnd).GetID();
 }
 
 void CBossGemini::BreathingEnd()
@@ -232,24 +293,54 @@ void CBossGemini::BreathingEnd()
     
     mbIsBreathing = false;
     float timeOffset = CGameRuleManager::GetInst()->GenerateRandomF() * 20 - 10;
-    CTimeManager::SetTimer(mBreathingTime + timeOffset, false, this, &CBossGemini::StartBreathing).GetID();
+    mBreathingEndTimerHandle = CTimeManager::SetTimer(mBreathingTime + timeOffset, false, this, &CBossGemini::StartBreathing).GetID();
     LOG_DEBUG("시간 오프셋-", std::to_string(timeOffset));
 }
 
 void CBossGemini::OnContusionHurtOverlap(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
 {
+    if (Collider.expired() || Collider.lock()->GetOwner().expired())
+        return;
+
+	std::shared_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
+    if (!obj)
+        return;
+
+    switch (obj->GetObjType())
+    {
+    case EObjectType::PlayerCharacter:
+        break;
+    case EObjectType::Tear:
+        break;        
+    case EObjectType::Obstacle:
+        break;
+    case EObjectType::Pickup:
+        return;
+    case EObjectType::Room:
+    case EObjectType::Item:
+    case EObjectType::Door:
+    case EObjectType::Monster:
+    case EObjectType::Boss:
+    case EObjectType::End:
+    default:
+        assert(false && "충돌 프로파일 에러");
+        return;
+    }
+    mbContusionJustHit = true;
 }
 
 void CBossGemini::UpdateSuture(float DeltaTime)
 {
+    if (mbSutureDead)
+        return;
+
     if (mbIsAttached)
     {
         FollowContusion();
-        //몇초 마다 Shoottoplayer 호출하기
     }
     else
     {
-
+        MoveToPlayer();
     }
 }
 
@@ -293,6 +384,34 @@ void CBossGemini::Shoot()
 
 void CBossGemini::OnSutureHurtOverlap(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
 {
+    if (Collider.expired() || Collider.lock()->GetOwner().expired())
+        return;
+
+    std::shared_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
+    if (!obj)
+        return;
+
+    switch (obj->GetObjType())
+    {
+    case EObjectType::PlayerCharacter:
+        break;
+    case EObjectType::Tear:
+        break;
+    case EObjectType::Obstacle:
+        break;
+    case EObjectType::Pickup:
+        return;
+    case EObjectType::Room:
+    case EObjectType::Item:
+    case EObjectType::Door:
+    case EObjectType::Monster:
+    case EObjectType::Boss:
+    case EObjectType::End:
+    default:
+        assert(false && "충돌 프로파일 에러");
+        return;
+    }
+    mbSutureJustHit = true;
 }
 
 void CBossGemini::UpdateRopePosition()
@@ -308,4 +427,73 @@ void CBossGemini::UpdateRopePosition()
         FVector3 offset = dir * dist * (i + 1);
         mRopeVec[i].lock()->SetWorldPos(suture + offset);
     }
+}
+
+void CBossGemini::CheckIsDie()
+{
+    if (!mbContusionDead)
+    {
+        if (0 >= mContusionHP)
+        {
+            mbContusionDead = true;
+
+            if (mbIsBreathing)
+                BreathingEnd();
+            FTimerHandle handle1(mBreathingEndTimerHandle);
+            CTimeManager::ClearTimer(handle1);
+            FTimerHandle handle(mBreathingStartTimerHandle);
+            CTimeManager::ClearTimer(handle);
+
+            mContusionRigidbody.lock()->SetEnable(false);
+            mContusionFullBodyMesh.lock()->SetEnable(false); mContusionFullBodyMesh.lock()->SetRenderEnable(false);
+            mContusionHeadMesh.lock()->SetEnable(false); mContusionHeadMesh.lock()->SetRenderEnable(false);
+            mContusionBodyMesh.lock()->SetEnable(false); mContusionBodyMesh.lock()->SetRenderEnable(false);
+            mContusionFullBodyAnimator.lock()->SetEnable(false);
+            mContusionHeadAnimator.lock()->SetEnable(false);
+            mContusionBodyAnimator.lock()->SetEnable(false);
+            mContusionHitBox.lock()->SetEnable(false);
+            mContusionHurtBox.lock()->SetEnable(false);
+
+            mSutureAnimator.lock()->ChangeAnimation("Suture_Move");
+
+            FVector3 pos = mSutureRigidbody.lock()->GetWorldPos();
+            FVector3 p = mChapter.lock()->GetPlayerCharacter().lock()->GetWorldPos();
+            FVector3 dir = p - pos;
+            dir.Normalize();
+            mSutureRigidbody.lock()->AddForce(dir * 500.f);
+
+            Dettach();
+        }
+    }
+    
+    if (!mbSutureDead)
+    {
+        if (0 >= mSutureHP)
+        {
+            mbSutureDead = true;
+
+            mSutureRigidbody.lock()->SetEnable(false);
+            mSutureMesh.lock()->SetEnable(false); mSutureMesh.lock()->SetRenderEnable(false);
+            mSutureAnimator.lock()->SetEnable(false);
+            mSutureHitBox.lock()->SetEnable(false);
+            mSutureHurtBox.lock()->SetEnable(false);
+
+            Dettach();
+        }
+    }
+}
+
+void CBossGemini::Dettach()
+{
+    if (!mbIsAttached)
+        return;
+
+    for (std::weak_ptr<CSpriteComponent> sprite : mRopeVec)
+    {
+        sprite.lock()->SetEnable(false);
+        sprite.lock()->SetRenderEnable(false);
+    }
+    mbIsAttached = false;
+    FTimerHandle handle(mShooterTimerHandle);
+    CTimeManager::ClearTimer(handle);
 }

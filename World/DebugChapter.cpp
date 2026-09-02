@@ -101,16 +101,16 @@ bool CDebugChapter::Init()
 		mInput->SetBindFunction("DebugKey", EInputType::Press, this, &CDebugChapter::DebugDrawTogle);
 
 		RegisterCharacter(31);
-		CGameClassContainer::GetInst()->Instantiate(91, FVector2(1, 1));
+		CGameClassContainer::GetInst()->Instantiate(40, FVector2(1, 1));
 
-		std::weak_ptr<CActor> actor = CreateActor<CActor>("TEST");
+		/*std::weak_ptr<CActor> actor = CreateActor<CActor>("TEST");
 		std::weak_ptr<CFontRenderer> font = actor.lock()->CreateComponent<CFontRenderer>("Root");
 		font.lock()->SetSize(400.f, 400.f);
 		font.lock()->SetFontSize(32.f);
 		font.lock()->SetFont("GameDefault");
 		font.lock()->SetText(L"Another One Bites The Dust");
 		FResolution resol = CDevice::GetInst()->GetResolution();
-		font.lock()->SetRenderPos(resol.Width / 2, resol.Height /2);
+		font.lock()->SetRenderPos(resol.Width / 2, resol.Height /2);*/
 
 		InitialSetting();
 

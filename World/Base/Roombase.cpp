@@ -94,6 +94,7 @@ void CRoombase::Update(float DeltaTime)
 				assert(door && "문이 아닌 객체가 DoorMap 에 할당되어있음");
 				door->MetRequirement(EOpenRequirement::Clear);
 			}
+			mbIsRoomWin = true;
 			WinRoom();
 		}
 	}
@@ -178,11 +179,14 @@ void CRoombase::EnterRoom()
 		obj->SetEnable(true);
 		obj->SetRenderEnable(true);
 	}
+
+	OnEnterRoom();
 }
 
 void CRoombase::ExitRoom()
 {
 	RoomDisenable();
+	OnExitRoom();
 }
 
 void CRoombase::PauseRoom()
@@ -344,7 +348,12 @@ void CRoombase::CreateDoorNormal()
 		mChapter.lock()->RegisterGObjToRoom(door, pos, mCoord);
 		bool enable = HasNearRoom(pos);
 		if (enable)
+		{
 			door->SetDoorState(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
+
+			std::shared_ptr<CRoombase> targetRoom = mChapter.lock()->GetRoom(pos + mCoord).lock();
+			door->SetDoorFrameType(targetRoom->GetRoomType());
+		}
 		else
 			door->SetDoorState(FDoorState(EDoorState::Closed, EOpenRequirement::Wall));
 
@@ -884,6 +893,13 @@ bool CRoombase::HasNearRoom(FVector2 Dir)
 			return true;
 	}
 	return false;
+}
+
+bool CRoombase::HasNearRoomExcept(FVector2 Dir)
+{
+	if (mNearRooms.size() < 2)
+		return false;
+	return true;
 }
 
 void CRoombase::GenerateRoom(FVector2 Direction, int Min, int Max, int& Current) //이거 이대로 쓰면 안되겠다. 하위 객체들 생성하면 함수 오버라이드 해서 내용 수정하기

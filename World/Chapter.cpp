@@ -68,7 +68,8 @@ bool CChapter::Init()
 
 	mRoomMapRowMax = 10;
 	mRoomMapColMax = 10;
-	GenerateRoom();
+	GenerateNormalRoom();
+	GenerateSpecialRoom();
 	//다시 적는 생성 규칙
 	//1. 시작 방 생성
 	//2. 시작 방으로부터 4방향으로 진행(생성)
@@ -139,7 +140,7 @@ void CChapter::GenerateWallAndDoor()
 		mDoorsDeactive.insert(std::make_pair(door.lock()->GetID(), door));
 	}
 }
-void CChapter::GenerateRoom()
+void CChapter::GenerateNormalRoom()
 {
 	FVector2 StartCoord(static_cast<float>(mRoomMapRowMax / 2), static_cast<float>(mRoomMapColMax / 2));
 	std::weak_ptr<CRoombase> generatedRoom = CreateRoom<class CDefaultRoom>("Start", StartCoord);
@@ -160,6 +161,51 @@ void CChapter::GenerateRoom()
 		room->GenerateRoom(FourDirections[1], min, max, CurrentSize);
 		room->GenerateRoom(FourDirections[2], min, max, CurrentSize);
 		room->GenerateRoom(FourDirections[3], min, max, CurrentSize);
+	}
+}
+void CChapter::GenerateSpecialRoom()
+{
+	bool treasure = false;
+	bool shop = false;
+	bool boss = false;
+	for (std::pair<int, std::weak_ptr<CRoombase>> pair : mRoomMap)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			if (pair.second.expired())
+				continue;
+			FVector2 center = Hash2Coord(pair.first);
+			FVector2 direction = FourDirections[i];
+			bool check = pair.second.lock()->HasNearRoom(direction);
+			if (check)
+				continue;
+
+			center += direction;
+
+			int count = 0;
+			count = mRoomMap[Coord2Hash(center + FourDirections[0])].expired() ? count : count + 1;
+			count = mRoomMap[Coord2Hash(center + FourDirections[1])].expired() ? count : count + 1;
+			count = mRoomMap[Coord2Hash(center + FourDirections[2])].expired() ? count : count + 1;
+			count = mRoomMap[Coord2Hash(center + FourDirections[3])].expired() ? count : count + 1;
+
+			if (count < 2)
+			{
+				std::weak_ptr<CRoombase> generatedRoom = std::dynamic_pointer_cast<CRoombase>(CGameClassContainer::GetInst()->Instantiate(11, center).lock()); //생성 후 내부에서 방 연결하기
+				std::shared_ptr<CRoombase> room = generatedRoom.lock();
+				if (!room)
+					return;
+
+				std::vector<std::pair<int, FVector2>> data;
+				data.push_back(std::make_pair(401, FVector2(6, 3)));
+				if (!room->SetInitRoom(data))
+				{
+					LOG_DEBUG("방 생성 실패");
+				}
+				RegisterRoom(room);
+				room->AdjustRoomPos();
+				return;
+			}
+		}
 	}
 }
 void CChapter::InitialSetting()
@@ -401,6 +447,10 @@ std::weak_ptr<CRoombase> CChapter::GetRoom(FVector2 Coord)
 std::weak_ptr<CRoombase> CChapter::GetFocusedRoom()
 {
 	return mRoomMap[mFocusedRoomHash];
+}
+void CChapter::RenderTitleWithQuato(const TCHAR* title, const TCHAR* quato)
+{
+	mChapterManagementActor.lock()->DrawTitleWithQuato(title, quato, 5.f);
 }
 //
 //첫 생성 함수는 일반함수로 모든 방향을 호출하고 두번째부터는 재귀함수 랜덤방향으로 이어가기 만약 이미 방이 있는 방향이 나온 경우 해당 방을 지나서 그 방향으로 쭉 이동 후 계속하기

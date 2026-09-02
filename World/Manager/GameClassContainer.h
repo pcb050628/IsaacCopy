@@ -25,6 +25,8 @@ public:
 	{
 		if (mWorldObjMap.contains(ID))
 		{
+			std::string error = "같은 아이디를 사용하는 객체가 있습니다. 아이디:" + std::to_string(ID);
+			assert(false && error.c_str());
 			return false;
 		}
 
@@ -36,6 +38,8 @@ public:
 	{
 		if (mDefMap.contains(ID))
 		{
+			std::string error = "같은 아이디를 사용하는 객체가 있습니다. 아이디:" + std::to_string(ID);
+			assert(false && error.c_str());
 			return false;
 		}
 

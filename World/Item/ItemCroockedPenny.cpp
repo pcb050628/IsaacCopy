@@ -13,7 +13,7 @@
 
 #include "../Manager/GameClassContainer.h"
 
-REGISTER_GAMEDEFCLASS(CItemCroockedPenny, "Croocked Penny", EObjectType::Item)
+REGISTER_GAMEDEFCLASS(CItemCroockedPenny, "Crooked_Penny", EObjectType::Item)
 
 CItemCroockedPenny::CItemCroockedPenny()
     :CItem("Crooked_Penny", EItemType::Active, false, false, false, false, false, true)

@@ -67,7 +67,8 @@ bool CGaper::Init()
 	//mBody.lock()->ChangeAnimation("Gaper_Body_Walk_H");
 	mHead.lock()->ChangeAnimation("Gaper_Head_Open_2");
 
-	mHurtBox.lock()->SetRadius(20.f);
+	mHurtBox.lock()->SetBoxSize(50.f, 60.f);
+	mHurtBox.lock()->SetRelativePos(0.f, 30.f);
 	mHurtBox.lock()->SetDebugDraw(true);
 
 	mRigidBody.lock()->SetLimit(100.f);

@@ -144,6 +144,7 @@ void CDoor::SetDoorFrameType(ERoomType Type)
 	case ERoomType::Shop:
 		break;
 	case ERoomType::Treasure:
+		targetName = "Door_Treasure_"; //챕터에 따라서 기본 프레임 이름은 변경해주기
 		break;
 	case ERoomType::Start:
 		break;

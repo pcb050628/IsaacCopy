@@ -3,12 +3,13 @@
 #include "LogManager.h"
 
 #include "World/Input.h"
-#include "World/Animation2DComponent.h"
 
 #include "../Manager/GameClassContainer.h"
 #include "../Chapter.h"
 
+#include "World/Animation2DComponent.h"
 #include "World/MeshComponent.h"
+#include "World/ColliderBox2D.h"
 #include "World/ColliderSphere2D.h"
 
 #include "../Component/TearShooter.h"
@@ -49,7 +50,8 @@ bool CCharacterIsaac::Init()
     mHeadAnimName = mDefaultHeadAnimName;
     mBodyAnimName = mDefaultBodyAnimName;
 
-    mHurtBox.lock()->SetRadius(20.f);
+    mHurtBox.lock()->SetBoxSize(30.f, 30.f);
+    mHurtBox.lock()->SetRelativePos(0, 5.f);
     mHurtBox.lock()->SetDebugDraw(true);
 
     SetBodyDirection(FVector2(0, -1));

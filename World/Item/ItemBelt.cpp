@@ -9,10 +9,10 @@
 
 #include "../Manager/GameClassContainer.h"
 
-REGISTER_GAMEDEFCLASS(CItemBelt, "Belt", EObjectType::Item)
+REGISTER_GAMEDEFCLASS(CItemBelt, "The_Belt", EObjectType::Item)
 
 CItemBelt::CItemBelt()
-    :CItem("Belt", EItemType::Passive)
+    :CItem("The_Belt", EItemType::Passive)
 {
 }
 
@@ -44,6 +44,8 @@ bool CItemBelt::Init(const std::weak_ptr<CGameClass>& Owner)
     mbIsHasAttribute = true;
     mUnitAdditionalAttribute.Speed = 5.f;
     mBodyAnimName = "Item_Belt_Walk";
+
+    mQuote = "SPEED UP";
 
     return true;
 }

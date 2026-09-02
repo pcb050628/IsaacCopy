@@ -118,15 +118,6 @@
     <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member">
       <UniqueIdentifier>{87401af5-ca06-4305-a9f6-eb169a9cdef1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle">
-      <UniqueIdentifier>{34156043-5c96-4f22-87b4-9e1e48f5112d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle\Base">
-      <UniqueIdentifier>{ef5697e0-ea0c-4472-be9a-253d395d1ec9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle\Rock">
-      <UniqueIdentifier>{d2032e68-af8a-4449-ada4-e18b8b54936a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit">
       <UniqueIdentifier>{cdf22f46-dd2d-4d81-b73e-565b9519a1c2}</UniqueIdentifier>
     </Filter>
@@ -145,12 +136,6 @@
     <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster">
       <UniqueIdentifier>{615cab64-f73b-4f21-9df9-42927a479e6f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup">
-      <UniqueIdentifier>{f8ae1d4e-f75c-4040-b06f-55be244b5bc6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup\Heart">
-      <UniqueIdentifier>{810224ec-619a-4397-95f6-8dc88b3bd21d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\2.World\1.Chapter\4.Room\1.Room">
       <UniqueIdentifier>{43257701-caf4-4ccc-9658-e1505f0b6e27}</UniqueIdentifier>
     </Filter>
@@ -166,26 +151,56 @@
     <Filter Include="소스 파일\1.GameClass\Component\SceneComponent\SpriteRenderer">
       <UniqueIdentifier>{663a1adc-e4a3-447f-b2b3-3a0b3d12115d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Door">
-      <UniqueIdentifier>{4e61cb1a-6a28-4003-b124-2fb6c8405b56}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob">
-      <UniqueIdentifier>{4e029a70-56f0-43bc-8922-40db5f59eade}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob\1.Gaper">
-      <UniqueIdentifier>{38a171e8-0195-4bcc-b154-c42e5e9de14a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob\0.Base">
-      <UniqueIdentifier>{7b292ea7-d6b6-4dc5-a1f2-af5cf5412927}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\0.Base">
       <UniqueIdentifier>{2fa46ce5-1063-4343-b360-1ea3af116042}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Boss">
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Boss">
       <UniqueIdentifier>{16437998-c2ad-4a98-87a0-233dc8ec1104}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Boss\Base">
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Boss\Base">
       <UniqueIdentifier>{68fb72d2-3656-4906-bb72-bfc22253c7f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle">
+      <UniqueIdentifier>{34156043-5c96-4f22-87b4-9e1e48f5112d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\Base">
+      <UniqueIdentifier>{ef5697e0-ea0c-4472-be9a-253d395d1ec9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\Rock">
+      <UniqueIdentifier>{d2032e68-af8a-4449-ada4-e18b8b54936a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Pickup">
+      <UniqueIdentifier>{f8ae1d4e-f75c-4040-b06f-55be244b5bc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Pickup\Heart">
+      <UniqueIdentifier>{810224ec-619a-4397-95f6-8dc88b3bd21d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\4.Door">
+      <UniqueIdentifier>{4e61cb1a-6a28-4003-b124-2fb6c8405b56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\0.Base\0.Base">
+      <UniqueIdentifier>{7b292ea7-d6b6-4dc5-a1f2-af5cf5412927}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Gaper">
+      <UniqueIdentifier>{38a171e8-0195-4bcc-b154-c42e5e9de14a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\ItemPedestal">
+      <UniqueIdentifier>{8182e506-cf74-45b0-8dfe-a497822c8fda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Boss\Gemini">
+      <UniqueIdentifier>{3de3db96-7325-477b-b566-7e7f35a9cea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\1.Room\Normal">
+      <UniqueIdentifier>{d5cd4d6f-8ef6-410d-b6e2-d9f01941b8e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\1.Room\Treasure">
+      <UniqueIdentifier>{27e82474-7a93-458f-8ad9-c2be8990b7fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\ShopSlot">
+      <UniqueIdentifier>{da5c5c39-935d-4db6-846a-543cb9c55717}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\1.Room\Shop">
+      <UniqueIdentifier>{7cda3686-d276-43a4-bc37-c8b70a3b0b29}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -208,16 +223,13 @@
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\0.Base</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\Obstaclebase.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle\Base</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\Base</Filter>
     </ClCompile>
     <ClCompile Include="World\Manager\GameClassContainer.cpp">
       <Filter>소스 파일\0.Manager\1.ClassContainer</Filter>
     </ClCompile>
     <ClCompile Include="World\Manager\GameRuleManager.cpp">
       <Filter>소스 파일\0.Manager\2.GameRuleManager</Filter>
-    </ClCompile>
-    <ClCompile Include="World\Room\DefaultRoom.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room</Filter>
     </ClCompile>
     <ClCompile Include="World\Data\GameData.cpp">
       <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data</Filter>
@@ -241,7 +253,7 @@
       <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Anim</Filter>
     </ClCompile>
     <ClCompile Include="World\Monster\Gaper.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob\1.Gaper</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Gaper</Filter>
     </ClCompile>
     <ClCompile Include="World\DebugChapter.cpp">
       <Filter>소스 파일\2.World\0.Debug</Filter>
@@ -256,7 +268,7 @@
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\PlayerCharacter\Isaac</Filter>
     </ClCompile>
     <ClCompile Include="World\Obstacle\RockObstacle.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle\Rock</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\Rock</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\Item.cpp">
       <Filter>소스 파일\2.World\1.Chapter\3.Item</Filter>
@@ -265,10 +277,10 @@
       <Filter>소스 파일\2.World\1.Chapter\3.Item\Belt</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\Pickup.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Pickup</Filter>
     </ClCompile>
     <ClCompile Include="World\Pickup\PickupRedHeart.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup\Heart</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Pickup\Heart</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\RoomMember.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member</Filter>
@@ -319,19 +331,31 @@
       <Filter>소스 파일\1.GameClass\Component\SceneComponent\SpriteRenderer</Filter>
     </ClCompile>
     <ClCompile Include="World\Door.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Door</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\4.Door</Filter>
     </ClCompile>
     <ClCompile Include="GameObjectStructs.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="World\Monster\Walker.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob\0.Base</Filter>
-    </ClCompile>
-    <ClCompile Include="World\Monster\BossGemini.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Boss</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\0.Base\0.Base</Filter>
     </ClCompile>
     <ClCompile Include="World\Base\Boss.cpp">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Boss\Base</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Boss\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Obstacle\PedestalObstacle.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\ItemPedestal</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Monster\BossGemini.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Boss\Gemini</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Room\DefaultRoom.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\Normal</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Room\TreasureRoom.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\Treasure</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Obstacle\ShopSlotObstacle.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\ShopSlot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -357,16 +381,13 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\Obstaclebase.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle\Base</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\Base</Filter>
     </ClInclude>
     <ClInclude Include="World\Manager\GameClassContainer.h">
       <Filter>소스 파일\0.Manager\1.ClassContainer</Filter>
     </ClInclude>
     <ClInclude Include="World\Manager\GameRuleManager.h">
       <Filter>소스 파일\0.Manager\2.GameRuleManager</Filter>
-    </ClInclude>
-    <ClInclude Include="World\Room\DefaultRoom.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room</Filter>
     </ClInclude>
     <ClInclude Include="World\Data\GameData.h">
       <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data</Filter>
@@ -393,7 +414,7 @@
       <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Anim</Filter>
     </ClInclude>
     <ClInclude Include="World\Monster\Gaper.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob\1.Gaper</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Gaper</Filter>
     </ClInclude>
     <ClInclude Include="World\DebugChapter.h">
       <Filter>소스 파일\2.World\0.Debug</Filter>
@@ -408,7 +429,7 @@
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\PlayerCharacter\Isaac</Filter>
     </ClInclude>
     <ClInclude Include="World\Obstacle\RockObstacle.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Obstacle\Rock</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\Rock</Filter>
     </ClInclude>
     <ClInclude Include="GameObjectEnums.h">
       <Filter>헤더 파일</Filter>
@@ -420,10 +441,10 @@
       <Filter>소스 파일\2.World\1.Chapter\3.Item\Belt</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\Pickup.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Pickup</Filter>
     </ClInclude>
     <ClInclude Include="World\Pickup\PickupRedHeart.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Pickup\Heart</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Pickup\Heart</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\RoomMember.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member</Filter>
@@ -477,16 +498,28 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="World\Door.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Door</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\4.Door</Filter>
     </ClInclude>
     <ClInclude Include="World\Monster\Walker.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Mob\0.Base</Filter>
-    </ClInclude>
-    <ClInclude Include="World\Monster\BossGemini.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Boss</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\0.Base\0.Base</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\Boss.h">
-      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\1.Boss\Base</Filter>
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Boss\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Obstacle\PedestalObstacle.h">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\ItemPedestal</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Monster\BossGemini.h">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\1.Boss\Gemini</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Room\DefaultRoom.h">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\Normal</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Room\TreasureRoom.h">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\Treasure</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Obstacle\ShopSlotObstacle.h">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\ShopSlot</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

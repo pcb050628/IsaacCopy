@@ -4,7 +4,7 @@
 class CItemSpoonBender :
     public CItem
 {
-    GAMEDEFCLASS(CItemSpoonBender, 92)
+    GAMEDEFCLASS(CItemSpoonBender, 102)
 public:
     CItemSpoonBender();
     virtual ~CItemSpoonBender();

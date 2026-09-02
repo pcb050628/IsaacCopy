@@ -86,7 +86,8 @@ public:
 
 protected:
 	void GenerateWallAndDoor();
-	void GenerateRoom();
+	void GenerateNormalRoom();
+	void GenerateSpecialRoom();
 	void InitialSetting();
 	void SettingFocus();
 
@@ -341,6 +342,8 @@ public:
 
 	std::weak_ptr<CActor> GetPlayerCharacter() { return mPlayerCharacter; }
 	const FVector2 GetFocusedRoomCoord() const { return Hash2Coord(mFocusedRoomHash); }
+
+	void RenderTitleWithQuato(const TCHAR* title, const TCHAR* quato);
 
 public:
 	static const float WallSize;

@@ -142,6 +142,7 @@ public:
 
 	void ConnectRoom(std::weak_ptr<CRoombase> Room);
 	bool HasNearRoom(FVector2 Dir);
+	bool HasNearRoomExcept(FVector2 Dir);
 
 	virtual void GenerateRoom(FVector2 Direction, int Min, int Max, int& Current);
 

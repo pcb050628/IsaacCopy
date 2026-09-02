@@ -101,5 +101,6 @@ public:
 	void SetBouncing(const bool Val) { mTearAttribute.Bouncing = Val; }
 
 	std::weak_ptr<CGameObject> GetShooterOwner();
+	EObjectType GetOwnerType();
 };
 

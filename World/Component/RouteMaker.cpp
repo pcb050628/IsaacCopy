@@ -103,6 +103,62 @@ FVector2 CRouteMaker::MakeRoute()
     return -FVector2::One;
 }
 
+FVector2 CRouteMaker::MakeRoute(FVector3 From)
+{
+	std::shared_ptr<CChapter> chptr = mChapter.lock();
+	if (mRoom.expired() || !chptr || !CanGetToTarget())
+	{
+		std::shared_ptr<CRoomMember> owner = std::dynamic_pointer_cast<CRoomMember>(mOwner.lock());
+		if (!owner)
+			return -FVector2::One;
+
+		mRoom = owner->GetRoom();
+		mChapter = owner->GetChapter();
+	}
+
+	std::shared_ptr<CRoombase> room = mRoom.lock();
+	FVector3 pos = mOwner.lock()->GetWorldPos();
+	if (mTargetObj.expired())
+		mTargetCoord = room->GetPlayerCoordInGrid();
+	else
+		mTargetCoord = room->WorldPosToCoord(mTargetObj.lock()->GetWorldPos());
+
+	mMyCoord = room->WorldPosToCoord(From);
+	if (CoordDistance(mTargetCoord, mMyCoord) <= 1.5f)
+	{
+		return mTargetCoord;
+	}
+	if (CheckStraightRoute(mTargetCoord, mMyCoord))
+	{
+		return mMyCoord + GetDir(mTargetCoord, mMyCoord);
+	}
+
+	mPoint.clear();	mPoint.resize(10);
+	mDeadEnd.clear();
+
+	std::map<int, FRoute> routes; //좌표마다 유일성을 주기 위해서 맵을 사용함 / unordered map 아 아닌 map을 사용한 이유는 순회를 해야하기 때문임
+	std::map<int, int> deadEnd;
+	for (int i = 0; i < 4; ++i)
+	{
+		FVector2 dest = mMyCoord + CChapter::FourDirections[i];
+		if (!room->CheckCell(dest))
+			continue;
+		routes.insert(std::make_pair(CChapter::Coord2Hash(dest), FRoute(nullptr, dest)));
+	}
+	RouteCheck(routes);
+	if (routes.find(-1) != routes.end())
+	{
+		FRoute route = routes[-1];
+		while (nullptr != route.Parent)
+		{
+			route = *route.Parent;
+		}
+		return route.Coord;
+	}
+
+	return -FVector2::One;
+}
+
 FVector2 CRouteMaker::MakeRouteBFS()
 {
 	std::shared_ptr<CChapter> chptr = mChapter.lock();

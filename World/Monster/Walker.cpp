@@ -2,6 +2,7 @@
 
 #include "LogManager.h"
 
+#include "World/ColliderBox2D.h"
 #include "World/ColliderSphere2D.h"
 #include "World/SoundComponent.h"
 #include "World/Animation2DComponent.h"
@@ -34,7 +35,7 @@ bool CWalker::Init()
 	if (!CMonster::Init())
 		return false;
 
-	std::shared_ptr<CColliderSphere2D> hurt = mHurtBox.lock();
+	std::shared_ptr<CColliderBox2D> hurt = mHurtBox.lock();
 	hurt->SetCollisionProfile("Monster");
 
 	mHitBox = CreateComponent<CColliderSphere2D>("Hit");
@@ -43,6 +44,10 @@ bool CWalker::Init()
 
 	std::shared_ptr<CColliderSphere2D> hit = mHitBox.lock();
 	hit->SetCollisionProfile("ContactHit_Monster");
+	hit->SetDebugDraw(true);
+	hit->SetRadius(20.f);
+	hit->SetBeginOverlapFunc(this, &CWalker::OnHitOverlaps);
+	hit->SetEndOverlapFunc(this, &CWalker::ExitHitOverlaps);
 
 	mRouteMaker = CreateComponent<CRouteMaker>("RouteMaker");
 	if (mRouteMaker.expired())
@@ -87,6 +92,16 @@ void CWalker::Update(float DeltaTime)
 		mBody.lock()->Stop(true);
 	}
 
+	if (!mOverlaps.empty())
+	{
+		for (std::pair<int, std::weak_ptr<CCollider>> pair : mOverlaps)
+		{
+			std::shared_ptr<CUnitbase> unit = std::dynamic_pointer_cast<CUnitbase>(pair.second.lock()->GetOwner().lock());
+			assert(unit && "공격할 수 없는 객체를 포함하였음");
+			unit->GetHit(GetThisPtr<CGameObject>());
+		}
+	}
+
 	CMonster::Update(DeltaTime);
 }
 
@@ -103,9 +118,7 @@ void CWalker::Reset(bool HardReset)
 
 //피격
 void CWalker::OnHurtOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
-{
-	std::shared_ptr<CActor> actor = Collider.lock()->GetOwner().lock();
-
+{/*
 	std::shared_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
 	if (!obj) 
 		return;
@@ -124,7 +137,7 @@ void CWalker::OnHurtOverlaps(const FVector3& HitPoint, const FVector3& Normal, s
 	else if (t == EObjectType::Obstacle)
 	{
 
-	}
+	}*/
 }
 
 void CWalker::ExitHurtOverlaps(std::weak_ptr<CCollider> Collider)
@@ -134,33 +147,33 @@ void CWalker::ExitHurtOverlaps(std::weak_ptr<CCollider> Collider)
 //공격
 void CWalker::OnHitOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
 {
-	//std::shared_ptr<CGameObject> gobj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
-	//if (!gobj)
-	//{
-	//	assert("몬스터가 게임 객체가 아닌 무언가와 충돌함\n충돌체 프로파일상 불가능하고 생성되는 객체들 중에서도 충돌체를 가진 객체들은 모두 게임 객체여야함");
-	//	return;
-	//}
-	//
-	//switch (gobj->GetObjType())
-	//{
-	//case EObjectType::PlayerCharacter: {
-	//	std::shared_ptr<CUnitbase> unit = std::static_pointer_cast<CUnitbase>(gobj);
-	//	if (!unit)
-	//	{
-	//		LOG_DEBUG(GetName(), ":", "충돌체에 유닛이 없습니다. 충돌 프로파일을 수정하세요");
-	//		return;
-	//	}
-	//	mTarget = unit;
-	//	//unit->GetHit(GetThisPtr<CUnitbase>());
-	//}
-	//	break;
-	//case EObjectType::Monster:
-	//case EObjectType::Door:
-	//case EObjectType::Obstacle:
-	//case EObjectType::Pickup:
-	//	//밀기
-	//	break;
-	//}
+	std::shared_ptr<CGameObject> gobj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
+	if (!gobj)
+	{
+		assert("몬스터가 게임 객체가 아닌 무언가와 충돌함\n충돌체 프로파일상 불가능하고 생성되는 객체들 중에서도 충돌체를 가진 객체들은 모두 게임 객체여야함");
+		return;
+	}
+	
+	switch (gobj->GetObjType())
+	{
+	case EObjectType::PlayerCharacter: {
+		std::shared_ptr<CUnitbase> unit = std::static_pointer_cast<CUnitbase>(gobj);
+		if (!unit)
+		{
+			LOG_DEBUG(GetName(), ":", "충돌체에 유닛이 없습니다. 충돌 프로파일을 수정하세요");
+			return;
+		}
+		mOverlaps.insert(std::make_pair(gobj->GetID(), Collider));
+		//unit->GetHit(GetThisPtr<CUnitbase>());
+	}
+		break;
+	case EObjectType::Monster:
+	case EObjectType::Door:
+	case EObjectType::Obstacle:
+	case EObjectType::Pickup:
+		//밀기
+		break;
+	}
 }
 
 void CWalker::ExitHitOverlaps(std::weak_ptr<CCollider> Collider)
@@ -168,6 +181,17 @@ void CWalker::ExitHitOverlaps(std::weak_ptr<CCollider> Collider)
 	//std::shared_ptr<CGameObject> gobj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
 	//if (gobj->GetID() == mTarget.lock()->GetID())
 	//	mTarget.reset();
+
+	std::shared_ptr<CGameObject> gobj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
+	if (!gobj)
+	{
+		assert("몬스터가 게임 객체가 아닌 무언가와 충돌함\n충돌체 프로파일상 불가능하고 생성되는 객체들 중에서도 충돌체를 가진 객체들은 모두 게임 객체여야함");
+		return;
+	}
+	if (mOverlaps.find(gobj->GetID()) != mOverlaps.end())
+	{
+		mOverlaps.erase(gobj->GetID());
+	}
 }
 
 bool CWalker::UpdateNextMove()

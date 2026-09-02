@@ -42,7 +42,6 @@ public:
     virtual void Update(float DeltaTime);
     virtual void Destroy();
 
-    virtual void GetHit(std::weak_ptr<CGameObject> From);
     virtual void Reset(bool hard = false);
 
     virtual void OnHurtOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
@@ -50,6 +49,8 @@ public:
 
     virtual void OnHitOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
     virtual void ExitHitOverlaps(std::weak_ptr<CCollider> Collider);
+
+    virtual void ContainItem(const int ID);
 
 public:
     //기능은 뭐가 필요한게 있나
@@ -84,6 +85,7 @@ public:
     // 지속이라 맵이든 리스트는 배열이든 해서 들고 있다가 잘 확인하고 없애주면 됨
     //void AddPlayerEffect();
 
+    virtual void GetHit(std::weak_ptr<CGameObject> From);
 protected:
     virtual bool AddFullBodyAnim(const std::string& Name, const TCHAR* FilePath, float PlayTime, float PlayRate, bool Loop, bool Reverse, bool Symmetry);
 

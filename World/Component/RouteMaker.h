@@ -28,6 +28,7 @@ protected:
 public:
 	bool CanGetToTarget();
 	FVector2 MakeRoute();
+	FVector2 MakeRoute(FVector3 From);
 	FVector2 MakeRouteBFS();
 
 	void SetRoom(std::weak_ptr<class CRoombase> room) { mRoom = room; mDeadEnd.clear(); }

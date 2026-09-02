@@ -48,10 +48,19 @@ void CGlobalCollision::SetGlobalCollision()
 		InfoManager->SetProfileInteraction("Monster", "ContactHit_Monster", ECollisionInteraction::Ignore);
 		InfoManager->SetProfileInteraction("ContactHit_Monster", "Monster", ECollisionInteraction::Ignore);
 
+		InfoManager->SetProfileInteraction("Obstacle", "ContactHit_Monster", ECollisionInteraction::Block);
+		InfoManager->SetProfileInteraction("ContactHit_Monster", "Obstacle", ECollisionInteraction::Block);
+
 		InfoManager->SetProfileInteraction("Monster", "Monster", ECollisionInteraction::Block);
 
 		InfoManager->SetProfileInteraction("Monster", "Player", ECollisionInteraction::Ignore);
 		InfoManager->SetProfileInteraction("Player", "Monster", ECollisionInteraction::Ignore);
+
+		InfoManager->SetProfileInteraction("Monster", "Obstacle", ECollisionInteraction::Ignore);
+		InfoManager->SetProfileInteraction("Obstacle", "Monster", ECollisionInteraction::Ignore);
+
+		InfoManager->SetProfileInteraction("Monster", "ContactHit_Obstacle", ECollisionInteraction::Overlap);
+		InfoManager->SetProfileInteraction("ContactHit_Obstacle", "Monster", ECollisionInteraction::Overlap);
 
 		//픽업
 		InfoManager->SetProfileInteraction("Door", "PickUp", ECollisionInteraction::Block);
@@ -67,9 +76,6 @@ void CGlobalCollision::SetGlobalCollision()
 
 		InfoManager->SetProfileInteraction("Player", "Obstacle", ECollisionInteraction::Block);
 		InfoManager->SetProfileInteraction("Obstacle", "Player", ECollisionInteraction::Block);
-
-		InfoManager->SetProfileInteraction("Monster", "Obstacle", ECollisionInteraction::Block);
-		InfoManager->SetProfileInteraction("Obstacle", "Monster", ECollisionInteraction::Block);
 
 		InfoManager->SetProfileInteraction("Obstacle", "PickUp", ECollisionInteraction::Block);
 		InfoManager->SetProfileInteraction("PickUp", "Obstacle", ECollisionInteraction::Block);

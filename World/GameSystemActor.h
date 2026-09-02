@@ -17,6 +17,8 @@ protected:
     std::weak_ptr<class CCameraComponent> mCam;
     std::weak_ptr<class CSoundComponent> mSound;
     std::weak_ptr<class CRigidBodyComponent> mRb;
+    std::weak_ptr<class CFontRenderer> mTitleRenderer;
+    std::weak_ptr<class CFontRenderer> mQuatoRenderer;
     //UI도 여기 넣을까 말까
     //넣을 생각이긴 헀는데
     //일단 넣고 커지면 분리할까?
@@ -48,9 +50,11 @@ private:
 
     void UpdateHeart(int id, FPlayerHeartContainer container);
 
+    void StopDrawText();
+
 public:
     void Move(FVector2 dir);
-
+    void DrawTitleWithQuato(const TCHAR* title, const TCHAR* quato, float time);
 
 public:
     template<typename T>
