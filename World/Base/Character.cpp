@@ -78,6 +78,7 @@ bool CCharacter::Init()
 	shooter->AddFirePoint(FVector2(10, -20));	//오
 
 	shooter->AddOnCollision(this, &CCharacter::Attack);
+	shooter->SetCenterComponent(mHeadMesh);
 	shooter->UpdateUnitAttributeData(false, mAttribute);
 
 	std::shared_ptr<CRigidBodyComponent> rb = mRigidBody.lock();
@@ -340,6 +341,11 @@ void CCharacter::OnAttributeChanged() //유닛의 능력치 변동 함수들 모
 	mHead.lock()->SetPlayTime(mHeadAnimName + "_Left", mAttribute.ShotTerm);
 	mHead.lock()->SetPlayTime(mHeadAnimName + "_Right", mAttribute.ShotTerm);
 
+	if (!mItemContainer.expired())
+	{
+		mItemContainer.lock()->SetHeadAnimPlayTime(mAttribute.ShotTerm);
+	}
+
 	mRigidBody.lock()->SetLimit(mAttribute.Speed * 10.f);
 }
 
@@ -500,7 +506,10 @@ void CCharacter::Fire()
 	std::shared_ptr<CTearShooter> shooter = mShooter.lock();
 
 	FVector3 dir = mRigidBody.lock()->GetVelocity();
-	dir.Normalize();
+	if (dir.Length() < 5.f)
+		dir = FVector3::Zero;
+	else
+		dir.Normalize();
 
 	if (shooter->FireWithVelocityOffset(FVector2(dir.x, dir.y)))
 	{

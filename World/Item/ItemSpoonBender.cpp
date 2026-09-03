@@ -11,7 +11,7 @@
 
 #include "../Manager/GameClassContainer.h"
 
-REGISTER_GAMEDEFCLASS(CItemSpoonBender, "SpoonBender", EObjectType::Item)
+REGISTER_GAMEDEFCLASS(CItemSpoonBender, "Spoon_Bender", EObjectType::Item)
 
 CItemSpoonBender::CItemSpoonBender()
 	:CItem("Spoon_Bender", EItemType::Passive)

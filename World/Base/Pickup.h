@@ -77,12 +77,12 @@ protected:
     
     //플레이어가 가지고 있는 픽업 갯수에 관여하는 경우
     const bool mbIsAboutPickup;
-    EPickupType mAffectPickupType;
+    EPickupType mAffectPickupType = EPickupType::None;
     const int mAffectPickupCount;
     
     //생성과 복사하는 픽업의 경우
     const bool mbIsAboutInstantiate;
-    EPickupType mInstantiateTargetPickupType;
+    EPickupType mInstantiateTargetPickupType = EPickupType::None;
 
     //쓰고보니까 거지같은거 캐릭터에 능력치 변동 시 함수도 만들어야 되네
     //캐릭터에 추가해야 하는것

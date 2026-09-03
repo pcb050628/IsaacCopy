@@ -201,5 +201,5 @@ void CDebugChapter::DebugDrawTogle()
 	static bool val = true;
 
 	val = !val;
-	CRenderManager::GetInst()->SetLayerEnable(10, val);
+	CRenderManager::GetInst()->SetLayerEnable(50, val);
 }

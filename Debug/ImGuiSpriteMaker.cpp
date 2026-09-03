@@ -126,13 +126,16 @@ void CImGuiSpriteMaker::LoadTexture()
 		std::wstring fileName(TexturePath.begin(), TexturePath.end());
 		std::wstring fullPath = CPathManager::FindPath("Texture");
 		fullPath += fileName;
-		if (!mgr->LoadTexture(d->TextureName, fullPath.c_str()))
+		size_t loc = fileName.find('\\');
+		std::wstring wName = fileName.substr(loc, fileName.size() - loc);
+		std::string Name(wName.begin(), wName.end());
+		if (!mgr->LoadTexture(Name, fullPath.c_str()))
 		{
 			ImGui::OpenPopup(ErrorPopupID.c_str());
 		}
 		else
 		{
-			std::weak_ptr<CTexture> tex = mgr->FindTexture(d->TextureName);
+			std::weak_ptr<CTexture> tex = mgr->FindTexture(Name);
 			DrawingTex = tex;
 		}
 	}
@@ -148,8 +151,7 @@ void CImGuiSpriteMaker::LoadButton()
 	if (ImGui::Button("Load Sprite"))
 	{
 		std::shared_ptr<CGameDataManager> mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
-		std::wstring path = L"Sprite\\";
-		path += std::wstring().assign(Name.begin(), Name.end());
+		std::wstring path(Name.begin(), Name.end());
 		if (!mgr->LoadDataFile<CSpriteGData>(Name, EGDataType::Sprite, path.c_str()))
 		{
 			ImGui::OpenPopup(ErrorPopupID.c_str());

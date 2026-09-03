@@ -32,8 +32,8 @@ public:
 	bool Init();
 
 	void SetRandomSeed(unsigned int Seed = 1);
-	float GenerateRandomF() { return mfDistribution(mGen); }
-	int GenerateRandomI() { return static_cast<int>(mfDistribution(mGen) * 100); }
+	float GenerateRandomF() { return mfDistribution(mGen); } //0 ~ 1
+	int GenerateRandomI() { return static_cast<int>(mfDistribution(mGen) * 100); } //0 ~ 100
 
 	const int GetItemWeightStack() const { return PlayerItemWeightStack; }
 

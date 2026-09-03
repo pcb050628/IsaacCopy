@@ -237,7 +237,7 @@ FVector3 CTearShooter::FirePointCalculate(int Index)
 {
 	if (Index < 0 || Index >= mFirePoints.size())
 	{
-		assert("ERROR: INDEX POINT NULL");
+		assert(false && "ERROR: INDEX POINT NULL");
 	}
 
 	FVector2 origin = mFirePoints[Index];
@@ -248,19 +248,19 @@ FVector3 CTearShooter::FirePointCalculate(int Index)
 	{
 		if (CChapter::FourDirections[0] == headDir)
 		{
-			int y = static_cast<float>(origin.x);
-			int x = static_cast<float>(-origin.y);
-			return FVector3(x, y, 0);
+			return FVector3(-origin.x, -origin.y, 0);
 		}
-		else if (CChapter::FourDirections[1] == headDir)
+		else if (CChapter::FourDirections[2] == headDir)
 		{
 			int y = static_cast<float>(origin.x);
 			int x = static_cast<float>(origin.y);
 			return FVector3(x, y, 0);
 		}
-		else if (CChapter::FourDirections[2] == headDir)
+		else if (CChapter::FourDirections[3] == headDir)
 		{
-			return FVector3(-origin.x, -origin.y, 0);
+			int y = static_cast<float>(origin.x);
+			int x = static_cast<float>(-origin.y);
+			return FVector3(x, y, 0);
 		}
 	}
 	return FVector3();

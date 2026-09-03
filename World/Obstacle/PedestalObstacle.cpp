@@ -44,7 +44,7 @@ bool CPedestalObstacle::Init()
 
     std::shared_ptr<CSpriteComponent> itemRenderer = mItemSpriteRenderer.lock();
     itemRenderer->SetMesh("TexRect"); itemRenderer->SetShader("Sprite2D");
-    itemRenderer->SetRenderLayer("Tear");
+    itemRenderer->SetRenderLayer("Obstacle");
     itemRenderer->SetWorldScale(cellsize);
 
     itemRenderer->SetRelativePos(0, 50.f);

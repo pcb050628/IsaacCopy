@@ -30,7 +30,7 @@ protected:
 
     std::weak_ptr<class CSoundComponent> mSound;
 
-    FDoorState mState;
+    FOpenInfo mInfo;
     FVector2 mDirection;
     bool mbIsOpen = false;
 
@@ -50,8 +50,8 @@ public:
 
     void MetRequirement(EOpenRequirement requirement);
 
-    void SetDoorState(FDoorState state);
-    FDoorState GetDoorState() const { return mState; }
+    void SetDoorOpenInfo(FOpenInfo state);
+    FOpenInfo GetDoorOpenInfo() const { return mInfo; }
 
 private:
     void OnOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);

@@ -32,6 +32,13 @@ protected:
 	int mFocusedRoomHash = -1;
 	int mPrevRoomHash = -1;
 	std::unordered_map<int, std::weak_ptr<CRoombase>> mRoomMap;
+	std::weak_ptr<CRoombase> mStartRoom;
+	int mTreasureRoomRequireCount = 1;
+	int mShopRoomRequireCount = 1;
+	int mBossRoomRequireCount = 1;
+	std::list<int> mTreasureRoomList;
+	std::list<int> mShopRoomList;
+	std::list<int> mBossRoomList;
 	//리스트 써서 맵->리스트 로 만들면 좋을거같은ㄷ
 	//접근은 클래스 아이디로 하고 해당 클래스 아이디 리스트 내부에서 하나 꺼내오면 되니까
 	//이거 그냥 통합해버릴까? 어짜피 전부 GameObject 상속받는데
@@ -87,7 +94,9 @@ public:
 protected:
 	void GenerateWallAndDoor();
 	void GenerateNormalRoom();
-	void GenerateSpecialRoom();
+	void GenerateTreasureRoom();
+	void GenerateShopRoom();
+	void GenerateBossRoom();
 	void InitialSetting();
 	void SettingFocus();
 

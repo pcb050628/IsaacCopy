@@ -80,18 +80,19 @@ bool CDoor::Init()
 	layer2->SetMesh("TexRect"); layer2->SetShader("Sprite2D");
 	layer3->SetMesh("TexRect"); layer3->SetShader("Sprite2D");
 
-	frame->SetWorldScale(100.f, 100.f);
+	frame->SetWorldScale(160.f, 160.f);
+	frame->SetRelativePos(0, 15.f);
 
 	layer1->SetRenderState(0, "StencilMaskWrite");
 	layer2->SetRenderState(0, "StencilMaskApply");
 	layer3->SetRenderState(0, "StencilMaskApply");
 
-	frame->SetRenderLayer("Obstacle");
+	frame->SetRenderLayer("Door");
 	layer1->SetRenderLayer("Obstacle");
 	layer2->SetRenderLayer("Obstacle");
 	layer3->SetRenderLayer("Obstacle");
 
-	layer1->SetRelativePos(-0.9f, 0);
+	layer1->SetRelativePos(-0.9f, -3.f);
 
 	mLayer2Rigid.lock()->SetMass(1.f); mLayer2Rigid.lock()->SetLimit(5000.f); mLayer2Rigid.lock()->SetUseGravity(false); mLayer2Rigid.lock()->SetMoveRoot(false);
 	mLayer3Rigid.lock()->SetMass(1.f); mLayer3Rigid.lock()->SetLimit(5000.f); mLayer3Rigid.lock()->SetUseGravity(false); mLayer3Rigid.lock()->SetMoveRoot(false);
@@ -117,6 +118,10 @@ void CDoor::Update(float DeltaTime)
 			mChapter.lock()->MoveRoom(mDirection);
 		}
 	}
+	else
+	{
+		mPlayer = std::dynamic_pointer_cast<CRoomMember>(mChapter.lock()->GetPlayerCharacter().lock());
+	}
 
 	CActor::Update(DeltaTime);
 }
@@ -140,11 +145,13 @@ void CDoor::SetDoorFrameType(ERoomType Type)
 		targetName = "Door_Wooden_"; //챕터에 따라서 기본 프레임 이름은 변경해주기
 		break;
 	case ERoomType::Boss:
+		targetName = "Door_Boss_";
 		break;
 	case ERoomType::Shop:
+		targetName = "Door_Shop_"; 
 		break;
 	case ERoomType::Treasure:
-		targetName = "Door_Treasure_"; //챕터에 따라서 기본 프레임 이름은 변경해주기
+		targetName = "Door_Treasure_"; 
 		break;
 	case ERoomType::Start:
 		break;
@@ -179,7 +186,7 @@ void CDoor::SetOpen(bool Val)
 
 		mLayer2Rigid.lock()->AddForce(FVector3(-1, 0, 0) * 350.f);
 		mLayer3Rigid.lock()->AddForce(FVector3(1, 0, 0) * 350.f);
-		mState.state = EDoorState::Open;
+		mInfo.state = EOpenState::Open;
 	}
 	else
 	{
@@ -188,7 +195,7 @@ void CDoor::SetOpen(bool Val)
 
 		mLayer2Rigid.lock()->SetVelocity(FVector3::Zero);
 		mLayer3Rigid.lock()->SetVelocity(FVector3::Zero);
-		mState.state = EDoorState::Closed;
+		mInfo.state = EOpenState::Closed;
 	}
 	mSound.lock()->Play();
 }
@@ -205,36 +212,36 @@ void CDoor::SetBoxSize(float x, float y)
 
 void CDoor::MetRequirement(EOpenRequirement requirement)
 {
-	if (requirement == mState.remainRequirement)
+	if (requirement == mInfo.remainRequirement)
 	{
 		SetOpen(true);
 	}
 	else
 	{
-		switch (mState.remainRequirement)
+		switch (mInfo.remainRequirement)
 		{
 		case EOpenRequirement::Key2:
 			if (EOpenRequirement::Key == requirement)
-				mState.remainRequirement = EOpenRequirement::Key;
+				mInfo.remainRequirement = EOpenRequirement::Key;
 			break;
 		case EOpenRequirement::Blast2:
 			if (EOpenRequirement::Blast == requirement)
-				mState.remainRequirement = EOpenRequirement::Blast;
+				mInfo.remainRequirement = EOpenRequirement::Blast;
 			break;
 		}
 	}
 }
 
-void CDoor::SetDoorState(FDoorState state)
+void CDoor::SetDoorOpenInfo(FOpenInfo state)
 {
-	mState = state;
-	switch (mState.state)
+	mInfo = state;
+	switch (mInfo.state)
 	{
-	case EDoorState::Closed:
+	case EOpenState::Closed:
 		SetOpen(false);
 		break;
-	case EDoorState::Blasted: //이미지 변경하기
-	case EDoorState::Open:
+	case EOpenState::Blasted: //이미지 변경하기
+	case EOpenState::Open:
 		SetOpen(true);
 		break;
 	}
@@ -242,27 +249,9 @@ void CDoor::SetDoorState(FDoorState state)
 
 void CDoor::OnOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
 {
-	if (Collider.expired() || Collider.lock()->GetOwner().expired())
-	{
-		LOG_DEBUG(GetName(), ": ", "Collider is not valid");
-		return;
-	}
 
-	std::shared_ptr<CRoomMember> player = std::dynamic_pointer_cast<CRoomMember>(Collider.lock()->GetOwner().lock());
-	if (false || !player || (player->GetGClassID() / 10) != 3)
-	{
-		LOG_DEBUG(GetName(), ": ", "Door has Deteced wrong Actor");
-		return;
-	}
-
-	LOG_DEBUG("Hit 발생 : ", player->GetName());
-	if (mbIsOpen)
-	{
-		mPlayer = player;
-	}
 }
 
 void CDoor::ExitOverlaps(std::weak_ptr<class CCollider> Collider)
 {
-	mPlayer.reset();
 }

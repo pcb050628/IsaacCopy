@@ -36,7 +36,7 @@ bool CShopSlotObstacle::Init()
 
     std::shared_ptr<CSpriteComponent> itemRenderer = mItemSpriteRenderer.lock();
     itemRenderer->SetMesh("TexRect"); itemRenderer->SetShader("Sprite2D");
-    itemRenderer->SetRenderLayer("Tear");
+    itemRenderer->SetRenderLayer("Obstacle");
     itemRenderer->SetWorldScale(cellsize);
 
     mHitBox.lock()->SetCollisionProfile("ContactHit_Obstacle");

@@ -71,6 +71,7 @@ bool CBossGemini::Init()
 
     //루트에서 위치정보 분리
     mSutureRigidbody.lock()->SetInheritPos(false);
+    mSutureRigidbody.lock()->SetWorldPos(mContusionRigidbody.lock()->GetWorldPos() + FVector3(-50, 20, 0));
 
     //메시 컴포넌트 설정 및 애니메이션 컴포넌트와 연결
     std::shared_ptr<CMeshComponent> cFullBody = mContusionFullBodyMesh.lock();
@@ -159,9 +160,12 @@ bool CBossGemini::Init()
 
 void CBossGemini::Update(float DeltaTime)
 {
-    UpdateContusion(DeltaTime);
-    UpdateSuture(DeltaTime);
-    UpdateRopePosition();
+    if (!mbIsDead)
+    {
+        UpdateContusion(DeltaTime);
+        UpdateSuture(DeltaTime);
+        UpdateRopePosition();
+    }
 
     CGameObject::Update(DeltaTime);
 }
@@ -251,7 +255,7 @@ void CBossGemini::MoveToPlayer()
         FVector3 dir = p - pos;
         float dist = p.Distance(pos);
         dir.Normalize();
-        mSutureRigidbody.lock()->AddForce(dir * 150 / dist + dir * 25.f);
+        mSutureRigidbody.lock()->AddForce(dir * 100 / dist + dir * 25.f);
         if (fabs(dir.x) > fabs(dir.y))
         {
             bool symmetry = dir.x < 0;
@@ -294,7 +298,8 @@ void CBossGemini::BreathingEnd()
     mbIsBreathing = false;
     float timeOffset = CGameRuleManager::GetInst()->GenerateRandomF() * 20 - 10;
     mBreathingEndTimerHandle = CTimeManager::SetTimer(mBreathingTime + timeOffset, false, this, &CBossGemini::StartBreathing).GetID();
-    LOG_DEBUG("시간 오프셋-", std::to_string(timeOffset));
+    
+    ("시간 오프셋-", std::to_string(timeOffset));
 }
 
 void CBossGemini::OnContusionHurtOverlap(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
@@ -481,6 +486,9 @@ void CBossGemini::CheckIsDie()
             Dettach();
         }
     }
+
+    if (mbContusionDead && mbSutureDead)
+        mbIsDead = true;
 }
 
 void CBossGemini::Dettach()

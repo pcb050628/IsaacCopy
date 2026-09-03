@@ -59,7 +59,7 @@ bool CCharacterIsaac::Init()
     mAttribute.Damage = 7.f;
     mAttribute.Range = 85.f * 5.f;
     mAttribute.ShotSpeed = 7.f; //이게 힘이고
-    mAttribute.ShotTerm = 1.f;
+    mAttribute.ShotTerm = 0.2f;
     mAttribute.Speed = 30.f;
 
     mShooter.lock()->UpdateUnitAttributeData(false, mAttribute);

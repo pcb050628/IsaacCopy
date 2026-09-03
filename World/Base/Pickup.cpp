@@ -45,6 +45,7 @@ void CPickup::Reset(bool HardReset)
 {
     SetEnable(true);
     SetRenderEnable(true);
+    mRigidbody.lock()->SetVelocity(FVector3::Zero);
 }
 
 void CPickup::OnCollision(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)

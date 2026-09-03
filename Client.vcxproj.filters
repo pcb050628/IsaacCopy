@@ -202,6 +202,9 @@
     <Filter Include="소스 파일\2.World\1.Chapter\4.Room\1.Room\Shop">
       <UniqueIdentifier>{7cda3686-d276-43a4-bc37-c8b70a3b0b29}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\1.Room\Boss">
+      <UniqueIdentifier>{a0546f1c-4988-423d-8de2-bfa523ca5c11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -357,6 +360,12 @@
     <ClCompile Include="World\Obstacle\ShopSlotObstacle.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\ShopSlot</Filter>
     </ClCompile>
+    <ClCompile Include="World\Room\ShopRoom.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\Shop</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Room\BossRoom.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\Boss</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -376,9 +385,6 @@
     </ClInclude>
     <ClInclude Include="World\Base\Monster.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\0.Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Rooms.h">
-      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="World\Base\Obstaclebase.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\Base</Filter>
@@ -520,6 +526,12 @@
     </ClInclude>
     <ClInclude Include="World\Obstacle\ShopSlotObstacle.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\2.Obstacle\ShopSlot</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Room\ShopRoom.h">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\Shop</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Room\BossRoom.h">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\Boss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -13,7 +13,7 @@ class CRoombase :
 	public CGameObject
 {
 public:
-	CRoombase(ERoomType Type, ERoomShape Shape);
+	CRoombase(ERoomType Type, ERoomShape Shape = ERoomShape::Normal);
 	CRoombase(const CRoombase& src);
 	CRoombase(CRoombase&& src) noexcept;
 	virtual ~CRoombase();
@@ -33,6 +33,7 @@ protected:
 	//방 내부 셀의 크기
 	FVector2 mRoomCellSize;
 
+	FOpenInfo mOpenInfo;
 
 	ERoomShape mShape;
 	ERoomType mRoomType;
@@ -60,7 +61,7 @@ protected:
 	std::unordered_map<int, std::list<FVector2>> mMonsterData;
 	std::unordered_map<int, std::list<FVector2>> mObstacleData;
 	std::unordered_map<int, std::list<FVector2>> mPickupData;
-	std::unordered_map<int, FDoorState> mDoorData;
+	std::unordered_map<int, FOpenInfo> mDoorData;
 
 	bool mbIsRoomWin = false;
 	//보상 / 해당 클래스는 아직 작성하지 않았으므로 나중에 작성 후 적용하기
@@ -115,7 +116,7 @@ private:
 public:
 	void SetCoord(FVector2 Coord) { mCoord = Coord; }
 	FVector2 GetCoord() { return mCoord; }
-	bool SetInitRoom(const std::vector<std::pair<int, FVector2>>& Objs);//여기에 정보를 넣어서 방 초기화하기 / 지금은 방의 좌표 정보만 들어가지만 나중에는 방 내부의 정보들도 포함되어야 함
+	bool SetInitData(const std::vector<std::pair<int, FVector2>>& Objs);//여기에 정보를 넣어서 방 초기화하기 / 지금은 방의 좌표 정보만 들어가지만 나중에는 방 내부의 정보들도 포함되어야 함
 
 	void RegisterGObj(const std::weak_ptr<class CRoomMember>& GObj, const FVector2& Coord);
 	void DisregisterGObj(const std::weak_ptr<class CRoomMember>& GObj);
@@ -149,6 +150,8 @@ public:
 public:
 	const ERoomType GetRoomType() const { return mRoomType; }
 	const ERoomShape GetRoomShape() const { return mShape; }
+
+	const FOpenInfo GetOpenInfo() const { return mOpenInfo; }
 
 protected:
 	static FVector2 DirectionV[6];

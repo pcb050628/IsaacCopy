@@ -86,6 +86,7 @@ void CItemContainer::ContainItem(int ID)
 		//지금 메시컴포넌트는 하나의 애니메이션 컴포넌트만 할당 가능하다.
 		//내일 애니메이션 컴포넌트 여러개 할당하는 것을 테스트 해보고 어떻게 할지 생각하자
 		auto animMgr = CAssetManager::GetInst()->GetSubManager<CAnimationManager>(EAssetType::Animation2D);
+		FUnitAttribute total = character->GetTotalAttribute();
 		if (item->HasHeadAnim()) //머리
 		{
 			std::shared_ptr<CAnimation2D> head = animMgr->FindAnimation(item->GetHeadAnimName() + "_Front").lock();
@@ -99,10 +100,10 @@ void CItemContainer::ContainItem(int ID)
 				mesh.lock()->SetMesh("TexRect"); mesh.lock()->SetShader("Animation2D"); mesh.lock()->SetRenderLayer("Item");
 				std::shared_ptr<CAnimation2DComponent> animator = character->CreateComponent<CAnimation2DComponent>(item->GetName() + "_Head").lock();
 				animator->SetUpdateComponent(mesh);
-				animator->AddAnimation(head, 1.f, 1.f, true);
-				animator->AddAnimation(item->GetHeadAnimName() + "_Back", 1.f, 1.f, true);
-				animator->AddAnimation(item->GetHeadAnimName() + "_Right", 1.f, 1.f, true);
-				animator->AddAnimation(item->GetHeadAnimName() + "_Left", 1.f, 1.f, true);
+				animator->AddAnimation(head, total.ShotTerm, 1.f, true);
+				animator->AddAnimation(item->GetHeadAnimName() + "_Back", total.ShotTerm, 1.f, true);
+				animator->AddAnimation(item->GetHeadAnimName() + "_Right", total.ShotTerm, 1.f, true);
+				animator->AddAnimation(item->GetHeadAnimName() + "_Left", total.ShotTerm, 1.f, true);
 
 				mHeadAnim.push_back(animator);
 				mHeadMesh.push_back(mesh);
@@ -123,6 +124,7 @@ void CItemContainer::ContainItem(int ID)
 				animator->SetUpdateComponent(mesh);
 				animator->AddAnimation(body);
 				animator->AddAnimation(item->GetHeadAnimName() + "_H", 0.7f, 0.7f, true);
+
 
 				mBodyAnim.push_back(animator);
 				mBodyMesh.push_back(mesh);
@@ -191,7 +193,8 @@ void CItemContainer::UseItem()
 	assert(mActiveItems.size() > mActiveFocused && "액티브 아이템 인덱스가 범위를 벗어남");
 
 	if (mActiveItems[mActiveFocused]->UseItem())
-		LOG_DEBUG("아이템 사용됨");
+		
+		("아이템 사용됨");
 	else
 		LOG_DEBUG("아이템 사용 실패");
 }
@@ -344,6 +347,15 @@ void CItemContainer::SetHitEffect(bool Enable, float intensity, const FVector4& 
 	{
 		mesh.lock()->SetHitEffect(0, Enable, intensity, Color);
 	}
+}
+
+void CItemContainer::SetHeadAnimPlayTime(float Time)
+{
+
+}
+
+void CItemContainer::SetBodyAnimPlayTime(float Time)
+{
 }
 
 void CItemContainer::SetHeadRenderEnable(bool Enable)

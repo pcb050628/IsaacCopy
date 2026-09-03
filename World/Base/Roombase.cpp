@@ -75,6 +75,9 @@ bool CRoombase::Init()
 
 	mShadeMesh1.lock()->SetWorldScale(FVector2(1.f, 1.f));
 
+	mOpenInfo.originRequirement = EOpenRequirement::Clear;
+	mOpenInfo.remainRequirement = EOpenRequirement::Clear;
+	mOpenInfo.state = EOpenState::Closed;
 
 	//객체 생성
 	return true;
@@ -328,7 +331,7 @@ void CRoombase::ContainDoorData()
 		std::shared_ptr<CDoor> door = std::dynamic_pointer_cast<CDoor>(pair.second.lock());
 		assert(door && "문이 아닌 객체가 DoorMap에 할당됨");
 		//assert(mDoorData.find(pair.first) == mDoorData.end() && "이미 존재하는 데이터를 다시 할당하려함");
-		FDoorState state = door->GetDoorState();
+		FOpenInfo state = door->GetDoorOpenInfo();
 		mDoorData[pair.first] = state;
 		pair.second.lock()->ReturnToChapter();
 	}
@@ -349,13 +352,13 @@ void CRoombase::CreateDoorNormal()
 		bool enable = HasNearRoom(pos);
 		if (enable)
 		{
-			door->SetDoorState(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
+			door->SetDoorOpenInfo(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
 
 			std::shared_ptr<CRoombase> targetRoom = mChapter.lock()->GetRoom(pos + mCoord).lock();
 			door->SetDoorFrameType(targetRoom->GetRoomType());
 		}
 		else
-			door->SetDoorState(FDoorState(EDoorState::Closed, EOpenRequirement::Wall));
+			door->SetDoorOpenInfo(FOpenInfo(EOpenState::Closed, EOpenRequirement::Wall));
 
 		pos.x *= 575.f; //방 내부 크기 / 2
 		pos.y *= 290.f;
@@ -387,7 +390,7 @@ void CRoombase::CreateDoorHorizontal()
 				FVector2 pos = CChapter::FourDirections[i]; pos.x + j;
 				bool enable = HasNearRoom(pos);
 				mChapter.lock()->RegisterGObjToRoom(door, pos, mCoord);
-				door->SetDoorState(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
+				door->SetDoorOpenInfo(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
 
 				pos.x *= (mRoomSize.x + CChapter::WallSize) / 3;
 				pos.y *= (mRoomSize.y + CChapter::WallSize) / 2;
@@ -411,7 +414,7 @@ void CRoombase::CreateDoorHorizontal()
 			FVector2 pos = CChapter::FourDirections[i];
 			bool enable = HasNearRoom(pos);
 			mChapter.lock()->RegisterGObjToRoom(door, pos, mCoord);
-			door->SetDoorState(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
+			door->SetDoorOpenInfo(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
 
 			pos.x *= (mRoomSize.x + CChapter::WallSize) / 2; //방 내부 크기 / 2
 			pos.y *= (mRoomSize.y + CChapter::WallSize) / 2;
@@ -444,7 +447,7 @@ void CRoombase::CreateDoorVertical()
 				FVector2 pos = CChapter::FourDirections[i]; pos.y + j;
 				bool enable = HasNearRoom(pos);
 				mChapter.lock()->RegisterGObjToRoom(door, pos, mCoord);
-				door->SetDoorState(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
+				door->SetDoorOpenInfo(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
 
 				pos.x *= (mRoomSize.x + CChapter::WallSize) / 2;
 				pos.y *= (mRoomSize.y + CChapter::WallSize) / 3;
@@ -468,7 +471,7 @@ void CRoombase::CreateDoorVertical()
 			FVector2 pos = CChapter::FourDirections[i];
 			bool enable = HasNearRoom(pos);
 			mChapter.lock()->RegisterGObjToRoom(door, pos, mCoord);
-			door->SetDoorState(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
+			door->SetDoorOpenInfo(mDoorData[CChapter::Coord2Hash(pos + mCoord)]);
 
 			pos.x *= (mRoomSize.x + CChapter::WallSize) / 2; //방 내부 크기 / 2
 			pos.y *= (mRoomSize.y + CChapter::WallSize) / 2;
@@ -498,7 +501,7 @@ void CRoombase::OpenDoor()
 {
 }
 
-bool CRoombase::SetInitRoom(const std::vector<std::pair<int, FVector2>>& InitData) //모양도 여기서 받아서 초기화 하기	
+bool CRoombase::SetInitData(const std::vector<std::pair<int, FVector2>>& InitData) //모양도 여기서 받아서 초기화 하기	
 {
 	mInitData = InitData;
 
@@ -528,11 +531,7 @@ void CRoombase::Reset(bool HardReset)
 			}
 
 			std::shared_ptr<CRoomMember> gobj = std::dynamic_pointer_cast<CRoomMember>(CGameClassContainer::GetInst()->Instantiate(pair.first, pair.second, false, chapter->GetLevel()).lock());
-			if (!gobj)
-			{
-				//LOG_DEBUG("객체 생성 실패 | 객체 ID: ", pair.first);
-				continue;
-			}
+			assert(gobj && "RoomMember 가 아닌 객체를 생성하려고 했습니다.");
 
 			chapter->RegisterGObjToRoom(gobj, pair.second, mCoord);
 		}
@@ -548,7 +547,7 @@ void CRoombase::Reset(bool HardReset)
 					//지금은 기본 방 뿐이 없기 때문에 전부 Clear로 설정한다.
 					int hash = CChapter::Coord2Hash(other.first + mCoord);
 					assert(mDoorData.find(hash) == mDoorData.end() && "이미 등록한 방향을 재참조 중 | Room 연결 부를 확인하기");
-					mDoorData.insert(std::make_pair(hash, FDoorState()));
+					mDoorData.insert(std::make_pair(hash, other.second.lock()->GetOpenInfo()));
 				}
 			}
 		}
@@ -964,7 +963,7 @@ void CRoombase::GenerateRoom(FVector2 Direction, int Min, int Max, int& Current)
 	{
 		data.push_back(std::make_pair(obj.ID, obj.Coord));
 	}
-	if (!room->SetInitRoom(data))
+	if (!room->SetInitData(data))
 	{
 		LOG_DEBUG("방 생성 실패");
 	}

@@ -77,7 +77,7 @@ enum class EPickupType
     None,
 };
 
-enum class EDoorState
+enum class EOpenState
 {
     Closed,
     Open,

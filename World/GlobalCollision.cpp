@@ -59,6 +59,9 @@ void CGlobalCollision::SetGlobalCollision()
 		InfoManager->SetProfileInteraction("Monster", "Obstacle", ECollisionInteraction::Ignore);
 		InfoManager->SetProfileInteraction("Obstacle", "Monster", ECollisionInteraction::Ignore);
 
+		InfoManager->SetProfileInteraction("Wall", "Obstacle", ECollisionInteraction::Block);
+		InfoManager->SetProfileInteraction("Obstacle", "Wall", ECollisionInteraction::Block);
+
 		InfoManager->SetProfileInteraction("Monster", "ContactHit_Obstacle", ECollisionInteraction::Overlap);
 		InfoManager->SetProfileInteraction("ContactHit_Obstacle", "Monster", ECollisionInteraction::Overlap);
 

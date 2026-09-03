@@ -120,7 +120,7 @@ void CChapterSystemActor::MoveToTarget(float DeltaTime)
     FVector3 dir = mTargetPosition - GetWorldPos();
     dir.Normalize();
     mRb.lock()->AddForce(dir * 200.f);
-    mCompareDist += DeltaTime * 60.f;
+    mCompareDist += DeltaTime * 100.f;
     if (GetWorldPos().Distance(mTargetPosition) < mCompareDist)
     {
         mbIsMoving = false;

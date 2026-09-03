@@ -277,24 +277,24 @@ struct FRoute
 	}
 };
 
-struct FDoorState
+struct FOpenInfo
 {
-	EDoorState state = EDoorState::Closed;
+	EOpenState state = EOpenState::Open;
 	EOpenRequirement originRequirement = EOpenRequirement::Clear;
 	EOpenRequirement remainRequirement = EOpenRequirement::Clear;
 
-	FDoorState()
-		:state(EDoorState::Closed), originRequirement(EOpenRequirement::Clear), remainRequirement(EOpenRequirement::Clear)
+	FOpenInfo()
+		:state(EOpenState::Open), originRequirement(EOpenRequirement::Clear), remainRequirement(EOpenRequirement::Clear)
 	{
 
 	}
-	FDoorState(const FDoorState& other)
+	FOpenInfo(const FOpenInfo& other)
 		:state(other.state), originRequirement(other.originRequirement), remainRequirement(other.remainRequirement)
 	{
 
 	}
 
-	FDoorState(EDoorState state_, EOpenRequirement origin)
+	FOpenInfo(EOpenState state_, EOpenRequirement origin)
 		:state(state_), originRequirement(origin)
 	{
 		remainRequirement = originRequirement;
