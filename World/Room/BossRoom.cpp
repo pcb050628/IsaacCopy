@@ -76,11 +76,16 @@ void CBossRoom::Destroy()
 
 void CBossRoom::OnEnterRoom()
 {
-	if (mTargetBoss.expired())
+	if (!mbSpawnCheck)
 	{
 		std::shared_ptr<CBoss> boss = std::dynamic_pointer_cast<CBoss>(CGameClassContainer::GetInst()->Instantiate(mBossID, FVector2(6, 5)).lock());
 		assert(boss && "객체 생성 실패");
 		mTargetBoss = boss;
+		mbSpawnCheck = true;
+	}
+	else
+	{
+
 	}
 }
 

@@ -17,9 +17,9 @@ private: //일단 다 모아두고 모아 둘 필요가 없으면 흩어놓기
 	std::vector<std::map<int, int>> ItemPoolPercentages;
 	int PlayerItemWeightStack = 0; //아이템 가중치 스택 / 너무 좋은템이나 구린템이 연속으로 나오지않게함
 	//1. 방에 대해서
-	std::map<int, std::function<void()>> OnRoomEnter; //만들어 놓고 보니까 안쓸거같긴한데 혹시 모르니까 가만두기 / 나중에 거의 다 완성하고도 안쓸것같으면 치우기
-	std::map<int, std::function<void()>> OnRoomExit;
-	std::map<int, std::function<void()>> OnRoomClear;
+	//std::map<int, std::function<void()>> OnRoomEnter; //만들어 놓고 보니까 안쓸거같긴한데 혹시 모르니까 가만두기 / 나중에 거의 다 완성하고도 안쓸것같으면 치우기
+	//std::map<int, std::function<void()>> OnRoomExit;
+	//std::map<int, std::function<void()>> OnRoomClear;
 
 	//2. 오브젝트에 대해서
 	
@@ -27,6 +27,9 @@ private: //일단 다 모아두고 모아 둘 필요가 없으면 흩어놓기
 	EPlayerHeartType mPlayerHeartDrainPriority = EPlayerHeartType::End;
 	std::map<int, FPlayerHeartContainer> mPlayerHeartContainer;
 	std::map<std::string, std::function<void(int, FPlayerHeartContainer)>> OnHeartUpdate; //체력 업데이트 시 호출되어야 하는 함수들
+	int mCoinCount = 0;
+	int mKeyCount = 0;
+	int mBombCount = 0;
 
 public:
 	bool Init();
@@ -49,56 +52,17 @@ public:
 		OnHeartUpdate[Name] = std::bind(Func, Obj, std::placeholders::_1, std::placeholders::_2);
 	}
 
-	template<typename T>
-	void RegisterRoomEnterFunc(std::shared_ptr<T> Obj, void(T::*Func)())
-	{
-		std::shared_ptr<CGameObject> gobj = std::dynamic_pointer_cast<CGameObject>(Obj);
-		if (!gobj)
-			return;
+	void AddCoin(int Add);
+	void AddKey(int Add);
+	void AddBomb(int Add);
 
-		OnRoomEnter[gobj->GetID()] = std::bind(Func, Obj.get());
-	}
-	template<typename T>
-	void RegisterRoomExitFunc(std::shared_ptr<T> Obj, void(T::* Func)())
-	{
-		std::shared_ptr<CGameObject> gobj = std::dynamic_pointer_cast<CGameObject>(Obj);
-		if (!gobj)
-			return;
+	void RemoveCoin(int Remove);
+	void RemoveKey(int Remove);
+	void RemoveBomb(int Remove);
 
-		OnRoomExit[gobj->GetID()] = std::bind(Func, Obj.get());
-	}
-	template<typename T>
-	void RegisterRoomClearFunc(std::shared_ptr<T> Obj, void(T::* Func)())
-	{
-		std::shared_ptr<CGameObject> gobj = std::dynamic_pointer_cast<CGameObject>(Obj);
-		if (!gobj)
-			return;
-
-		OnRoomClear[gobj->GetID()] = std::bind(Func, Obj.get());
-	}
-
-	void DisregisterRoomEnterFunc(const int ID)
-	{
-		if (!OnRoomEnter.contains(ID))
-			return;
-
-		OnRoomEnter.erase(ID);
-	}
-	void DisregisterRoomExitFunc(const int ID)
-	{
-		if (!OnRoomExit.contains(ID))
-			return;
-
-		OnRoomExit.erase(ID);
-	}
-	void DisregisterRoomClearFunc(const int ID)
-	{
-		if (!OnRoomClear.contains(ID))
-			return;
-
-		OnRoomClear.erase(ID);
-	}
-
+	bool CanUseCoin(int Count);
+	bool CanUseKey(int Count);
+	bool CanUseBomb(int Count);
 
 private:
 	void CallOnHeartUpdate();

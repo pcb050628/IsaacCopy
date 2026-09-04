@@ -20,8 +20,6 @@ CRigidBodyComponent::~CRigidBodyComponent()
 
 bool CRigidBodyComponent::Init()
 {
-
-
     CSceneComponent::Init();
     return true;
 }

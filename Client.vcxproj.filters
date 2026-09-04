@@ -205,6 +205,15 @@
     <Filter Include="소스 파일\2.World\1.Chapter\4.Room\1.Room\Boss">
       <UniqueIdentifier>{a0546f1c-4988-423d-8de2-bfa523ca5c11}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\2.World\2.StartMenu">
+      <UniqueIdentifier>{cff923c8-3430-4542-9e10-d1eb490e4937}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\2.StartMenu\Title">
+      <UniqueIdentifier>{797b0630-39f9-451c-945f-94cd6c6d4007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\2.StartMenu\Menu">
+      <UniqueIdentifier>{70386157-ba3d-4fd5-bb5c-2c67645e729a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -327,12 +336,6 @@
     <ClCompile Include="World\Component\TearShooter.cpp">
       <Filter>소스 파일\1.GameClass\Component\ActorComponent\TearShooter</Filter>
     </ClCompile>
-    <ClCompile Include="World\Component\RigidBodyComponent.cpp">
-      <Filter>소스 파일\1.GameClass\Component\SceneComponent\Rigidbody</Filter>
-    </ClCompile>
-    <ClCompile Include="World\Component\SpriteComponent.cpp">
-      <Filter>소스 파일\1.GameClass\Component\SceneComponent\SpriteRenderer</Filter>
-    </ClCompile>
     <ClCompile Include="World\Door.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\4.Door</Filter>
     </ClCompile>
@@ -365,6 +368,21 @@
     </ClCompile>
     <ClCompile Include="World\Room\BossRoom.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Component\RigidBodyComponent.cpp">
+      <Filter>소스 파일\1.GameClass\Component\SceneComponent\Rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Component\SpriteComponent.cpp">
+      <Filter>소스 파일\1.GameClass\Component\SceneComponent\SpriteRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="StartWorld\StartWorld.cpp">
+      <Filter>소스 파일\2.World\2.StartMenu</Filter>
+    </ClCompile>
+    <ClCompile Include="StartWorld\TitleActor.cpp">
+      <Filter>소스 파일\2.World\2.StartMenu\Title</Filter>
+    </ClCompile>
+    <ClCompile Include="StartWorld\MenuActor.cpp">
+      <Filter>소스 파일\2.World\2.StartMenu\Menu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -494,12 +512,6 @@
     <ClInclude Include="World\Component\ItemContainer.h">
       <Filter>소스 파일\1.GameClass\Component\ActorComponent\ItemContainer</Filter>
     </ClInclude>
-    <ClInclude Include="World\Component\RigidBodyComponent.h">
-      <Filter>소스 파일\1.GameClass\Component\SceneComponent\Rigidbody</Filter>
-    </ClInclude>
-    <ClInclude Include="World\Component\SpriteComponent.h">
-      <Filter>소스 파일\1.GameClass\Component\SceneComponent\SpriteRenderer</Filter>
-    </ClInclude>
     <ClInclude Include="GameObjectStructs.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -532,6 +544,21 @@
     </ClInclude>
     <ClInclude Include="World\Room\BossRoom.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\1.Room\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Component\RigidBodyComponent.h">
+      <Filter>소스 파일\1.GameClass\Component\SceneComponent\Rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Component\SpriteComponent.h">
+      <Filter>소스 파일\1.GameClass\Component\SceneComponent\SpriteRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="StartWorld\StartWorld.h">
+      <Filter>소스 파일\2.World\2.StartMenu</Filter>
+    </ClInclude>
+    <ClInclude Include="StartWorld\TitleActor.h">
+      <Filter>소스 파일\2.World\2.StartMenu\Title</Filter>
+    </ClInclude>
+    <ClInclude Include="StartWorld\MenuActor.h">
+      <Filter>소스 파일\2.World\2.StartMenu\Menu</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

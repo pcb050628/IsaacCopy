@@ -11,6 +11,7 @@ public:
 
 private:
     int mItemID = -1;
+    bool mbFlag = false;
 
 public:
     virtual bool Init();

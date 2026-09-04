@@ -75,6 +75,9 @@ void CTreasureRoom::Destroy()
 
 void CTreasureRoom::OnEnterRoom()
 {
+	if (mbFlag)
+		return;
+
 	for (std::pair<int, std::weak_ptr<CRoomMember>> pair : mObstacleMap)
 	{
 		std::shared_ptr<CObstaclebase> ob = std::dynamic_pointer_cast<CObstaclebase>(pair.second.lock());
@@ -82,8 +85,10 @@ void CTreasureRoom::OnEnterRoom()
 		{
 			std::shared_ptr<CPedestalObstacle> pedestal = std::dynamic_pointer_cast<CPedestalObstacle>(ob);
 			pedestal->SetItemID(mItemID);
+			mbFlag = true;
 		}
 	}
+
 }
 
 void CTreasureRoom::WinRoom()

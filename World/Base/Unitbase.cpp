@@ -71,11 +71,11 @@ bool CUnitbase::Init()
 	mBodyMesh.lock()->SetMesh("TexRect");
 	mBodyMesh.lock()->SetShader("Animation2D");
 
-	mHeadMesh.lock()->SetRelativePos(FVector2(0, 47.f));
+	mHeadMesh.lock()->SetRelativePos(FVector2(0, 50.f));
 	mBodyMesh.lock()->SetRelativePos(FVector2(0, 9.f));
 
-	mHeadMesh.lock()->SetRelativeScale(FVector2(7.f, 7.f));
-	mBodyMesh.lock()->SetRelativeScale(FVector2(5.5f, 5.5f));
+	mHeadMesh.lock()->SetRelativeScale(FVector2(8.f, 8.f));
+	mBodyMesh.lock()->SetRelativeScale(FVector2(6.2f, 6.2f));
 
 	mHurtBox = CreateComponent<CColliderBox2D>("HurtBox");
 	if (mHurtBox.expired())
@@ -102,7 +102,7 @@ bool CUnitbase::Init()
 
 void CUnitbase::Update(float DeltaTime)
 {
-	CActor::Update(DeltaTime);
+	CRoomMember::Update(DeltaTime);
 }
 
 void CUnitbase::Destroy()

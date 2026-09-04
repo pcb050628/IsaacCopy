@@ -50,7 +50,7 @@ bool CCharacterIsaac::Init()
     mHeadAnimName = mDefaultHeadAnimName;
     mBodyAnimName = mDefaultBodyAnimName;
 
-    mHurtBox.lock()->SetBoxSize(30.f, 30.f);
+    mHurtBox.lock()->SetBoxSize(40.f, 40.f);
     mHurtBox.lock()->SetRelativePos(0, 5.f);
     mHurtBox.lock()->SetDebugDraw(true);
 

@@ -22,6 +22,9 @@ public:
 
 public:
     void SetItemID(const int ID);
+    virtual bool GetHasInfo() { return true; }
+    virtual FRoomMemberInfo GetInfo() override;
+    virtual void SetInfo(const FRoomMemberInfo& info) override;
 
 private:
     void OnCollision(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);

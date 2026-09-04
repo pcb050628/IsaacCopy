@@ -28,5 +28,8 @@ public:
     virtual bool Init();
 
     const EObstacleType GetObstacleType() const { return mObstacleType; }
+    virtual bool GetHasInfo() { return false; }
+    virtual FRoomMemberInfo GetInfo() { return FRoomMemberInfo(); }
+    virtual void SetInfo(const FRoomMemberInfo& info) {}
 };
 

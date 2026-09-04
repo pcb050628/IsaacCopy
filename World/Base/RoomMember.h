@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "../../GameObjectStructs.h"
 
 class CRoomMember :
     public CGameObject
@@ -14,6 +15,8 @@ protected:
     std::weak_ptr<class CRoombase> mRoomOwner;
 
 public:
+    virtual void Update(float DeltaTime);
+
     std::weak_ptr<CRoombase> GetRoom() { return mRoomOwner; }
     void SetRoom(std::weak_ptr<CRoombase> Room) { mRoomOwner = Room; }
     std::weak_ptr<CRoombase> UnsetRoom()

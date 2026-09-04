@@ -72,7 +72,7 @@ bool CTear::Init()
 	mAnimator.lock()->SetFinishFunction(animData->GetData().Name, this, &CTear::ReturnToChapter);
 	
 	mMesh.lock()->SetWorldScale(100.f, 100.f);
-	mMesh.lock()->SetRenderLayer("Tear");
+	mMesh.lock()->SetRenderLayer("Head");
 	//mHitBox.lock()->SetBeginOverlapFunc()
 
 	mHitBox.lock()->SetCollisionProfile("Tear");

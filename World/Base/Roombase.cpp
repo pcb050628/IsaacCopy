@@ -163,6 +163,8 @@ void CRoombase::EnterRoom()
 	mObstacleData.clear();
 	mPickupData.clear();
 
+	mObstacleInfo.clear();
+
 	SetEnable(true);
 	for (std::pair<int, std::weak_ptr<CGameObject>> pair : mMonsterMap)
 	{
@@ -258,6 +260,7 @@ void CRoombase::CreateDoor()
 
 void CRoombase::ContainMonsterData()
 {
+	std::shared_ptr<CRoombase> myself = GetThisPtr<CRoombase>();
 	std::map<int, std::weak_ptr<CRoomMember>>::iterator iter = mMonsterMap.begin();
 	std::map<int, std::weak_ptr<CRoomMember>>::iterator iterEnd = mMonsterMap.end();
 	for (; iter != iterEnd; )
@@ -269,6 +272,8 @@ void CRoombase::ContainMonsterData()
 		}
 
 		std::shared_ptr<CRoomMember> m = iter->second.lock();
+		assert(m->GetRoom().lock() == myself && "등록되지 않은 객체 발견");
+
 		if (!iter->second.lock()->GetIsTemporary())
 		{
 			mMonsterData[m->GetGClassID()].push_back(WorldPosToCoord(m->GetWorldPos()));
@@ -293,6 +298,14 @@ void CRoombase::ContainObstacleData()
 		if (!iter->second.lock()->GetIsTemporary())
 		{
 			mObstacleData[m->GetGClassID()].push_back(WorldPosToCoord(m->GetWorldPos()));
+		}
+
+		std::shared_ptr<CObstaclebase> obs = std::dynamic_pointer_cast<CObstaclebase>(m);
+		if (obs->GetHasInfo())
+		{
+			FRoomMemberInfo info = obs->GetInfo();
+			info.v2 = WorldPosToCoord(m->GetWorldPos());
+			mObstacleInfo[obs->GetID()].push_back(info);
 		}
 
 		iter->second.lock()->ReturnToChapter();
@@ -576,6 +589,18 @@ void CRoombase::Reset(bool HardReset)
 				}
 
 				chapter->RegisterGObjToRoom(gobj, coord, mCoord);
+				if (!mObstacleInfo[pair.first].empty())
+				{
+					for (const FRoomMemberInfo& info : mObstacleInfo[pair.first])
+					{
+						if (coord == info.v2)
+						{
+							std::shared_ptr<CObstaclebase> obs = std::dynamic_pointer_cast<CObstaclebase>(gobj);
+							obs->SetInfo(info);
+							break;
+						}
+					}
+				}
 			}
 		}
 
@@ -643,6 +668,7 @@ void CRoombase::RegisterGObj(const std::weak_ptr<class CRoomMember>& GObj, const
 	case EObjectType::PlayerCharacter:
 		break;
 	case EObjectType::Monster:
+	case EObjectType::Boss:
 		mMonsterMap.insert(std::make_pair(obj->GetID(), obj));
 		break;
 	case EObjectType::Obstacle:
@@ -675,6 +701,7 @@ void CRoombase::DisregisterGObj(const std::weak_ptr<class CRoomMember>& GObj)
 	case EObjectType::PlayerCharacter:
 		break;
 	case EObjectType::Monster:
+	case EObjectType::Boss:
 		mMonsterMap.erase(obj->GetID());
 		break;
 	case EObjectType::Obstacle:

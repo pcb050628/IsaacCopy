@@ -1,7 +1,7 @@
 #pragma once
 #include "World\MeshComponent.h"
 
-#include "../Data/GameObjectStructure.h"
+#include "../Data/GameData.h"
 
 class CSpriteComponent :
     public CMeshComponent

@@ -19,6 +19,7 @@ protected:
     FTimerHandle mMumblingTimer;
 
 public:
+    virtual void Update(float DeltaTime);
     virtual void Reset(bool HardReset = false);
 
     virtual void SetEnable(bool Enable) override;

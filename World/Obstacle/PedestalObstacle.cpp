@@ -77,6 +77,18 @@ void CPedestalObstacle::SetItemID(const int ID)
     mItemSpriteRenderer.lock()->SetSpriteData(CGameClassContainer::GetInst()->GetName(ID));
 }
 
+FRoomMemberInfo CPedestalObstacle::GetInfo()
+{
+    FRoomMemberInfo d;
+    d.i_1 = mItemID;
+    return d;
+}
+
+void CPedestalObstacle::SetInfo(const FRoomMemberInfo& info)
+{
+	SetItemID(info.i_1);
+}
+
 void CPedestalObstacle::OnCollision(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
 {
     if (Collider.expired() || Collider.lock()->GetOwner().expired())

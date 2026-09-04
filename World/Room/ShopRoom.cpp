@@ -84,28 +84,27 @@ void CShopRoom::Destroy()
 
 void CShopRoom::OnEnterRoom()
 {
-	if (mSlotObstacles.empty())
+	if (!mbFlag)
 	{
-		for (std::pair<int, std::weak_ptr<CRoomMember>> pair : mObstacleMap)
+		if (mSlotObstacles.empty())
 		{
-			assert(!pair.second.expired() && "유효하지 않은 객체를 참조중");
-			if (402 == pair.second.lock()->GetGClassID())
+			for (std::pair<int, std::weak_ptr<CRoomMember>> pair : mObstacleMap)
 			{
-				mSlotObstacles.push_back(pair.second);
+				assert(!pair.second.expired() && "유효하지 않은 객체를 참조중");
+				if (402 == pair.second.lock()->GetGClassID())
+				{
+					mSlotObstacles.push_back(pair.second);
+				}
 			}
 		}
+		mbFlag = true;
 	}
 
 	for (int i = 0; i < mSlots.size(); ++i)
 	{
 		bool enable = mSlots[i].first;
 		if (enable)
-		{
-			std::shared_ptr<CShopSlotObstacle> slot = std::dynamic_pointer_cast<CShopSlotObstacle>(mSlotObstacles[i].lock());
-			assert(slot && "잘못된 객체를 참조했습니다.");
-			slot->SetItemID(mSlots[i].second);
 			continue;
-		}
 
 		mSlotObstacles[i].lock()->SetEnable(enable);
 		mSlotObstacles[i].lock()->SetRenderEnable(enable);

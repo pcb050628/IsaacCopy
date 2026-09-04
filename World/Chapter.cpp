@@ -81,6 +81,7 @@ bool CChapter::Init()
 	//5. 진행 중 생성된 방의 개수가 최대값보다 크거나 같다면 바로 반환
 	//6. 시작 방에서 시작한 4방향을 다 완료했을때 최소 값보다 방이 적으면 다시 진행
 
+	RegisterCharacter(31);
 	return true;
 }
 void CChapter::Update(float DeltaTime)
@@ -321,9 +322,9 @@ void CChapter::InitialSetting()
 				continue;
 			FVector2 wallOffset = pos;
 			if (0 == FourDirections[i].x)
-				wallOffset.x += j * ((RoomWorldSize.x / 4) - cellSize.x / 4);
+				wallOffset.x += j * ((size.x / 4) + WallSize / 2);
 			else if (0 == FourDirections[i].y)
-				wallOffset.y += j * ((RoomWorldSize.y / 4) - cellSize.y / 4);
+				wallOffset.y += j * ((size.y / 4) + WallSize / 2);
 
 			auto wall = mWalls[wallidx++].lock();
 			wall->SetWorldPos(center + FVector3(wallOffset.x, wallOffset.y, 0));
@@ -428,6 +429,7 @@ bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 		mTearsDeactivate[ObjID] = mTearsActivate[ObjID];
 		mTearsActivate.erase(ObjID);
 	} return true;
+	case EObjectType::Boss: 
 	case EObjectType::Monster: {
 		rm->UnsetRoom().lock()->DisregisterGObj(rm);
 		mUnitsDeactivate[classID][ObjID] = mUnitsActivate[classID][ObjID];
@@ -496,16 +498,17 @@ void CChapter::RegisterGObjToRoom(const std::weak_ptr<CRoomMember>& rm, const FV
 		return;
 
 	std::shared_ptr<CRoombase> room = mRoomMap[Coord2Hash(targetRoomCoord)].lock();
-	if (!room)
-		return;
+	assert(room && "잘못된 좌표를 걸러내지 못했습니다");
 
 	room->RegisterGObj(rm, Coord);
 	std::weak_ptr<CRoombase> prevRoom = rm.lock()->UnsetRoom();
 	if (!prevRoom.expired())
 	{
+		assert(prevRoom.lock() != room && "함수 호출 순서 오류");
 		prevRoom.lock()->DisregisterGObj(rm);
 	}
 	rm.lock()->SetRoom(room);
+	LOG_DEBUG(rm.lock()->GetName(), " 등록 : ", static_cast<int>(Coord.x), ", ", static_cast<int>(Coord.y));
 }
 
 void CChapter::RegisterCharacter(const int ID)
@@ -519,6 +522,7 @@ void CChapter::RegisterCharacter(const int ID)
 	assert(chara && "캐릭터 생성 실패: ", ID);
 
 	CGameRuleManager::GetInst()->RegisterPlayerHeartContainer(chara->GetID());
+	CGameRuleManager::GetInst()->AddCoin(15);
 }
 
 const int CChapter::GetIsValidCoord(const FVector2& Coord)

@@ -12,7 +12,7 @@ public:
 protected:
     bool mbIsAttached = true;
     //Contusion
-    float mContusionHP = 10.f;
+    float mContusionHP = 140.f;
     float mMovingTimeStack = 0.f;
     float mBreathingTime = 5.f;
     bool mbIsBreathing = false;

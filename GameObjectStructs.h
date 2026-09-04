@@ -300,3 +300,13 @@ struct FOpenInfo
 		remainRequirement = originRequirement;
 	}
 };
+
+struct FRoomMemberInfo
+{
+	int i_1 = 0;
+	int i_2 = 0;
+	float f_1 = 0.f;
+	float f_2 = 0.f;
+	FVector2 v2 = FVector2::Zero;
+	FVector3 f3 = FVector3::Zero;
+};

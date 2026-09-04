@@ -71,7 +71,6 @@ bool CBossGemini::Init()
 
     //루트에서 위치정보 분리
     mSutureRigidbody.lock()->SetInheritPos(false);
-    mSutureRigidbody.lock()->SetWorldPos(mContusionRigidbody.lock()->GetWorldPos() + FVector3(-50, 20, 0));
 
     //메시 컴포넌트 설정 및 애니메이션 컴포넌트와 연결
     std::shared_ptr<CMeshComponent> cFullBody = mContusionFullBodyMesh.lock();
@@ -100,7 +99,7 @@ bool CBossGemini::Init()
     cFullBodyAnimator->Stop();
 
     sAnimator->AddAnimation("Suture_Shoot");
-    sAnimator->AddAnimation("Suture_Move", 1.f, 1.f, true);
+    sAnimator->AddAnimation("Suture_Move", 0.4f, 1.f, true);
     sAnimator->SetFinishFunction("Suture_Shoot", this, &CBossGemini::Shoot);
     sAnimator->Stop(true);
 
@@ -354,9 +353,16 @@ void CBossGemini::FollowContusion()
     FVector3 contusion = mContusionRigidbody.lock()->GetWorldPos();
     FVector3 suture = mSutureRigidbody.lock()->GetWorldPos();
     float dist = contusion.Distance(suture);
-    FVector3 dir = contusion - suture;
-    dir.Normalize();
-    mSutureRigidbody.lock()->SetVelocity(dir * 25.f * (dist * 0.03f));
+    if(dist > 500)
+    {
+        mSutureRigidbody.lock()->SetWorldPos(mContusionRigidbody.lock()->GetWorldPos() + FVector3(-50, 20, 0));
+    }
+    else
+    {
+        FVector3 dir = contusion - suture;
+        dir.Normalize();
+        mSutureRigidbody.lock()->SetVelocity(dir * 25.f * (dist * 0.03f));
+    }
 }
 
 void CBossGemini::ShootToPlayer()

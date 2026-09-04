@@ -18,3 +18,9 @@ CRoomMember::CRoomMember(CRoomMember&& src) noexcept
 CRoomMember::~CRoomMember()
 {
 }
+
+void CRoomMember::Update(float DeltaTime)
+{
+	CGameObject::Update(DeltaTime);
+	assert(!mRoomOwner.expired() && "객체가 등록되지 않은 채로 실행중입니다.");
+}

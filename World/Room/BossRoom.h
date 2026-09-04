@@ -12,6 +12,7 @@ public:
 private:
     int mBossID = -1;
     int mRewardID = -1;
+    bool mbSpawnCheck = false;
     std::weak_ptr<class CBoss> mTargetBoss;
 
 public:

@@ -30,6 +30,11 @@ CMonster::~CMonster()
 {
 }
 
+void CMonster::Update(float DeltaTime)
+{
+	CUnitbase::Update(DeltaTime);
+}
+
 void CMonster::Reset(bool HardReset)
 {
 	mCurrentHP = mMaxHP;

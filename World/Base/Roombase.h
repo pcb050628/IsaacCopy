@@ -63,6 +63,8 @@ protected:
 	std::unordered_map<int, std::list<FVector2>> mPickupData;
 	std::unordered_map<int, FOpenInfo> mDoorData;
 
+	std::map<int, std::list<FRoomMemberInfo>> mObstacleInfo;
+
 	bool mbIsRoomWin = false;
 	//보상 / 해당 클래스는 아직 작성하지 않았으므로 나중에 작성 후 적용하기
 	// 추가로 이 변수는 기본 방 클래스로 넘기기 / 보상이 픽업이 아닌 경우도 있기 때문에

@@ -222,6 +222,9 @@
     <ClCompile Include="Debug\ImGuiSpriteMaker.cpp" />
     <ClCompile Include="GameObjectStructs.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="StartWorld\MenuActor.cpp" />
+    <ClCompile Include="StartWorld\StartWorld.cpp" />
+    <ClCompile Include="StartWorld\TitleActor.cpp" />
     <ClCompile Include="World\Base\Boss.cpp" />
     <ClCompile Include="World\Base\Character.cpp" />
     <ClCompile Include="World\Base\GameClass.cpp" />
@@ -278,6 +281,9 @@
     <ClInclude Include="GameObjectEnums.h" />
     <ClInclude Include="GameObjectStructs.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="StartWorld\MenuActor.h" />
+    <ClInclude Include="StartWorld\StartWorld.h" />
+    <ClInclude Include="StartWorld\TitleActor.h" />
     <ClInclude Include="World\Base\Boss.h" />
     <ClInclude Include="World\Base\Character.h" />
     <ClInclude Include="World\Base\GameClass.h" />

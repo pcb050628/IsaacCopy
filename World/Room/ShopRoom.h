@@ -10,6 +10,7 @@ public:
     virtual ~CShopRoom();
 
 private:
+    bool mbFlag = false;
     std::vector<std::pair<bool, int>> mSlots;
     std::vector<std::weak_ptr<class CRoomMember>> mSlotObstacles;
 

@@ -35,11 +35,11 @@ bool CGameStarter::Start()
 		1U);
 
 	CRenderManager::GetInst()->CreateLayer("UI", 10, ERenderSortType::None);
-	CRenderManager::GetInst()->CreateLayer("Tear", 9, ERenderSortType::None);
-	CRenderManager::GetInst()->CreateLayer("Pickup", 8, ERenderSortType::Y);
-	CRenderManager::GetInst()->CreateLayer("Item", 7, ERenderSortType::None);
-	CRenderManager::GetInst()->CreateLayer("Head", 6, ERenderSortType::Y);
-	CRenderManager::GetInst()->CreateLayer("Body", 5, ERenderSortType::Y);
+	CRenderManager::GetInst()->CreateLayer("Pickup", 9, ERenderSortType::Y);
+	CRenderManager::GetInst()->CreateLayer("Item", 8, ERenderSortType::None);
+	CRenderManager::GetInst()->CreateLayer("Head", 7, ERenderSortType::Y);
+	CRenderManager::GetInst()->CreateLayer("Body", 6, ERenderSortType::Y);
+	CRenderManager::GetInst()->CreateLayer("Tear", 5, ERenderSortType::None);
 	CRenderManager::GetInst()->CreateLayer("Door", 4, ERenderSortType::Y);
 	CRenderManager::GetInst()->CreateLayer("Obstacle", 2, ERenderSortType::Y);
 

@@ -4,7 +4,11 @@
 
 #include "../Base/Roombase.h"
 
+//아래 내용들 변수로 바꾸기
 #define HEART_MAX 12
+#define COIN_MAX 99
+#define KEY_MAX 99
+#define BOMB_MAX 99
 
 CGameRuleManager* CGameRuleManager::mInstance = nullptr;
 
@@ -150,6 +154,63 @@ bool CGameRuleManager::RemoveRedContainerCapcity(const int ID)
 	mPlayerHeartContainer[ID].RedContainer.pop_back();
 	CallOnHeartUpdate();
 	return true;
+}
+
+void CGameRuleManager::AddCoin(int Add)
+{
+	mCoinCount += Add;
+	if (mCoinCount > COIN_MAX)
+		mCoinCount = COIN_MAX;
+}
+
+void CGameRuleManager::AddKey(int Add)
+{
+	mKeyCount += Add;
+	if (mKeyCount > KEY_MAX)
+		mKeyCount = KEY_MAX;
+}
+
+void CGameRuleManager::AddBomb(int Add)
+{
+	mBombCount += Add;
+	if (mBombCount > BOMB_MAX)
+		mBombCount = BOMB_MAX;
+}
+
+void CGameRuleManager::RemoveCoin(int Remove)
+{
+	mCoinCount -= Remove;
+	if (mCoinCount < 0)
+		mCoinCount = 0;
+}
+
+void CGameRuleManager::RemoveKey(int Remove)
+{
+	mKeyCount -= Remove;
+	if (mKeyCount < 0)
+		mKeyCount = 0;
+}
+
+void CGameRuleManager::RemoveBomb(int Remove)
+{
+	mBombCount -= Remove;
+	if (mBombCount < 0)
+		mBombCount = 0;
+}
+
+bool CGameRuleManager::CanUseCoin(int Count)
+{
+	return mCoinCount >= Count;
+}
+
+bool CGameRuleManager::CanUseKey(int Count)
+{
+	return mKeyCount >= Count;
+}
+
+bool CGameRuleManager::CanUseBomb(int Count)
+{
+	return mBombCount >= Count;
 }
 
 void CGameRuleManager::CallOnHeartUpdate()
