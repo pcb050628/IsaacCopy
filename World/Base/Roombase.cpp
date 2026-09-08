@@ -994,8 +994,8 @@ void CRoombase::GenerateRoom(FVector2 Direction, int Min, int Max, int& Current)
 	{
 		LOG_DEBUG("방 생성 실패");
 	}
-	chapter->RegisterRoom(GetThisPtr<CRoombase>());
-	AdjustRoomPos();
+	chapter->RegisterRoom(room);
+	room->AdjustRoomPos();
 
 	//방 위치 오프셋 줘야함
 	//어디서 주지

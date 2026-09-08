@@ -42,4 +42,5 @@ void CGameClassContainer::MakeChapter(CChapterGData* GData, bool IsFocused)
 	{
 		Instantiate(d.Rooms[i].ID, d.Rooms[i].Coord, IsFocused, d.ChapterLevel);
 	}
+	mChapters.push_back(chapter);
 }

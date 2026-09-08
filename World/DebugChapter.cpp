@@ -49,8 +49,8 @@ bool CDebugChapter::Init()
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[2].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);*/
 
-	debugMode = false;
-	dataType = EGDataType::Anim;
+	debugMode = true;
+	dataType = EGDataType::Sprite;
 	
 	if (debugMode) //애니메이션 만들기
 	{
@@ -108,8 +108,6 @@ bool CDebugChapter::Init()
 		font.lock()->SetText(L"Another One Bites The Dust");
 		FResolution resol = CDevice::GetInst()->GetResolution();
 		font.lock()->SetRenderPos(resol.Width / 2, resol.Height /2);*/
-
-		InitialSetting();
 
 		//CTimeManager::SetTimer(3.f, true, this, &CDebugChapter::CheckPlayerPos);
 	}

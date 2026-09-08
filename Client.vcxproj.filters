@@ -208,11 +208,20 @@
     <Filter Include="소스 파일\2.World\2.StartMenu">
       <UniqueIdentifier>{cff923c8-3430-4542-9e10-d1eb490e4937}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\2.World\2.StartMenu\Title">
+    <Filter Include="소스 파일\2.World\2.StartMenu\Screen">
+      <UniqueIdentifier>{abdd21c7-fdf6-4ca7-bdd5-f913e8890366}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\2.StartMenu\Screen\Title">
       <UniqueIdentifier>{797b0630-39f9-451c-945f-94cd6c6d4007}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\2.World\2.StartMenu\Menu">
+    <Filter Include="소스 파일\2.World\2.StartMenu\Screen\Menu">
       <UniqueIdentifier>{70386157-ba3d-4fd5-bb5c-2c67645e729a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\2.StartMenu\Screen\CharacterMenu">
+      <UniqueIdentifier>{2d6a83db-2dc2-4995-a828-7a3adf3648a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\0.ChapterCurtain">
+      <UniqueIdentifier>{be1c7b3f-ca72-465a-8fd0-f5741c974ac8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -379,10 +388,28 @@
       <Filter>소스 파일\2.World\2.StartMenu</Filter>
     </ClCompile>
     <ClCompile Include="StartWorld\TitleActor.cpp">
-      <Filter>소스 파일\2.World\2.StartMenu\Title</Filter>
+      <Filter>소스 파일\2.World\2.StartMenu\Screen\Title</Filter>
     </ClCompile>
     <ClCompile Include="StartWorld\MenuActor.cpp">
-      <Filter>소스 파일\2.World\2.StartMenu\Menu</Filter>
+      <Filter>소스 파일\2.World\2.StartMenu\Screen\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="StartWorld\ScreenActor.cpp">
+      <Filter>소스 파일\2.World\2.StartMenu\Screen</Filter>
+    </ClCompile>
+    <ClCompile Include="StartWorld\StartCameraActor.cpp">
+      <Filter>소스 파일\2.World\2.StartMenu</Filter>
+    </ClCompile>
+    <ClCompile Include="StartWorld\CharacterMenu.cpp">
+      <Filter>소스 파일\2.World\2.StartMenu\Screen\CharacterMenu</Filter>
+    </ClCompile>
+    <ClCompile Include="World\ScreenCurtain.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\0.ChapterCurtain</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Data\PlayerGData.cpp">
+      <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Data\RunGData.cpp">
+      <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Run</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -555,10 +582,28 @@
       <Filter>소스 파일\2.World\2.StartMenu</Filter>
     </ClInclude>
     <ClInclude Include="StartWorld\TitleActor.h">
-      <Filter>소스 파일\2.World\2.StartMenu\Title</Filter>
+      <Filter>소스 파일\2.World\2.StartMenu\Screen\Title</Filter>
     </ClInclude>
     <ClInclude Include="StartWorld\MenuActor.h">
-      <Filter>소스 파일\2.World\2.StartMenu\Menu</Filter>
+      <Filter>소스 파일\2.World\2.StartMenu\Screen\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="StartWorld\ScreenActor.h">
+      <Filter>소스 파일\2.World\2.StartMenu\Screen</Filter>
+    </ClInclude>
+    <ClInclude Include="StartWorld\StartCameraActor.h">
+      <Filter>소스 파일\2.World\2.StartMenu</Filter>
+    </ClInclude>
+    <ClInclude Include="StartWorld\CharacterMenu.h">
+      <Filter>소스 파일\2.World\2.StartMenu\Screen\CharacterMenu</Filter>
+    </ClInclude>
+    <ClInclude Include="World\ScreenCurtain.h">
+      <Filter>소스 파일\2.World\1.Chapter\0.ChapterCurtain</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Data\PlayerGData.h">
+      <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Data\RunGData.h">
+      <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Run</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

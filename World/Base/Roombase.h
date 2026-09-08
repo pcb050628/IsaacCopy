@@ -154,6 +154,7 @@ public:
 	const ERoomShape GetRoomShape() const { return mShape; }
 
 	const FOpenInfo GetOpenInfo() const { return mOpenInfo; }
+	const bool GetIsWin() const { return mbIsRoomWin; }
 
 protected:
 	static FVector2 DirectionV[6];

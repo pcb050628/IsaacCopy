@@ -32,23 +32,32 @@ struct FRoomObjectData
 struct FItemData
 {
 	//어떤 아이템인지(아이디)
-	int ID;
+	int ID = -1;
 	//더 알게 뭐가 있더라
 	//에너지 얼마나 있었는지
-	int ChargedEnerge;
+	int ChargedEnerge = 0;
 	//몇스택인지(스택을 쌓는 아이템이 몇가지 있음
-	int Stack;
+	int Stack = 0;
+};
+
+struct FHeartData
+{
+	int Type = 0;
+	int State = 0;
 };
 
 struct FPlayerData
 {
 	//어떤캐릭터인지(아이디)
-	int ID;
+	int ID = -1;
 	//체력(정수)
-	int HPCount;
+	std::vector<FHeartData> Hearts;
+	int Coins = 0;
+	int Keys = 0;
+	int Bombs = 0;
 	//방위치(좌표) , 방 내의 위치(좌표)
-	FVector2 ChapterCoord;
-	FVector2 RoomCoord;
+	FVector2 ChapterCoord = FVector2::Zero;
+	FVector2 RoomCoord = FVector2::Zero;
 	//가지고 있는 아이템들(배열)
 	std::vector<FItemData> Items;
 };

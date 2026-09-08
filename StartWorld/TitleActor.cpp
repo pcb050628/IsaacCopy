@@ -1,5 +1,6 @@
 #include "TitleActor.h"
 
+#include "Engine.h"
 #include "Device.h"
 
 #include "World/MeshComponent.h"
@@ -80,4 +81,35 @@ void CTitleActor::Update(float DeltaTime)
 void CTitleActor::Destory()
 {
     CActor::Destroy();
+}
+
+int CTitleActor::OnUp()
+{
+    return 0;
+}
+
+int CTitleActor::OnDown()
+{
+    return 0;
+}
+
+int CTitleActor::OnRight()
+{
+    return 0;
+}
+
+int CTitleActor::OnLeft()
+{
+    return 0;
+}
+
+int CTitleActor::OnSubmit()
+{
+    return 1;
+}
+
+int CTitleActor::OnEscape()
+{
+    DestroyWindow(CEngine::GetInst()->GetWindowHandle());
+    return 0;
 }

@@ -20,6 +20,9 @@ private:
 
 	std::unordered_map<int, std::string> mNameMap;
 
+private:
+	std::vector<std::weak_ptr<class CChapter>> mChapters;
+
 public:
 	const bool RegisterGameClass(const int ID, const std::string& Name, std::weak_ptr<CGameObject>(* Func)(const FVector2&, bool, int))
 	{

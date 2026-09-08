@@ -185,6 +185,16 @@ std::string CItemContainer::GetActiveItemName()
 	return mActiveItems[mActiveFocused]->GetName();
 }
 
+std::vector<int> CItemContainer::GetItems()
+{
+	std::vector<int> vec;
+	for (std::pair<int, std::shared_ptr<CItem>> item : mContainedItems)
+	{
+		vec.push_back(item.first);
+	}
+	return vec;
+}
+
 void CItemContainer::UseItem()
 {
 	if (mActiveItems.empty())

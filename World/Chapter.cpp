@@ -15,8 +15,9 @@
 
 #include "LogManager.h"
 
-#include "Base/Character.h"
 #include "GameSystemActor.h"
+#include "ScreenCurtain.h"
+#include "Base/Character.h"
 #include "Door.h"
 
 #include "World/ColliderBox2D.h"
@@ -60,9 +61,13 @@ bool CChapter::Init()
 	//최대 (층 * 5.5 + 3: 1 * 5.5 + 3 = 8 | 2 * 5.5 + 3 = 14)
 
 	mChapterLevel = 1;
+	mInput->SetEnable(false);
 	CRenderManager::GetInst()->SetState("AlphaBlend");
 	mChapterManagementActor = CreateActor<CChapterSystemActor>("GSA");
+	mCurtain = CreateActor<CScreenCurtain>("Curtain");
 	mChapterManagementActor.lock()->OnMoveEnd(this, &CChapter::SettingFocus);
+	//함수 내용 바꾸기 | 인풋 활성화 하는 함수 넣으면 됨
+	mCurtain.lock()->SetOnFadeOutFunction(this, &CChapter::OnChapterStart);
 
 	GenerateWallAndDoor();
 
@@ -81,7 +86,10 @@ bool CChapter::Init()
 	//5. 진행 중 생성된 방의 개수가 최대값보다 크거나 같다면 바로 반환
 	//6. 시작 방에서 시작한 4방향을 다 완료했을때 최소 값보다 방이 적으면 다시 진행
 
-	RegisterCharacter(31);
+	RegisterCharacter(CGameRuleManager::GetInst()->GetInitialCharacter());
+	InitialSetting();
+
+	mCurtain.lock()->Start();
 	return true;
 }
 void CChapter::Update(float DeltaTime)
@@ -121,6 +129,12 @@ void CChapter::Update(float DeltaTime)
 	//UI는 방이 아닌 챕터에서 관리할 것이고
 	//키 입력으로 On/Off 가능하게 할 것임
 	//UI 상태에 따라서 Input을 바꿈
+}
+void CChapter::OnChapterStart()
+{
+	mInput->SetEnable(true);
+	//CGameRuleManager::GetInst()->SaveData(GetThisPtr<CChapter>());
+	//CGameRuleManager::GetInst()->LoadData();
 }
 void CChapter::GenerateWallAndDoor()
 {
@@ -478,6 +492,8 @@ void CChapter::RegisterRoom(const std::shared_ptr<CRoombase>& room)
 	else
 	{
 		mRoomMap[Coord2Hash(Coord)] = room;
+		room->SetEnable(false);
+		room->SetRenderEnable(false);
 	}
 
 	for (int i = 0; i < 4; i++)
@@ -489,7 +505,7 @@ void CChapter::RegisterRoom(const std::shared_ptr<CRoombase>& room)
 			mRoomMap[dest].lock()->ConnectRoom(room);
 		}
 	}
-	room->PauseRoom();
+	//room->PauseRoom();
 }
 
 void CChapter::RegisterGObjToRoom(const std::weak_ptr<CRoomMember>& rm, const FVector2& Coord, const FVector2& targetRoomCoord)
@@ -548,6 +564,19 @@ std::weak_ptr<CRoombase> CChapter::GetFocusedRoom()
 void CChapter::RenderTitleWithQuato(const TCHAR* title, const TCHAR* quato)
 {
 	mChapterManagementActor.lock()->DrawTitleWithQuato(title, quato, 5.f);
+}
+void CChapter::MakeRoomData(std::vector<struct FRoomData>& roomVec)
+{
+	for (std::pair<int, std::weak_ptr<CRoombase>> room : mRoomMap)
+	{
+		if (room.second.expired())
+			continue;
+		FRoomData d;
+		d.ID = room.second.lock()->GetGClassID();
+		d.Coord = Hash2Coord(room.first);
+		d.Clear = room.second.lock()->GetIsWin();
+		roomVec.push_back(d);
+	}
 }
 //
 //첫 생성 함수는 일반함수로 모든 방향을 호출하고 두번째부터는 재귀함수 랜덤방향으로 이어가기 만약 이미 방이 있는 방향이 나온 경우 해당 방을 지나서 그 방향으로 쭉 이동 후 계속하기

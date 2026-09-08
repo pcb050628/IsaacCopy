@@ -24,6 +24,7 @@ private: //일단 다 모아두고 모아 둘 필요가 없으면 흩어놓기
 	//2. 오브젝트에 대해서
 	
 	//3. 플레이어에 대해서
+	int mInitialCharacterID = 31;
 	EPlayerHeartType mPlayerHeartDrainPriority = EPlayerHeartType::End;
 	std::map<int, FPlayerHeartContainer> mPlayerHeartContainer;
 	std::map<std::string, std::function<void(int, FPlayerHeartContainer)>> OnHeartUpdate; //체력 업데이트 시 호출되어야 하는 함수들
@@ -38,6 +39,7 @@ public:
 	float GenerateRandomF() { return mfDistribution(mGen); } //0 ~ 1
 	int GenerateRandomI() { return static_cast<int>(mfDistribution(mGen) * 100); } //0 ~ 100
 
+	const int GetInitialCharacter() const { return mInitialCharacterID; }
 	const int GetItemWeightStack() const { return PlayerItemWeightStack; }
 
 	void RegisterPlayerHeartContainer(const int InstantID, const int InitialLimit = 3);
@@ -63,6 +65,9 @@ public:
 	bool CanUseCoin(int Count);
 	bool CanUseKey(int Count);
 	bool CanUseBomb(int Count);
+
+	bool SaveData(std::weak_ptr<class CChapter> targetChapter);
+	bool LoadData();
 
 private:
 	void CallOnHeartUpdate();

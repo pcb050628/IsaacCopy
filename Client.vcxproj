@@ -222,7 +222,10 @@
     <ClCompile Include="Debug\ImGuiSpriteMaker.cpp" />
     <ClCompile Include="GameObjectStructs.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="StartWorld\CharacterMenu.cpp" />
     <ClCompile Include="StartWorld\MenuActor.cpp" />
+    <ClCompile Include="StartWorld\ScreenActor.cpp" />
+    <ClCompile Include="StartWorld\StartCameraActor.cpp" />
     <ClCompile Include="StartWorld\StartWorld.cpp" />
     <ClCompile Include="StartWorld\TitleActor.cpp" />
     <ClCompile Include="World\Base\Boss.cpp" />
@@ -249,7 +252,9 @@
     <ClCompile Include="World\Data\ChapterGData.cpp" />
     <ClCompile Include="World\Data\GameData.cpp" />
     <ClCompile Include="World\Data\GameDataManager.cpp" />
+    <ClCompile Include="World\Data\PlayerGData.cpp" />
     <ClCompile Include="World\Data\RoomGData.cpp" />
+    <ClCompile Include="World\Data\RunGData.cpp" />
     <ClCompile Include="World\Data\SpriteGData.cpp" />
     <ClCompile Include="World\DebugChapter.cpp" />
     <ClCompile Include="World\Door.cpp" />
@@ -273,6 +278,7 @@
     <ClCompile Include="World\Room\DefaultRoom.cpp" />
     <ClCompile Include="World\Room\ShopRoom.cpp" />
     <ClCompile Include="World\Room\TreasureRoom.cpp" />
+    <ClCompile Include="World\ScreenCurtain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Debug\ImGuiAnimationMaker.h" />
@@ -281,7 +287,10 @@
     <ClInclude Include="GameObjectEnums.h" />
     <ClInclude Include="GameObjectStructs.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="StartWorld\CharacterMenu.h" />
     <ClInclude Include="StartWorld\MenuActor.h" />
+    <ClInclude Include="StartWorld\ScreenActor.h" />
+    <ClInclude Include="StartWorld\StartCameraActor.h" />
     <ClInclude Include="StartWorld\StartWorld.h" />
     <ClInclude Include="StartWorld\TitleActor.h" />
     <ClInclude Include="World\Base\Boss.h" />
@@ -309,7 +318,9 @@
     <ClInclude Include="World\Data\GameData.h" />
     <ClInclude Include="World\Data\GameDataManager.h" />
     <ClInclude Include="World\Data\GameObjectStructure.h" />
+    <ClInclude Include="World\Data\PlayerGData.h" />
     <ClInclude Include="World\Data\RoomGData.h" />
+    <ClInclude Include="World\Data\RunGData.h" />
     <ClInclude Include="World\Data\SpriteGData.h" />
     <ClInclude Include="World\DebugChapter.h" />
     <ClInclude Include="World\Door.h" />
@@ -333,6 +344,7 @@
     <ClInclude Include="World\Room\DefaultRoom.h" />
     <ClInclude Include="World\Room\ShopRoom.h" />
     <ClInclude Include="World\Room\TreasureRoom.h" />
+    <ClInclude Include="World\ScreenCurtain.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc" />

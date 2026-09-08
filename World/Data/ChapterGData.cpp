@@ -24,11 +24,12 @@ bool CChapterGData::Write(rapidjson::Writer<rapidjson::StringBuffer>& Writer)
 
 		std::string Name = "Room_" + std::to_string(i + 1);
 		Writer.Key(Name.c_str());
-		Writer.StartObject();Writer.Key("ID");
+		Writer.StartObject();
 		if (!data.Write(Writer))
 			return false;
 		Writer.EndObject();
 	}
+    Writer.EndArray();
 	return true;
 }
 
@@ -49,6 +50,25 @@ bool CChapterGData::Read(const TCHAR* FileName)
         static CRoomGData data;
 		if (!data.Read(val))
 			return false;
+        mData.Rooms.push_back(data.GetData());
+    }
+
+    return true;
+}
+
+bool CChapterGData::Read(const rapidjson::Value& Val)
+{
+    mData.ChapterLevel = Val["Level"].GetInt();
+
+    const rapidjson::Value& roomArray = Val["Rooms"];
+    int size = roomArray.Size();
+    mData.Rooms.reserve(size);
+    for (int i = 0; i < size; ++i)
+    {
+        const rapidjson::Value& val = roomArray[i];
+        static CRoomGData data;
+        if (!data.Read(val))
+            return false;
         mData.Rooms.push_back(data.GetData());
     }
 

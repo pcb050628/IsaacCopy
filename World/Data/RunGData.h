@@ -1,14 +1,14 @@
 #pragma once
 #include "GameData.h"
-
-class CChapterGData :
+class CRunGData :
     public CGameData
 {
 public:
-    CChapterGData();
-    virtual ~CChapterGData();
+	CRunGData();
+	virtual ~CRunGData() override;
+
 private:
-	FChapterData mData;
+	FRunData mData;
 
 public:
 	virtual bool Write(rapidjson::Writer<rapidjson::StringBuffer>& Writer) override;
@@ -16,7 +16,7 @@ public:
 	virtual bool Read(const rapidjson::Value& Val);
 
 public:
-	void ContainData(FChapterData Data) { mData = Data; }
-	const FChapterData GetData() const { return mData; }
+	void ContainData(FRunData& Data) { mData = Data; }
+	const FRunData& GetData() const { return mData; }
 };
 

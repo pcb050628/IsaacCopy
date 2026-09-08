@@ -91,6 +91,7 @@ void CBossRoom::OnEnterRoom()
 
 void CBossRoom::WinRoom()
 {
+	mTargetBoss.lock()->ReturnToChapter();
 }
 
 void CBossRoom::OnExitRoom()

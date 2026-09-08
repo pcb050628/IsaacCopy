@@ -307,6 +307,18 @@ void CCharacter::ContainItem(const int ID)
 	mItemContainer.lock()->ContainItem(ID);
 }
 
+FPlayerData CCharacter::MakeItemData()
+{
+	FPlayerData d;
+	std::vector<int> itemID = mItemContainer.lock()->GetItems();
+	for (int id : itemID)
+	{
+		d.Items.push_back({id, 0, 0});
+	}
+	d.RoomCoord = mRoomOwner.lock()->WorldPosToCoord(GetWorldPos());
+	return d;
+}
+
 void CCharacter::OverrideHeadAnim(const std::string& Name)
 {
 	mHead.lock()->AddAnimation(Name + "_Front", 1.f, mAttribute.ShotTerm, true);

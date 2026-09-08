@@ -53,6 +53,9 @@ public:
     virtual void ContainItem(const int ID);
 
 public:
+    struct FPlayerData MakeItemData();
+
+public:
     //기능은 뭐가 필요한게 있나
     //초기화에서 키 입력 설정해주고
     //현재 입력가능한 상태인지는 챕터에서 관리할거고

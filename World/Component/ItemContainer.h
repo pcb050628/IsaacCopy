@@ -44,6 +44,8 @@ public:
 
 	std::string GetActiveItemName();
 
+	std::vector<int> GetItems();
+
 public:
 	void UseItem();
 

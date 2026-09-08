@@ -2,7 +2,17 @@
 
 #include "LogManager.h"
 
+#include "Asset/PathManager.h"
+#include "Asset/AssetManager.h"
+#include "../Data/GameDataManager.h"
+
+#include "../Chapter.h"
+#include "../Base/Character.h"
 #include "../Base/Roombase.h"
+#include "../Component/ItemContainer.h"
+
+#include "../Data/RunGData.h"
+#include "../Data/GameObjectStructure.h"
 
 //아래 내용들 변수로 바꾸기
 #define HEART_MAX 12
@@ -211,6 +221,59 @@ bool CGameRuleManager::CanUseKey(int Count)
 bool CGameRuleManager::CanUseBomb(int Count)
 {
 	return mBombCount >= Count;
+}
+
+bool CGameRuleManager::SaveData(std::weak_ptr<class CChapter> targetChapter)
+{
+	if (targetChapter.expired())
+		return false;
+
+	FRunData d;
+	FChapterData cd;
+	cd.ChapterLevel = targetChapter.lock()->GetLevel();
+	targetChapter.lock()->MakeRoomData(cd.Rooms);
+
+	d.Chapters.push_back(cd);
+
+	std::shared_ptr<CCharacter> chara = std::dynamic_pointer_cast<CCharacter>(targetChapter.lock()->GetPlayerCharacter().lock());
+	FPlayerData pd = chara->MakeItemData();
+	pd.ID = chara->GetGClassID();
+	for (FPlayerHeartData container : mPlayerHeartContainer[chara->GetID()].RedContainer)
+	{
+		FHeartData hd;
+		hd.Type = static_cast<int>(container.Type);
+		hd.State = static_cast<int>(container.State);
+		pd.Hearts.push_back(hd);
+	}
+	for (FPlayerHeartData container : mPlayerHeartContainer[chara->GetID()].OtherContainer)
+	{
+		FHeartData hd;
+		hd.Type = static_cast<int>(container.Type);
+		hd.State = static_cast<int>(container.State);
+		pd.Hearts.push_back(hd);
+	}
+	std::vector<FHeartData> Hearts;
+	pd.Coins = mCoinCount;
+	pd.Keys = mKeyCount;
+	pd.Bombs = mBombCount;
+	//방위치(좌표) , 방 내의 위치(좌표)
+	pd.ChapterCoord = targetChapter.lock()->GetFocusedRoomCoord();FVector2::Zero;
+	
+	CRunGData runGD;
+	runGD.ContainData(d);
+
+	runGD.WriteData(L"Run\\SaveFile");
+
+	return true;
+}
+
+bool CGameRuleManager::LoadData()
+{
+	std::shared_ptr<CGameDataManager> mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
+	if (!mgr->LoadDataFile<CRunGData>("SaveFile", EGDataType::Run, L"SaveFile"))
+		return false;
+
+	return true;
 }
 
 void CGameRuleManager::CallOnHeartUpdate()

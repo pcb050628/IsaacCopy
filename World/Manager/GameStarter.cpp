@@ -34,6 +34,10 @@ bool CGameStarter::Start()
 		{ D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS },
 		1U);
 
+	CRenderManager::GetInst()->CreateLayer("Curtain_4", 14, ERenderSortType::None);
+	CRenderManager::GetInst()->CreateLayer("Curtain_3", 13, ERenderSortType::None);
+	CRenderManager::GetInst()->CreateLayer("Curtain_2", 12, ERenderSortType::None);
+	CRenderManager::GetInst()->CreateLayer("Curtain_1", 11, ERenderSortType::None);
 	CRenderManager::GetInst()->CreateLayer("UI", 10, ERenderSortType::None);
 	CRenderManager::GetInst()->CreateLayer("Pickup", 9, ERenderSortType::Y);
 	CRenderManager::GetInst()->CreateLayer("Item", 8, ERenderSortType::None);

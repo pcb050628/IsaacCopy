@@ -9,13 +9,28 @@ public:
     virtual ~CStartWorld();
 
 private:
-    //std::weak_ptr<CActor> mTitle;
-    //std::weak_ptr<CActor> mMenu;
-    //std::weak_ptr<CActor> m;
+    std::weak_ptr<class CScreenActor> mTitle;
+    std::weak_ptr<class CScreenActor> mMenu;
+    std::weak_ptr<class CScreenActor> mCharacterMenu;
+    std::weak_ptr<class CStartCameraActor> mCam;
+    int mFocused = 0;
+    bool mbMoveToChapter = false;
 
 public:
     virtual bool Init();
     virtual void Update(float DeltaTime);
+    virtual void PostRender() override;
+
+private:
+    void OnUp();
+    void OnDown();
+    void OnRight();
+    void OnLeft();
+    void OnSubmit();
+    void OnEscape();
+
+    void MoveStart();
+    void MoveEnd();
 };
 
 //

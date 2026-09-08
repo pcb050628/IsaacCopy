@@ -67,6 +67,7 @@ protected:
 	//UI On/Off 시 움직이는 효과는 이 객체에 있음
 	//아직 만들지 않았고 만들어야함
 	std::weak_ptr<class CChapterSystemActor> mChapterManagementActor;
+	std::weak_ptr<class CScreenCurtain> mCurtain;
 	std::vector<std::weak_ptr<CActor>> mWalls;
 
 	/// <summary>
@@ -92,6 +93,7 @@ public:
 	virtual void Update(float DeltaTime);
 
 protected:
+	void OnChapterStart();
 	void GenerateWallAndDoor();
 	void GenerateNormalRoom();
 	void GenerateTreasureRoom();
@@ -353,6 +355,8 @@ public:
 	const FVector2 GetFocusedRoomCoord() const { return Hash2Coord(mFocusedRoomHash); }
 
 	void RenderTitleWithQuato(const TCHAR* title, const TCHAR* quato);
+
+	void MakeRoomData(std::vector<struct FRoomData>& roomVec);
 
 public:
 	static const float WallSize;

@@ -1,27 +1,31 @@
 #pragma once
 #include "ScreenActor.h"
 
-class CTitleActor :
+class CCharacterMenu :
     public CScreenActor
 {
 public:
-    CTitleActor();
-    virtual ~CTitleActor();
+    CCharacterMenu();
+    virtual ~CCharacterMenu();
 
 private:
-    std::weak_ptr<class CMeshComponent> mMeshComponent;
-    std::weak_ptr<class CAnimation2DComponent> mAnimator;
     std::weak_ptr<class CSpriteComponent> mBackground;
-    std::weak_ptr<class CRigidBodyComponent> mTitleRB;
-    std::weak_ptr<class CSpriteComponent> mTitleSprite;
-    float mTitlePivotPointY = 0;
-    float mTitleMoveDistMax = 15.f;
-    bool mbMoveUp = true;
+    std::weak_ptr<class CSpriteComponent> mFrame;
+    std::vector<std::weak_ptr<class CSpriteComponent>> mSprites;
+    int mFocusedIndex = 0;
+    FVector2 mCenterOffset = FVector2::Zero;
+    int mWidth = 0;
+    int mHeight = 0;
 
 public:
     virtual bool Init();
     virtual void Update(float DeltaTime);
-    virtual void Destory();
+
+private:
+    void MoveRight();
+    void MoveLeft();
+
+    void ResettingPos();
 
 public:
     virtual int OnUp() override;
