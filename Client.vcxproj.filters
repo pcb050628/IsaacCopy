@@ -223,6 +223,12 @@
     <Filter Include="소스 파일\2.World\1.Chapter\0.ChapterCurtain">
       <UniqueIdentifier>{be1c7b3f-ca72-465a-8fd0-f5741c974ac8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\0.Manager\0.GameFinalizer">
+      <UniqueIdentifier>{50165564-26f6-44f5-b5f5-42262171a5f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Pickup\Bomb">
+      <UniqueIdentifier>{cb639fdf-66a1-4870-8545-2b130e86de2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -410,6 +416,12 @@
     </ClCompile>
     <ClCompile Include="World\Data\RunGData.cpp">
       <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Run</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Manager\GameFinalizer.cpp">
+      <Filter>소스 파일\0.Manager\0.GameFinalizer</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Pickup\PickupBomb.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Pickup\Bomb</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -604,6 +616,12 @@
     </ClInclude>
     <ClInclude Include="World\Data\RunGData.h">
       <Filter>소스 파일\2.World\0.Debug\GameDataAsset\Data\Run</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Manager\GameFinalizer.h">
+      <Filter>소스 파일\0.Manager\0.GameFinalizer</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Pickup\PickupBomb.h">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\3.Pickup\Bomb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

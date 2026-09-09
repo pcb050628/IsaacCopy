@@ -15,6 +15,7 @@
 #include "World/WorldManager.h"
 
 #include "World/Manager/GameStarter.h"
+#include "World/Manager/GameFinalizer.h"
 #include "World/Manager/GameRuleManager.h"
 #include "World/Manager/GameClassContainer.h"
 #include "World/GlobalCollision.h"
@@ -64,11 +65,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//-디버그 레벨(디버그 빌드는 항상 이쪽으로 진입)
 	//	디버그 레벨에서는 방을 찍고 저장한다.
 	CWorldManager::GetInst()->CreateWorld<CStartWorld>(false);
-	CRenderManager::GetInst()->SetLayerEnable(50, false);
+	//CRenderManager::GetInst()->SetLayerEnable(50, false);
 	//CWorldManager::GetInst()->CreateWorld<CDebugChapter>(false);
 	//CWorldManager::GetInst()->CreateWorld<CChapter>(false);
 
 	int Ret = CEngine::GetInst()->Run();
+
+	CGameFinalizer::Finalier();
 
 	CEngine::GetInst()->DestroyInst();
 	CGameClassContainer::GetInst()->DestroyInst();

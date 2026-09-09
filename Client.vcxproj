@@ -265,6 +265,7 @@
     <ClCompile Include="World\Item\ItemSpoonBender.cpp" />
     <ClCompile Include="World\MainWorld.cpp" />
     <ClCompile Include="World\Manager\GameClassContainer.cpp" />
+    <ClCompile Include="World\Manager\GameFinalizer.cpp" />
     <ClCompile Include="World\Manager\GameRuleManager.cpp" />
     <ClCompile Include="World\Manager\GameStarter.cpp" />
     <ClCompile Include="World\Monster\BossGemini.cpp" />
@@ -273,6 +274,7 @@
     <ClCompile Include="World\Obstacle\PedestalObstacle.cpp" />
     <ClCompile Include="World\Obstacle\RockObstacle.cpp" />
     <ClCompile Include="World\Obstacle\ShopSlotObstacle.cpp" />
+    <ClCompile Include="World\Pickup\PickupBomb.cpp" />
     <ClCompile Include="World\Pickup\PickupRedHeart.cpp" />
     <ClCompile Include="World\Room\BossRoom.cpp" />
     <ClCompile Include="World\Room\DefaultRoom.cpp" />
@@ -331,6 +333,7 @@
     <ClInclude Include="World\Item\ItemSpoonBender.h" />
     <ClInclude Include="World\MainWorld.h" />
     <ClInclude Include="World\Manager\GameClassContainer.h" />
+    <ClInclude Include="World\Manager\GameFinalizer.h" />
     <ClInclude Include="World\Manager\GameRuleManager.h" />
     <ClInclude Include="World\Manager\GameStarter.h" />
     <ClInclude Include="World\Monster\BossGemini.h" />
@@ -339,6 +342,7 @@
     <ClInclude Include="World\Obstacle\PedestalObstacle.h" />
     <ClInclude Include="World\Obstacle\RockObstacle.h" />
     <ClInclude Include="World\Obstacle\ShopSlotObstacle.h" />
+    <ClInclude Include="World\Pickup\PickupBomb.h" />
     <ClInclude Include="World\Pickup\PickupRedHeart.h" />
     <ClInclude Include="World\Room\BossRoom.h" />
     <ClInclude Include="World\Room\DefaultRoom.h" />

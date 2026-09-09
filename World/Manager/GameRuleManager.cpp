@@ -231,8 +231,9 @@ bool CGameRuleManager::SaveData(std::weak_ptr<class CChapter> targetChapter)
 	FRunData d;
 	FChapterData cd;
 	cd.ChapterLevel = targetChapter.lock()->GetLevel();
-	targetChapter.lock()->MakeRoomData(cd.Rooms);
+	targetChapter.lock()->MakeChapterData(cd.Rooms);
 
+	d.CurrentChapterLevel = cd.ChapterLevel;
 	d.Chapters.push_back(cd);
 
 	std::shared_ptr<CCharacter> chara = std::dynamic_pointer_cast<CCharacter>(targetChapter.lock()->GetPlayerCharacter().lock());
@@ -252,13 +253,16 @@ bool CGameRuleManager::SaveData(std::weak_ptr<class CChapter> targetChapter)
 		hd.State = static_cast<int>(container.State);
 		pd.Hearts.push_back(hd);
 	}
-	std::vector<FHeartData> Hearts;
+	//std::vector<FHeartData> Hearts;
 	pd.Coins = mCoinCount;
 	pd.Keys = mKeyCount;
 	pd.Bombs = mBombCount;
 	//방위치(좌표) , 방 내의 위치(좌표)
-	pd.ChapterCoord = targetChapter.lock()->GetFocusedRoomCoord();FVector2::Zero;
+	pd.ChapterCoord = targetChapter.lock()->GetFocusedRoomCoord();
+	pd.RoomCoord = chara->GetRoom().lock()->WorldPosToCoord(chara->GetWorldPos());
 	
+	d.Player = pd;
+
 	CRunGData runGD;
 	runGD.ContainData(d);
 
@@ -272,6 +276,12 @@ bool CGameRuleManager::LoadData()
 	std::shared_ptr<CGameDataManager> mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
 	if (!mgr->LoadDataFile<CRunGData>("SaveFile", EGDataType::Run, L"SaveFile"))
 		return false;
+	
+	FRunData d = mgr->FindData<CRunGData>("SaveFile", EGDataType::Run).lock()->GetData();
+	
+	mCoinCount = d.Player.Coins;
+	mKeyCount = d.Player.Keys;
+	mBombCount = d.Player.Bombs;
 
 	return true;
 }

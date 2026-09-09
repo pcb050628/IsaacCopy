@@ -86,6 +86,9 @@ struct FRoomData
 	//일단은 사용안하는 중
 	//필요해지면 CRoomGData 클래스의 함수들 수정해주기
 	std::vector<FRoomObjectData> InitObjs; 
+	std::vector<FRoomObjectData> CurrentMonster; 
+	std::vector<FRoomObjectData> CurrentObstacle; 
+	std::vector<FRoomObjectData> CurrentPickup; 
 };
 
 struct FChapterData

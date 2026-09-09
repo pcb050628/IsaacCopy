@@ -85,9 +85,9 @@ bool CPlayerGData::Read(const TCHAR* FileName)
         mData.Hearts.push_back(heartData);
     }
 
-    mData.Coins = d["Coins"].GetInt();
-    mData.Keys = d["Keys"].GetInt();
-    mData.Bombs = d["Bombs"].GetInt();
+    mData.Coins = d["Coin"].GetInt();
+    mData.Keys = d["Key"].GetInt();
+    mData.Bombs = d["Bomb"].GetInt();
 
     mData.ChapterCoord = FVector2(static_cast<float>(d["ChapterX"].GetInt()), static_cast<float>(d["ChapterY"].GetInt()));
     mData.RoomCoord = FVector2(static_cast<float>(d["RoomX"].GetInt()), static_cast<float>(d["RoomY"].GetInt()));
@@ -122,9 +122,9 @@ bool CPlayerGData::Read(const rapidjson::Value& Val)
         mData.Hearts.push_back(heartData);
     }
 
-    mData.Coins = Val["Coins"].GetInt();
-    mData.Keys = Val["Keys"].GetInt();
-    mData.Bombs = Val["Bombs"].GetInt();
+    mData.Coins = Val["Coin"].GetInt();
+    mData.Keys = Val["Key"].GetInt();
+    mData.Bombs = Val["Bomb"].GetInt();
 
     mData.ChapterCoord = FVector2(static_cast<float>(Val["ChapterX"].GetInt()), static_cast<float>(Val["ChapterY"].GetInt()));
     mData.RoomCoord = FVector2(static_cast<float>(Val["RoomX"].GetInt()), static_cast<float>(Val["RoomY"].GetInt()));

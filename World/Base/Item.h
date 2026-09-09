@@ -53,6 +53,8 @@ protected:
 	int mEnergyMax = 0;
 	int mCurrentEnergy = 0;
 
+	int mStack = 0; //범용 데이터
+
 public: //발동 조건들
 	//피격 
 	const bool bIsOnHit;
@@ -83,7 +85,7 @@ public: //발동 조건들
 	virtual void OnUpdatecShooter(const std::weak_ptr<class CCharacter>& character);
 
 public:
-	const std::string& GetQuato() const { return mQuote; }
+	const std::string& GetQuate() const { return mQuote; }
 	const EItemType GetItemType() const { return mItemType; }
 	const bool HasAttribute() const { return mbIsHasAttribute; }
 	const bool GetIsMagnification() const { return mbIsAttributeMagnification; }
@@ -94,6 +96,10 @@ public:
 	const bool GetIsBodyAnimOverride() const { return mbIsBodyAnimOverride; }
 	const std::string& GetHeadAnimName() { return mHeadAnimName; }
 	const std::string& GetBodyAnimName() { return mBodyAnimName; }
+
+	const int GetEnergy() const { return mCurrentEnergy; }
+	const int GetStack() const { return mStack; }
+
 
 	//아이템의 특수효과들에 대해서
 	// 아래의 모든 효과들의 중요한 점은 

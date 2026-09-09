@@ -116,9 +116,11 @@ private:
 	void OpenDoor();
 
 public:
+	void SetWin(bool Win) { mbIsRoomWin = Win; }
 	void SetCoord(FVector2 Coord) { mCoord = Coord; }
 	FVector2 GetCoord() { return mCoord; }
-	bool SetInitData(const std::vector<std::pair<int, FVector2>>& Objs);//여기에 정보를 넣어서 방 초기화하기 / 지금은 방의 좌표 정보만 들어가지만 나중에는 방 내부의 정보들도 포함되어야 함
+	bool SetData(struct FRoomData Data);
+	bool SetInitData(const std::vector<std::pair<int, FVector2>>& Objs, bool Win = false);//여기에 정보를 넣어서 방 초기화하기 / 지금은 방의 좌표 정보만 들어가지만 나중에는 방 내부의 정보들도 포함되어야 함
 
 	void RegisterGObj(const std::weak_ptr<class CRoomMember>& GObj, const FVector2& Coord);
 	void DisregisterGObj(const std::weak_ptr<class CRoomMember>& GObj);
@@ -148,6 +150,8 @@ public:
 	bool HasNearRoomExcept(FVector2 Dir);
 
 	virtual void GenerateRoom(FVector2 Direction, int Min, int Max, int& Current);
+
+	void MakeRoomData(struct FRoomData& data);
 
 public:
 	const ERoomType GetRoomType() const { return mRoomType; }

@@ -14,6 +14,8 @@
 #include "../Base/Character.h"
 #include "../Base/Item.h"
 
+#include "../Data/GameObjectStructure.h"
+
 CItemContainer::CItemContainer()
 {
 }
@@ -165,7 +167,7 @@ void CItemContainer::ContainItem(int ID)
 	item->OnGetItem(mOwnerCharacter);
 
 	std::wstring title(item->GetName().begin(), item->GetName().end());
-	std::wstring quato(item->GetQuato().begin(), item->GetQuato().end());
+	std::wstring quato(item->GetQuate().begin(), item->GetQuate().end());
 	std::dynamic_pointer_cast<CChapter>(mWorld.lock())->RenderTitleWithQuato(title.c_str(), quato.c_str());
 }
 
@@ -193,6 +195,14 @@ std::vector<int> CItemContainer::GetItems()
 		vec.push_back(item.first);
 	}
 	return vec;
+}
+
+void CItemContainer::MakeData(FPlayerData& data)
+{
+	for (std::pair<int, std::shared_ptr<CItem>> item : mContainedItems)
+	{
+		data.Items.push_back({ item.first, item.second->GetEnergy(), item.second->GetStack() });
+	}
 }
 
 void CItemContainer::UseItem()

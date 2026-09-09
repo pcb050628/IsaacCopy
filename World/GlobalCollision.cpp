@@ -44,6 +44,10 @@ void CGlobalCollision::SetGlobalCollision()
 
 		InfoManager->CreateChannel("Fly");
 		InfoManager->CreateProfile("Fly", "Fly", true, ECollisionInteraction::Overlap);
+
+		InfoManager->CreateChannel("Bomb");
+		InfoManager->CreateProfile("Bomb", "Bomb", true, ECollisionInteraction::Overlap);
+
 		//몬스터 히트박스
 		InfoManager->SetProfileInteraction("Monster", "ContactHit_Monster", ECollisionInteraction::Ignore);
 		InfoManager->SetProfileInteraction("ContactHit_Monster", "Monster", ECollisionInteraction::Ignore);

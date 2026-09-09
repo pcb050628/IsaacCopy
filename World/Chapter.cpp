@@ -11,6 +11,8 @@
 
 #include "Data/GameDataManager.h"
 #include "Data/GameObjectStructure.h"
+#include "Data/RunGData.h"
+#include "Data/ChapterGData.h"
 #include "Data/RoomGData.h"
 
 #include "LogManager.h"
@@ -43,6 +45,8 @@ const FVector2 CChapter::EightDirections[8] =
 	FVector2(-2, 1),	//좌측 상단
 };
 
+bool CChapter::bLoadMode = false;
+
 CChapter::CChapter()
 {
 }
@@ -54,8 +58,6 @@ CChapter::~CChapter()
 bool CChapter::Init()
 {
 	CWorld::Init();
-	//랜덤 초기화
-	CGameRuleManager::GetInst()->SetRandomSeed();
 	//방 생성하기
 	//최소 (층 * 5      : 1 * 5 =       5 | 2 * 5 =       10)
 	//최대 (층 * 5.5 + 3: 1 * 5.5 + 3 = 8 | 2 * 5.5 + 3 = 14)
@@ -73,23 +75,67 @@ bool CChapter::Init()
 
 	mRoomMapRowMax = 10;
 	mRoomMapColMax = 10;
-	GenerateNormalRoom();
-	GenerateTreasureRoom();
-	GenerateShopRoom();
-	GenerateBossRoom();
-	//다시 적는 생성 규칙
-	//1. 시작 방 생성
-	//2. 시작 방으로부터 4방향으로 진행(생성)
-	//3. 진행 방향으로 방 생성 후 연결
-	//3-1. 만약 진행방향에 방이 이미 존재한다면 해당 방향으로 이어서 진행
-	//4. 진행 방향으로 생성 한 방에서 다시 4방향으로 진행
-	//5. 진행 중 생성된 방의 개수가 최대값보다 크거나 같다면 바로 반환
-	//6. 시작 방에서 시작한 4방향을 다 완료했을때 최소 값보다 방이 적으면 다시 진행
 
-	RegisterCharacter(CGameRuleManager::GetInst()->GetInitialCharacter());
-	InitialSetting();
+	if (bLoadMode)
+	{
+		LOG_DEBUG("세이브 파일 로드 시도");
+		std::shared_ptr<CGameDataManager> mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
+		FRunData run = mgr->FindData<CRunGData>("SaveFile", EGDataType::Run).lock()->GetData();
+
+		CGameRuleManager::GetInst()->SetRandomSeed(run.Seed);
+
+		std::vector<std::pair<int, FVector2>> vec;
+		for (FRoomData room : run.Chapters[mChapterLevel - 1].Rooms)
+		{
+			std::shared_ptr<CRoombase> roombase = std::dynamic_pointer_cast<CRoombase>(CGameClassContainer::GetInst()->Instantiate(room.ID, room.Coord).lock());
+			assert(roombase && "객체 생성 실패");
+			vec.clear();
+			for (FRoomObjectData obj : room.InitObjs)
+			{
+				vec.push_back(std::make_pair(obj.ID, obj.Coord));
+			}
+			roombase->SetData(room);
+			RegisterRoom(roombase);
+			roombase->AdjustRoomPos();
+		}
+
+		RegisterCharacter(run.Player.ID);
+		mFocusedRoomHash = Coord2Hash(run.Player.ChapterCoord);
+
+		CGameRuleManager::GetInst()->LoadData();
+		LOG_DEBUG("세이브 파일 로드 성공");
+
+		bLoadMode = false;
+
+		mRoomMap[mFocusedRoomHash].lock()->PauseRoom();
+		InitialSetting();
+		mPlayerCharacter.lock()->SetWorldPos(mRoomMap[mFocusedRoomHash].lock()->CoordToWorldPos(run.Player.RoomCoord));
+		mPlayerCharacter.lock()->SetRoom(mRoomMap[mFocusedRoomHash]);
+	}
+	else
+	{
+		//랜덤 초기화
+		CGameRuleManager::GetInst()->SetRandomSeed();
+
+		GenerateNormalRoom();
+		GenerateTreasureRoom();
+		GenerateShopRoom();
+		GenerateBossRoom();
+		//다시 적는 생성 규칙
+		//1. 시작 방 생성
+		//2. 시작 방으로부터 4방향으로 진행(생성)
+		//3. 진행 방향으로 방 생성 후 연결
+		//3-1. 만약 진행방향에 방이 이미 존재한다면 해당 방향으로 이어서 진행
+		//4. 진행 방향으로 생성 한 방에서 다시 4방향으로 진행
+		//5. 진행 중 생성된 방의 개수가 최대값보다 크거나 같다면 바로 반환
+		//6. 시작 방에서 시작한 4방향을 다 완료했을때 최소 값보다 방이 적으면 다시 진행
+
+		RegisterCharacter(CGameRuleManager::GetInst()->GetInitialCharacter());
+		InitialSetting();
+	}
 
 	mCurtain.lock()->Start();
+
 	return true;
 }
 void CChapter::Update(float DeltaTime)
@@ -369,13 +415,15 @@ void CChapter::InitialSetting()
 	LOG_DEBUG("현재 위치: ", mFocusedRoomHash);
 
 	mChapterManagementActor.lock()->SetWorldPos(center);
+	mCurtain.lock()->SetWorldPos(center);
 	mPlayerCharacter.lock()->SetEnable(true); //중앙 이동 말고 내부 함수 따로 작성해서 방 모양에 따라서 이동하게 만드릭
 	//추가로 ChatperSystemActor 내부에 플레이어 따라다니는 함수 작성하기 | 방이 커졌을때 필요함
 }
 void CChapter::SettingFocus() //지금은 벽만 설정하지만 이 함수를 포커스 이동시 초기 설정 함수로 만들기(벽, 문 모두 이동 설정하기)
 {
 	mPlayerCharacter.lock()->UnsetRoom();
-	mRoomMap[mPrevRoomHash].lock()->ExitRoom();
+	if(-1 != mPrevRoomHash)
+		mRoomMap[mPrevRoomHash].lock()->ExitRoom();
 	InitialSetting();
 	//플레이어 위치 옮겨주기
 	//그리고 타이머 넣어서 enable 넣어주기
@@ -565,16 +613,14 @@ void CChapter::RenderTitleWithQuato(const TCHAR* title, const TCHAR* quato)
 {
 	mChapterManagementActor.lock()->DrawTitleWithQuato(title, quato, 5.f);
 }
-void CChapter::MakeRoomData(std::vector<struct FRoomData>& roomVec)
+void CChapter::MakeChapterData(std::vector<struct FRoomData>& roomVec)
 {
 	for (std::pair<int, std::weak_ptr<CRoombase>> room : mRoomMap)
 	{
 		if (room.second.expired())
 			continue;
 		FRoomData d;
-		d.ID = room.second.lock()->GetGClassID();
-		d.Coord = Hash2Coord(room.first);
-		d.Clear = room.second.lock()->GetIsWin();
+		room.second.lock()->MakeRoomData(d);
 		roomVec.push_back(d);
 	}
 }

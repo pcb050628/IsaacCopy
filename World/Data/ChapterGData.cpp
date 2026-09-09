@@ -22,8 +22,8 @@ bool CChapterGData::Write(rapidjson::Writer<rapidjson::StringBuffer>& Writer)
 		static CRoomGData data;
 		data.ContainData(mData.Rooms[i]);
 
-		std::string Name = "Room_" + std::to_string(i + 1);
-		Writer.Key(Name.c_str());
+		//std::string Name = "Room_" + std::to_string(i + 1);
+		//Writer.Key(Name.c_str());
 		Writer.StartObject();
 		if (!data.Write(Writer))
 			return false;
@@ -65,8 +65,8 @@ bool CChapterGData::Read(const rapidjson::Value& Val)
     mData.Rooms.reserve(size);
     for (int i = 0; i < size; ++i)
     {
+        CRoomGData data;
         const rapidjson::Value& val = roomArray[i];
-        static CRoomGData data;
         if (!data.Read(val))
             return false;
         mData.Rooms.push_back(data.GetData());

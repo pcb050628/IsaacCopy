@@ -45,6 +45,7 @@ public:
 	std::string GetActiveItemName();
 
 	std::vector<int> GetItems();
+	void MakeData(struct FPlayerData& data);
 
 public:
 	void UseItem();

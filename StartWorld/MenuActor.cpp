@@ -98,6 +98,7 @@ int CMenuActor::OnSubmit()
 	case 0: //캐릭터  창
 		return 1;
 	case 1: //이어하기
+		CChapter::SetLoadMode(true);
 		return 0;
 	}
 }

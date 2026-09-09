@@ -6,6 +6,7 @@
 #include "AnimGData.h"
 #include "RoomGData.h"
 #include "SpriteGData.h"
+#include "RunGData.h"
 
 bool CGameDataManager::Init()
 {
@@ -34,6 +35,8 @@ bool CGameDataManager::LoadAll()
 	if (!LoadFromDirectory<CRoomGData>(TEXT("Room\\"), EGDataType::Room))
 		return false;
 	if (!LoadFromDirectory<CSpriteGData>(TEXT("Sprite\\"), EGDataType::Sprite))
+		return false;
+	if (!LoadFromDirectory<CRunGData>(TEXT("Run\\"), EGDataType::Run))
 		return false;
 
 	return true;

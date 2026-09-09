@@ -24,6 +24,8 @@ class CChapter :
 	public CWorld
 {
 public:
+	static bool bLoadMode;
+public:
 	CChapter();
 	virtual ~CChapter();
 
@@ -356,12 +358,13 @@ public:
 
 	void RenderTitleWithQuato(const TCHAR* title, const TCHAR* quato);
 
-	void MakeRoomData(std::vector<struct FRoomData>& roomVec);
+	void MakeChapterData(std::vector<struct FRoomData>& roomVec);
 
 public:
 	static const float WallSize;
 	static const FVector2 RoomWorldSize;
 	static const FVector2 FourDirections[4]; //상, 하, 좌, 우
 	static const FVector2 EightDirections[8]; //상좌, 상우, 우상, 우하, 하우, 하좌, 좌하, 좌상
+	static void SetLoadMode(bool Load) { bLoadMode = Load; }
 };
 

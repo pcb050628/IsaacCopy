@@ -22,7 +22,7 @@
 #include "../Door.h"
 
 
-FVector2 CRoombase::DirectionV[6] = 
+FVector2 CRoombase::DirectionV[6] =
 {
 	FVector2(),
 	FVector2(),
@@ -31,15 +31,15 @@ FVector2 CRoombase::DirectionV[6] =
 	FVector2(),
 	FVector2(),
 };
-FVector2 CRoombase::DirectionH[6] = 
-{
-
-};
-FVector2 CRoombase::DirectionL[8] = 
+FVector2 CRoombase::DirectionH[6] =
 {
 
 };
-FVector2 CRoombase::DirectionD[8] = 
+FVector2 CRoombase::DirectionL[8] =
+{
+
+};
+FVector2 CRoombase::DirectionD[8] =
 {
 
 };
@@ -514,12 +514,39 @@ void CRoombase::OpenDoor()
 {
 }
 
-bool CRoombase::SetInitData(const std::vector<std::pair<int, FVector2>>& InitData) //모양도 여기서 받아서 초기화 하기	
+bool CRoombase::SetData(FRoomData Data)
+{
+	mbIsRoomWin = Data.Clear;
+
+	for (FRoomObjectData obj : Data.InitObjs)
+	{
+		mInitData.push_back(std::make_pair(obj.ID, obj.Coord));
+	}
+
+	if (mbIsRoomWin)
+	{
+		for (FRoomObjectData obj : Data.CurrentMonster)
+		{
+			mMonsterData[obj.ID].push_back(obj.Coord);
+		}
+		for (FRoomObjectData obj : Data.CurrentObstacle)
+		{
+			mObstacleData[obj.ID].push_back(obj.Coord);
+		}
+		for (FRoomObjectData obj : Data.CurrentPickup)
+		{
+			mPickupData[obj.ID].push_back(obj.Coord);
+		}
+	}
+	return true;
+}
+
+bool CRoombase::SetInitData(const std::vector<std::pair<int, FVector2>>& InitData, bool Win) //모양도 여기서 받아서 초기화 하기	
 {
 	mInitData = InitData;
 
 	//여기서 클리어 시 보상 설정하기
-	mbIsRoomWin = false;
+	mbIsRoomWin = Win;
 
 	return true;
 }
@@ -1030,4 +1057,46 @@ void CRoombase::GenerateRoom(FVector2 Direction, int Min, int Max, int& Current)
 	//LShape 인 경우
 	//TR | RT 은 같은 방향을 가리킨다.
 	return;
+}
+
+void CRoombase::MakeRoomData(FRoomData& data)
+{
+	data.ID = GetGClassID();
+	data.Coord = mCoord;
+	data.Clear = mbIsRoomWin;
+	data.InitObjs.clear();
+	data.CurrentMonster.clear();
+	data.CurrentObstacle.clear();
+	data.CurrentPickup.clear();
+	for (std::pair<int, FVector2> d : mInitData)
+	{
+		data.InitObjs.push_back({ d.first, d.second });
+	}
+	if (mbIsRoomWin)
+	{
+		ContainMonsterData();
+		ContainObstacleData();
+		ContainPickupData();
+		for (std::pair<int, std::list<FVector2>> pair : mMonsterData)
+		{
+			for (FVector2 coord : pair.second)
+			{
+				data.CurrentMonster.push_back({ pair.first, coord });
+			}
+		}
+		for (std::pair<int, std::list<FVector2>> pair : mObstacleData)
+		{
+			for (FVector2 coord : pair.second)
+			{
+				data.CurrentObstacle.push_back({ pair.first, coord });
+			}
+		}
+		for (std::pair<int, std::list<FVector2>> pair : mPickupData)
+		{
+			for (FVector2 coord : pair.second)
+			{
+				data.CurrentPickup.push_back({ pair.first, coord });
+			}
+		}
+	}
 }

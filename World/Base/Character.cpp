@@ -310,11 +310,7 @@ void CCharacter::ContainItem(const int ID)
 FPlayerData CCharacter::MakeItemData()
 {
 	FPlayerData d;
-	std::vector<int> itemID = mItemContainer.lock()->GetItems();
-	for (int id : itemID)
-	{
-		d.Items.push_back({id, 0, 0});
-	}
+	mItemContainer.lock()->MakeData(d);
 	d.RoomCoord = mRoomOwner.lock()->WorldPosToCoord(GetWorldPos());
 	return d;
 }
