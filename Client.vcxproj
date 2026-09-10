@@ -272,6 +272,7 @@
     <ClCompile Include="World\Monster\BossGemini.cpp" />
     <ClCompile Include="World\Monster\Fly.cpp" />
     <ClCompile Include="World\Monster\Gaper.cpp" />
+    <ClCompile Include="World\Monster\Sucker.cpp" />
     <ClCompile Include="World\Monster\Walker.cpp" />
     <ClCompile Include="World\Obstacle\PedestalObstacle.cpp" />
     <ClCompile Include="World\Obstacle\RockObstacle.cpp" />
@@ -342,6 +343,7 @@
     <ClInclude Include="World\Monster\BossGemini.h" />
     <ClInclude Include="World\Monster\Fly.h" />
     <ClInclude Include="World\Monster\Gaper.h" />
+    <ClInclude Include="World\Monster\Sucker.h" />
     <ClInclude Include="World\Monster\Walker.h" />
     <ClInclude Include="World\Obstacle\PedestalObstacle.h" />
     <ClInclude Include="World\Obstacle\RockObstacle.h" />

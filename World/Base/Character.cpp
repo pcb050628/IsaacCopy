@@ -228,9 +228,11 @@ void CCharacter::GetHit(std::weak_ptr<CGameObject> From)
 	default:
 		LOG_DEBUG("캐릭터가 이상한 객체에 피격당했습니다.\n클래스 아이디: ", obj->GetGClassID());
 		return;
-	case EObjectType::Tear:
-		LOG_DEBUG("캐릭터가 충돌에서 피격체를 제대로 검사하지 못했습니다. 눈물이 검출되었습니다.\n클래스 아이디: ", obj->GetGClassID());
-		return;
+	case EObjectType::Tear:{
+		std::shared_ptr<CTear> tear = std::dynamic_pointer_cast<CTear>(obj);
+		if (!tear || tear->GetOwnerType() == EObjectType::PlayerCharacter)
+			return;
+	}break;
 	case EObjectType::Item:
 		break;
 	case EObjectType::Monster:

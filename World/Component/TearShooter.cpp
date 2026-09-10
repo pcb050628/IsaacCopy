@@ -98,6 +98,26 @@ void CTearShooter::Fire()
 	}
 }
 
+bool CTearShooter::FireWithoutCalculate(FVector2 vOffset)
+{
+	if (static_cast<float>(CTimeManager::GetTime()) - mLastFireTime < mUnitAttribute.ShotTerm || mOwnerCenterComp.expired())
+		return false;
+
+	mLastFireTime = static_cast<float>(CTimeManager::GetTime());
+
+	std::shared_ptr<CChapter> chptr = std::dynamic_pointer_cast<CChapter>(mWorld.lock());
+	std::shared_ptr<CTear> tear = chptr->GetTear().lock();
+	FTearAttribute attribute = mTearAttribute;
+	attribute.Direction += vOffset;
+	if (!tear)
+	{
+		assert(false && "ERROR: TEAR IS EMPTY");
+		return false;
+	}
+	tear->Set(mbIsOwnerPlayer, mOwnerCenterComp.lock()->GetWorldPos(), attribute, GetThisPtr<CTearShooter>(), mSounds[mFirePointIndex % 2]);
+	return true;
+}
+
 void CTearShooter::Fire(FVector3 firePoint, bool IsSet)
 {
 	if (static_cast<float>(CTimeManager::GetTime()) - mLastFireTime < mUnitAttribute.ShotTerm)

@@ -104,7 +104,7 @@ bool CDebugChapter::Init()
 		//CGameClassContainer::GetInst()->Instantiate(82, FVector2(9, 2));
 		CGameClassContainer::GetInst()->Instantiate(41, FVector2(8, 2));
 		CGameClassContainer::GetInst()->Instantiate(41, FVector2(7, 1));
-		CGameClassContainer::GetInst()->Instantiate(21, FVector2(7, 1));
+		CGameClassContainer::GetInst()->Instantiate(22, FVector2(7, 1));
 
 		/*std::weak_ptr<CActor> actor = CreateActor<CActor>("TEST");
 		std::weak_ptr<CFontRenderer> font = actor.lock()->CreateComponent<CFontRenderer>("Root");

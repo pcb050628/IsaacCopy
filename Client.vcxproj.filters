@@ -432,6 +432,9 @@
     <ClCompile Include="World\Monster\Fly.cpp">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\0.Base\0.Base</Filter>
     </ClCompile>
+    <ClCompile Include="World\Monster\Sucker.cpp">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Fly</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -637,6 +640,9 @@
     </ClInclude>
     <ClInclude Include="World\Monster\Fly.h">
       <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\0.Base\0.Base</Filter>
+    </ClInclude>
+    <ClInclude Include="World\Monster\Sucker.h">
+      <Filter>소스 파일\2.World\1.Chapter\4.Room\2.Member\0.Unit\Monster\2.Fly</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -31,7 +31,7 @@ public:
     virtual void Reset(bool HardReset = false) override;
 
 protected:
-    virtual void OnDead();
+    void OnDead();
 
     virtual void OnHitBoxEnter(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
     virtual void ExitHitBoxEnter(std::weak_ptr<class CCollider> Collider);

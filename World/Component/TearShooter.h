@@ -40,6 +40,7 @@ public:
 
 public:
     void Fire();
+    bool FireWithoutCalculate(FVector2 vOffset);
     //IsSet - True: 위치 고정 | False: 오프셋 추가
     void Fire(FVector3 firePoint, bool IsSet = false);
     bool FireWithVelocityOffset(FVector2 vOffset);
