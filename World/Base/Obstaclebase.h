@@ -17,6 +17,8 @@ protected:
     std::weak_ptr<class CMeshComponent> mMeshComp;
     std::weak_ptr<class CAnimation2DComponent> mAnimator;
 
+    bool mbIsBreakalbe = true;
+
     //상태를 명시해야할까 
     //어떤 상태들이 있지
     //파괴됨(돌, 해골
@@ -26,6 +28,8 @@ protected:
 
 public:
     virtual bool Init();
+
+    virtual void TryBreak();
 
     const EObstacleType GetObstacleType() const { return mObstacleType; }
     virtual bool GetHasInfo() { return false; }

@@ -1,4 +1,5 @@
 #include "RoomMember.h"
+#include "LogManager.h"
 
 CRoomMember::CRoomMember(EObjectType Type)
 	:CGameObject(Type)
@@ -21,6 +22,11 @@ CRoomMember::~CRoomMember()
 
 void CRoomMember::Update(float DeltaTime)
 {
-	CGameObject::Update(DeltaTime);
 	assert(!mRoomOwner.expired() && "객체가 등록되지 않은 채로 실행중입니다.");
+	CGameObject::Update(DeltaTime);
+}
+
+void CRoomMember::GetHit(std::weak_ptr<CGameObject> From)
+{
+	LOG_DEBUG("피격 호출 무시됨");
 }

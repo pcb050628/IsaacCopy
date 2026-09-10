@@ -224,7 +224,6 @@ void CCharacter::GetHit(std::weak_ptr<CGameObject> From)
 	case EObjectType::PlayerCharacter:
 	case EObjectType::Room:
 	case EObjectType::Door:
-	case EObjectType::Pickup:
 	case EObjectType::End:
 	default:
 		LOG_DEBUG("캐릭터가 이상한 객체에 피격당했습니다.\n클래스 아이디: ", obj->GetGClassID());
@@ -238,7 +237,11 @@ void CCharacter::GetHit(std::weak_ptr<CGameObject> From)
 		break;
 	case EObjectType::Obstacle:
 		break;
+	case EObjectType::Pickup:
+		break;
 	}
+
+	LOG_DEBUG("캐릭터가 ", CGameClassContainer::GetInst()->GetName(obj->GetGClassID()), "에게 공격 받았습니다.");
 
 	//소리 출력
 	if (mHurtSound.size() > 1)

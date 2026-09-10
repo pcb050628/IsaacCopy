@@ -1,28 +1,38 @@
 #include "Walker.h"
 
 #include "LogManager.h"
+#include "TimeManager.h"
+
+#include "Asset/AssetManager.h"
+#include "Asset/SoundManager.h"
 
 #include "World/ColliderBox2D.h"
 #include "World/ColliderSphere2D.h"
 #include "World/SoundComponent.h"
 #include "World/Animation2DComponent.h"
 
+#include "../Manager/GameRuleManager.h"
+
 #include "../Chapter.h"
 #include "../Base/Roombase.h"
 #include "../Component/RigidBodyComponent.h"
 #include "../Component/RouteMaker.h"
 
+#include "../Base/Tear.h"
+#include "../Pickup/PickupBomb.h"
+
 CWalker::CWalker()
+	:CUnitbase(EObjectType::Monster)
 {
 }
 
 CWalker::CWalker(const CWalker& src)
-	:CMonster(src)
+	:CUnitbase(src)
 {
 }
 
 CWalker::CWalker(CWalker&& src) noexcept
-	:CMonster(std::move(src))
+	:CUnitbase(std::move(src))
 {
 }
 
@@ -32,7 +42,7 @@ CWalker::~CWalker()
 
 bool CWalker::Init()
 {
-	if (!CMonster::Init())
+	if (!CUnitbase::Init())
 		return false;
 
 	std::shared_ptr<CColliderBox2D> hurt = mHurtBox.lock();
@@ -102,21 +112,79 @@ void CWalker::Update(float DeltaTime)
 		}
 	}
 
-	CMonster::Update(DeltaTime);
+	CUnitbase::Update(DeltaTime);
 }
 
 void CWalker::Destory()
 {
-	CMonster::Destroy();
+	CUnitbase::Destroy();
 }
 
 void CWalker::Reset(bool HardReset)
 {
-	CMonster::Reset(HardReset);
+	mCurrentHP = mMaxHP;
 	mRouteMaker.lock()->SetRoom(mRoomOwner);
 }
 
-//피격
+void CWalker::SetEnable(bool Enable)
+{
+	CUnitbase::SetEnable(Enable);
+	FTimerHandle handle = (mMumblingTimerID);
+	CTimeManager::ClearTimer(handle);
+	mMumblingTimerID = 0;
+}
+
+void CWalker::GetHit(std::weak_ptr<CGameObject> From)
+{
+	if (From.expired())
+		return;
+	if (mHurtSound.size() > 1)
+	{
+		int rand = CGameRuleManager::GetInst()->GenerateRandomI();
+		mSoundPlayer.lock()->mSound = mHurtSound[rand % mHurtSound.size()].lock();
+	}
+	else if (!mHurtSound.empty())
+	{
+		mSoundPlayer.lock()->mSound = mHurtSound[0].lock();
+	}
+	mSoundPlayer.lock()->Play();
+
+	std::shared_ptr<CGameObject> obj = From.lock();
+	EObjectType t = obj->GetObjType();
+	if (EObjectType::Tear == t)
+	{
+		std::shared_ptr<CTear> tear = std::dynamic_pointer_cast<CTear>(obj);
+		t = tear->GetOwnerType();
+		obj = tear->GetShooterOwner().lock();
+	}
+
+	if (EObjectType::PlayerCharacter == t || EObjectType::Monster == t)
+	{
+		std::shared_ptr<CUnitbase> unit = std::static_pointer_cast<CUnitbase>(obj);
+		FUnitAttribute atrbt = unit->GetAttribute();
+		mCurrentHP -= atrbt.Damage;
+		LOG_DEBUG(GetName(), "유닛이 ", obj->GetActorTag(), " 에게 공격받았습니다\n 피해량: ", atrbt.Damage);
+		if (mCurrentHP <= 0)
+			ReturnToChapter(); //이 부분 나중에 수정하기 -> 애니메이션 같은거 출력하고 리턴하기 | 일단 비활성화는 해야함
+	}
+	else if (EObjectType::Obstacle == t)
+	{
+
+	}
+	else if (EObjectType::Pickup == t)
+	{
+		std::shared_ptr<CPickupBomb> bomb = std::static_pointer_cast<CPickupBomb>(obj);
+		if (!bomb)
+			return;
+
+		mCurrentHP -= 100;
+		if (mCurrentHP <= 0)
+			ReturnToChapter(); //이 부분 나중에 수정하기 -> 애니메이션 같은거 출력하고 리턴하기 | 일단 비활성화는 해야함
+	}
+}
+
+
+//피격 -> 꼬여있던 것 수정함 | 기존에는 때리고 맞고 섞여있었는데 때리는걸로 통일 맞는 쪽이 맞을 수 있는지 확인하고 맞ㅇ므
 void CWalker::OnHurtOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
 {/*
 	std::shared_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
@@ -150,7 +218,7 @@ void CWalker::OnHitOverlaps(const FVector3& HitPoint, const FVector3& Normal, st
 	std::shared_ptr<CGameObject> gobj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
 	if (!gobj)
 	{
-		assert("몬스터가 게임 객체가 아닌 무언가와 충돌함\n충돌체 프로파일상 불가능하고 생성되는 객체들 중에서도 충돌체를 가진 객체들은 모두 게임 객체여야함");
+		assert(false && "몬스터가 게임 객체가 아닌 무언가와 충돌함\n충돌체 프로파일상 불가능하고 생성되는 객체들 중에서도 충돌체를 가진 객체들은 모두 게임 객체여야함");
 		return;
 	}
 	
@@ -185,7 +253,7 @@ void CWalker::ExitHitOverlaps(std::weak_ptr<CCollider> Collider)
 	std::shared_ptr<CGameObject> gobj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
 	if (!gobj)
 	{
-		assert("몬스터가 게임 객체가 아닌 무언가와 충돌함\n충돌체 프로파일상 불가능하고 생성되는 객체들 중에서도 충돌체를 가진 객체들은 모두 게임 객체여야함");
+		assert(false && "몬스터가 게임 객체가 아닌 무언가와 충돌함\n충돌체 프로파일상 불가능하고 생성되는 객체들 중에서도 충돌체를 가진 객체들은 모두 게임 객체여야함");
 		return;
 	}
 	if (mOverlaps.find(gobj->GetID()) != mOverlaps.end())
@@ -194,173 +262,24 @@ void CWalker::ExitHitOverlaps(std::weak_ptr<CCollider> Collider)
 	}
 }
 
-bool CWalker::UpdateNextMove()
+void CWalker::SetMumblingSound(const std::string& soundName, float Time, bool loop)
 {
-	std::shared_ptr<CChapter> chptr = mChapter.lock();
-	if (mRoomOwner.expired() || !chptr)
-		return false;
-
-	std::shared_ptr<CRoombase> room = mRoomOwner.lock();
-
-	if(!room->CanGetToPlayerCharacter(GetWorldPos()))
-		return false;
-
-	FVector2 playerCoord = room->GetPlayerCoordInGrid();
-	if (-FVector2::One == playerCoord)
-		return false;
-
-	FVector2 myCoord = room->WorldPosToCoord(GetWorldPos());
-
-	FVector2 dir = playerCoord - myCoord;
-	if (fabs(dir.x) > fabs(dir.y))
-		dir.y = 0;
-	else if (fabs(dir.x) < fabs(dir.y))
-		dir.x = 0;
-	dir.Normalize();
-	FVector2 nextCoord = myCoord + dir;
-	if (NextMoveSet(nextCoord))
-		return true;
-	else
-	{
-		if (fabs(dir.x) > fabs(dir.y))
-		{
-			nextCoord.y = 1;
-			if (NextMoveSet(nextCoord))
-				return true;
-
-			nextCoord.y = -1;
-			if (NextMoveSet(nextCoord))
-				return true;
-		}
-		else
-		{
-			nextCoord.x = 1;
-			if (NextMoveSet(nextCoord))
-				return true;
-
-			nextCoord.x = -1;
-			if (NextMoveSet(nextCoord))
-				return true;
-		}
-	}
-
-	nextCoord = myCoord + -dir;
-	if (NextMoveSet(nextCoord))
-		return true;
-	return false;
-}
-
-int routeCount = 0;
-void CWalker::MakeRoute()
-{
-}
-
-void CWalker::MakeRouteBFS()
-{
-	std::shared_ptr<CChapter> chptr = mChapter.lock();
-	if (mRoomOwner.expired() || !chptr)
+	std::shared_ptr<CSoundManager> mgr = CAssetManager::GetInst()->GetSubManager<CSoundManager>(EAssetType::Sound);
+	std::weak_ptr<CSound> sound = mgr->FindSound(soundName);
+	if (sound.expired())
 		return;
 
-	std::shared_ptr<CRoombase> room = mRoomOwner.lock();
-	if (!room->CanGetToPlayerCharacter(GetWorldPos()))
-		return;
-
-	FVector2 playerCoord = room->GetPlayerCoordInGrid();
-	if (-FVector2::One == playerCoord)
-		return;
-
-	mRoute.clear();
-	FVector2 myCoord = room->WorldPosToCoord(GetWorldPos());
-	if (CoordDistance(playerCoord, myCoord) <= 1.5f)
-	{
-		mRoute.push_back(FVector2(playerCoord));
-		return;
-	}
-
-
-	routeCount = 0;
-	std::list<FRoute> routes;
-	std::map<int, int> visited;
-	for (int i = 0; i < 4; ++i)
-	{
-		FVector2 dest = myCoord + CChapter::FourDirections[i];
-		if (!CheckCellValid(dest))
-			continue;
-		routes.push_back(FRoute(nullptr, dest));
-	}
-	visited[CChapter::Coord2Hash(myCoord)] = 1;
-	CheckRouteBFS(routes, visited, playerCoord);
-	if (routes.size() > 0)
-	{
-		FRoute route = routes.back();
-		while (nullptr != route.Parent)
-		{
-			route = *route.Parent;
-		}
-		mRoute.push_back(route.Coord);
-	}
+	mMumblingSound = sound;
+	mMumblingTimerID = CTimeManager::SetTimer(Time, loop, this, &CWalker::PlayerMumbling).GetID();
 }
 
-bool CWalker::NextMoveSet(FVector2 Coord)
+void CWalker::SetMumblingSound(float Time, bool loop)
 {
-	std::shared_ptr<CChapter> chptr = mChapter.lock();
-	if (mRoomOwner.expired() || !chptr)
-		return false;
-
-	std::shared_ptr<CRoombase> room = mRoomOwner.lock();
-	if (room->CheckCell(Coord))
-	{
-		mNextMoveDir = room->CoordToWorldPos(Coord) - GetWorldPos();
-		return true;
-	}
-	return false;
+	mMumblingTimerID = CTimeManager::SetTimer(Time, loop, this, &CWalker::PlayerMumbling).GetID();
 }
 
-void CWalker::CheckRouteBFS(std::list<FRoute>& route, std::map<int, int>& visited, const FVector2& target)
+void CWalker::PlayerMumbling()
 {
-	if (route.empty())
-		return;
-
-	FRoute check = route.front();
-	route.pop_front();
-
-	for (int i = 0; i < 4; ++i)
-	{
-		FVector2 dest = check.Coord + CChapter::FourDirections[i];
-		int dHash = CChapter::Coord2Hash(dest);
-		if (target == dest)
-		{
-			route.push_back(FRoute(&check, dest));
-			return;
-		}
-
-		if (visited.find(dHash) != visited.end() || (nullptr != check.Parent && check.Parent->Coord == dest))
-			continue;
-
-		if (CheckCellValid(dest))
-		{
-			route.push_back(FRoute(&check, dest));
-			visited[dHash] = 5;
-		}
-	}
-	CheckRouteBFS(route, visited, target);
-}
-
-bool CWalker::CheckCellValid(const FVector2& Coord)
-{
-	if (mRoomOwner.expired())
-		return false;
-
-	std::shared_ptr<CRoombase> room = mRoomOwner.lock();
-	return room->CheckCell(Coord);
-}
-
-int CWalker::CoordDistance(FVector2 to, FVector2 from)
-{
-	return static_cast<int>(abs(to.x - from.x) + abs(to.y - from.y));
-}
-
-void CWalker::RouteCountCheck()
-{
-	LOG_DEBUG(mName, "-", mID, " : ", routeCount);
+	mSoundPlayer.lock()->mSound = mMumblingSound.lock();
+	mSoundPlayer.lock()->Play();
 }

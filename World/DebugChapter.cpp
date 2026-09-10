@@ -49,8 +49,8 @@ bool CDebugChapter::Init()
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[2].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);*/
 
-	debugMode = true;
-	dataType = EGDataType::Sprite;
+	debugMode = false;
+	dataType = EGDataType::Anim;
 	
 	if (debugMode) //애니메이션 만들기
 	{
@@ -99,6 +99,12 @@ bool CDebugChapter::Init()
 
 		mInput->AddBindKey("DebugKey", VK_NUMPAD0);
 		mInput->SetBindFunction("DebugKey", EInputType::Press, this, &CDebugChapter::DebugDrawTogle);
+
+		CGameClassContainer::GetInst()->Instantiate(81, FVector2(3, 2));
+		//CGameClassContainer::GetInst()->Instantiate(82, FVector2(9, 2));
+		CGameClassContainer::GetInst()->Instantiate(41, FVector2(8, 2));
+		CGameClassContainer::GetInst()->Instantiate(41, FVector2(7, 1));
+		CGameClassContainer::GetInst()->Instantiate(21, FVector2(7, 1));
 
 		/*std::weak_ptr<CActor> actor = CreateActor<CActor>("TEST");
 		std::weak_ptr<CFontRenderer> font = actor.lock()->CreateComponent<CFontRenderer>("Root");

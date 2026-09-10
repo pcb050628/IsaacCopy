@@ -1,8 +1,9 @@
 #pragma once
+#include "../Base/Unitbase.h"
 #include "../Base/Monster.h"
 
 class CWalker :
-	public CMonster
+	public CUnitbase, public CMonster
 {
 public:
 	CWalker();
@@ -10,13 +11,27 @@ public:
 	CWalker(CWalker&& src) noexcept;
 	virtual ~CWalker();
 
+protected:
+	std::weak_ptr<class CSound> mMumblingSound;
+	uint64_t mMumblingTimerID;
+	std::weak_ptr<class CRouteMaker> mRouteMaker;
+	std::weak_ptr<CUnitbase> mTarget;
+
+	FVector3 mNextMoveDir = FVector3::Zero;
+	std::list<FVector2> mRoute;
+	float mMoveSpeed = 100.f;
+	float mSpeedLimit = 500.f;
+
 public:
 	virtual bool Init();
 	virtual void Update(float DeltaTime) = 0;
 	virtual void Destory();
 	virtual void Dead() = 0;
 
-	virtual void Reset(bool HardReset = false);
+	virtual void Reset(bool HardReset = false) override;
+	virtual void SetEnable(bool Enable) override;
+
+	virtual void GetHit(std::weak_ptr<CGameObject> From);
 
 protected:
 	virtual void OnHurtOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
@@ -25,24 +40,9 @@ protected:
 	virtual void OnHitOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
 	virtual void ExitHitOverlaps(std::weak_ptr<CCollider> Collider);
 
-	bool UpdateNextMove();
-	void MakeRoute();
-	void MakeRouteBFS();
-private:
-	bool NextMoveSet(FVector2 Coord);
-	void CheckRouteBFS(std::list<FRoute>& routes, std::map<int, int>& visited, const FVector2& target);
-	bool CheckCellValid(const FVector2& Coord);
-	int CoordDistance(FVector2 a, FVector2 b);
+	void SetMumblingSound(const std::string& soundName, float Time, bool loop = false);
+	void SetMumblingSound(float Time, bool loop = false);
+	void PlayerMumbling();
 
-	void RouteCountCheck();
-
-protected:
-	std::weak_ptr<class CRouteMaker> mRouteMaker;
-	std::weak_ptr<CUnitbase> mTarget;
-
-	FVector3 mNextMoveDir = FVector3::Zero;
-	std::list<FVector2> mRoute;
-	float mMoveSpeed = 100.f;
-	float mSpeedLimit = 500.f;
 };
 

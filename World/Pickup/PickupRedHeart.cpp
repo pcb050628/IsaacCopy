@@ -55,7 +55,6 @@ bool CPickupRedHeart::Init()
     animator->AddAnimation(data->GetData().Name, 1.f, 1.f, true);
 
     mCollider.lock()->SetRadius(10.f);
-    mCollider.lock()->SetDebugDraw(true);
 
     //mRigidbody.lock()->SetWorldScale(100.f, 100.f);
 

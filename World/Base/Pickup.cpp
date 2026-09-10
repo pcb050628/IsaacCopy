@@ -32,6 +32,7 @@ bool CPickup::Init()
 
     mCollider.lock()->SetCollisionProfile("PickUp");
     mCollider.lock()->SetBeginOverlapFunc(this, &CPickup::OnCollision);
+    mCollider.lock()->SetDebugDraw(true);
 
     return true;
 }

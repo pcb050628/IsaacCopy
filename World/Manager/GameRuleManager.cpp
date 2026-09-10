@@ -171,6 +171,8 @@ void CGameRuleManager::AddCoin(int Add)
 	mCoinCount += Add;
 	if (mCoinCount > COIN_MAX)
 		mCoinCount = COIN_MAX;
+
+	LOG_DEBUG("동전을 ", std::to_string(Add), "만큼 얻었습니다.");
 }
 
 void CGameRuleManager::AddKey(int Add)
@@ -178,6 +180,7 @@ void CGameRuleManager::AddKey(int Add)
 	mKeyCount += Add;
 	if (mKeyCount > KEY_MAX)
 		mKeyCount = KEY_MAX;
+	LOG_DEBUG("열쇠를 ", std::to_string(Add), "만큼 얻었습니다.");
 }
 
 void CGameRuleManager::AddBomb(int Add)
@@ -185,6 +188,7 @@ void CGameRuleManager::AddBomb(int Add)
 	mBombCount += Add;
 	if (mBombCount > BOMB_MAX)
 		mBombCount = BOMB_MAX;
+	LOG_DEBUG("폭탄을 ", std::to_string(Add), "만큼 얻었습니다.");
 }
 
 void CGameRuleManager::RemoveCoin(int Remove)

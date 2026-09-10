@@ -55,3 +55,11 @@ bool CObstaclebase::Init()
 
 	return true;
 }
+
+void CObstaclebase::TryBreak()
+{
+	if (!mbIsBreakalbe)
+		return;
+
+	ReturnToChapter(); //이펙트는 나중에 추가하기
+}

@@ -268,7 +268,9 @@
     <ClCompile Include="World\Manager\GameFinalizer.cpp" />
     <ClCompile Include="World\Manager\GameRuleManager.cpp" />
     <ClCompile Include="World\Manager\GameStarter.cpp" />
+    <ClCompile Include="World\Monster\AttackFly.cpp" />
     <ClCompile Include="World\Monster\BossGemini.cpp" />
+    <ClCompile Include="World\Monster\Fly.cpp" />
     <ClCompile Include="World\Monster\Gaper.cpp" />
     <ClCompile Include="World\Monster\Walker.cpp" />
     <ClCompile Include="World\Obstacle\PedestalObstacle.cpp" />
@@ -336,7 +338,9 @@
     <ClInclude Include="World\Manager\GameFinalizer.h" />
     <ClInclude Include="World\Manager\GameRuleManager.h" />
     <ClInclude Include="World\Manager\GameStarter.h" />
+    <ClInclude Include="World\Monster\AttackFly.h" />
     <ClInclude Include="World\Monster\BossGemini.h" />
+    <ClInclude Include="World\Monster\Fly.h" />
     <ClInclude Include="World\Monster\Gaper.h" />
     <ClInclude Include="World\Monster\Walker.h" />
     <ClInclude Include="World\Obstacle\PedestalObstacle.h" />

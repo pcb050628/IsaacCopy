@@ -16,6 +16,7 @@ protected:
 
 public:
     virtual void Update(float DeltaTime);
+    virtual void GetHit(std::weak_ptr<CGameObject> From);
 
     std::weak_ptr<CRoombase> GetRoom() { return mRoomOwner; }
     void SetRoom(std::weak_ptr<CRoombase> Room) { mRoomOwner = Room; }

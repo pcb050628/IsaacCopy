@@ -42,15 +42,15 @@ void CGlobalCollision::SetGlobalCollision()
 		InfoManager->CreateChannel("Wall");
 		InfoManager->CreateProfile("Wall", "Wall", true, ECollisionInteraction::Block);
 
-		InfoManager->CreateChannel("Fly");
-		InfoManager->CreateProfile("Fly", "Fly", true, ECollisionInteraction::Overlap);
-
-		InfoManager->CreateChannel("Bomb");
-		InfoManager->CreateProfile("Bomb", "Bomb", true, ECollisionInteraction::Overlap);
+		InfoManager->CreateChannel("ContactHit_Fly");
+		InfoManager->CreateProfile("ContactHit_Fly", "ContactHit_Fly", true, ECollisionInteraction::Overlap);
 
 		//몬스터 히트박스
 		InfoManager->SetProfileInteraction("Monster", "ContactHit_Monster", ECollisionInteraction::Ignore);
 		InfoManager->SetProfileInteraction("ContactHit_Monster", "Monster", ECollisionInteraction::Ignore);
+
+		InfoManager->SetProfileInteraction("ContactHit_Fly", "ContactHit_Monster", ECollisionInteraction::Ignore);
+		InfoManager->SetProfileInteraction("ContactHit_Monster", "ContactHit_Fly", ECollisionInteraction::Ignore);
 
 		InfoManager->SetProfileInteraction("Obstacle", "ContactHit_Monster", ECollisionInteraction::Block);
 		InfoManager->SetProfileInteraction("ContactHit_Monster", "Obstacle", ECollisionInteraction::Block);
@@ -59,6 +59,9 @@ void CGlobalCollision::SetGlobalCollision()
 
 		InfoManager->SetProfileInteraction("Monster", "Player", ECollisionInteraction::Ignore);
 		InfoManager->SetProfileInteraction("Player", "Monster", ECollisionInteraction::Ignore);
+
+		InfoManager->SetProfileInteraction("ContactHit_Fly", "Player", ECollisionInteraction::Overlap);
+		InfoManager->SetProfileInteraction("Player", "ContactHit_Fly", ECollisionInteraction::Overlap);
 
 		InfoManager->SetProfileInteraction("Monster", "Obstacle", ECollisionInteraction::Ignore);
 		InfoManager->SetProfileInteraction("Obstacle", "Monster", ECollisionInteraction::Ignore);
@@ -76,8 +79,8 @@ void CGlobalCollision::SetGlobalCollision()
 		InfoManager->SetProfileInteraction("Monster", "PickUp", ECollisionInteraction::Overlap);
 		InfoManager->SetProfileInteraction("PickUp", "Monster", ECollisionInteraction::Overlap);
 
-		InfoManager->SetProfileInteraction("ContactHit", "PickUp", ECollisionInteraction::Ignore);
-		InfoManager->SetProfileInteraction("PickUp", "ContactHit", ECollisionInteraction::Ignore);
+		//InfoManager->SetProfileInteraction("ContactHit", "PickUp", ECollisionInteraction::Ignore); //이거 좀 고민해보기 | 접촉 피해를 하나로 묶는 것
+		//InfoManager->SetProfileInteraction("PickUp", "ContactHit", ECollisionInteraction::Ignore);
 
 		//장애물
 
@@ -97,6 +100,12 @@ void CGlobalCollision::SetGlobalCollision()
 
 		//폭파
 		InfoManager->SetProfileInteraction("ContactHit", "Blasting", ECollisionInteraction::Ignore);
+
+		InfoManager->SetProfileInteraction("Monster", "Blasting", ECollisionInteraction::Overlap);
+		InfoManager->SetProfileInteraction("Blasting", "Monster", ECollisionInteraction::Overlap);
+
+		InfoManager->SetProfileInteraction("Obstacle", "Blasting", ECollisionInteraction::Overlap);
+		InfoManager->SetProfileInteraction("Blasting", "Obstacle", ECollisionInteraction::Overlap);
 
 		//눈물
 		InfoManager->SetProfileInteraction("PickUp", "Tear", ECollisionInteraction::Ignore);

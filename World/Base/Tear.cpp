@@ -280,17 +280,13 @@ void CTear::OnCollision(const FVector3& HitPoint, const FVector3& Normal, std::w
 			return;
 		break;
 	case EObjectType::PlayerCharacter:
-		std::dynamic_pointer_cast<CUnitbase>(obj)->GetHit(GetThisPtr<CGameObject>());
+		std::dynamic_pointer_cast<CRoomMember>(obj)->GetHit(GetThisPtr<CGameObject>());
 		break;
 	case EObjectType::Monster:
-		if (EObjectType::Monster == ownert || EObjectType::Boss == ownert)
-			return;
-		std::dynamic_pointer_cast<CUnitbase>(obj)->GetHit(GetThisPtr<CGameObject>());
-		break;
 	case EObjectType::Boss:
 		if (EObjectType::Monster == ownert || EObjectType::Boss == ownert)
 			return;
-		std::dynamic_pointer_cast<CBoss>(obj)->GetHit(GetThisPtr<CGameObject>());
+		std::dynamic_pointer_cast<CRoomMember>(obj)->GetHit(GetThisPtr<CGameObject>());
 		break;
 	case EObjectType::Room:
 	case EObjectType::Door:
