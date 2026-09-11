@@ -61,6 +61,7 @@ private:
     void StartBreathing();
     void BreathingEnd();
     void OnContusionHurtOverlap(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
+    void OnHitOverlap(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider);
 
     void UpdateSuture(float DeltaTime);
     void FollowContusion();

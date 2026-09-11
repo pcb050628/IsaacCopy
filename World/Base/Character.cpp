@@ -26,6 +26,8 @@
 #include "../Component/TearShooter.h"
 #include "../Component/ItemContainer.h"
 
+#include "../Pickup/PickupBomb.h"
+
 CCharacter::CCharacter()
 	:CUnitbase(EObjectType::PlayerCharacter)
 {
@@ -123,6 +125,7 @@ bool CCharacter::Init()
 	input->SetBindFunction("FireRight", EInputType::Hold, this, &CCharacter::FireRight);
 
 	input->SetBindFunction("UseItem", EInputType::Press, this, &CCharacter::UseItem);
+	input->SetBindFunction("UseBomb", EInputType::Press, this, &CCharacter::UseBomb);
 
 	OnAttributeChanged();
 
@@ -233,12 +236,10 @@ void CCharacter::GetHit(std::weak_ptr<CGameObject> From)
 		if (!tear || tear->GetOwnerType() == EObjectType::PlayerCharacter)
 			return;
 	}break;
+	case EObjectType::Boss:
 	case EObjectType::Item:
-		break;
 	case EObjectType::Monster:
-		break;
 	case EObjectType::Obstacle:
-		break;
 	case EObjectType::Pickup:
 		break;
 	}
@@ -287,6 +288,7 @@ void CCharacter::GetHit(std::weak_ptr<CGameObject> From)
 
 void CCharacter::Reset(bool hard) //캐릭터는 사용할 일이 없음
 {
+	CUnitbase::Reset(hard);
 }
 
 void CCharacter::OnHurtOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
@@ -585,6 +587,14 @@ void CCharacter::UsePickup()
 
 void CCharacter::UseBomb()
 {
+	if (!CGameRuleManager::GetInst()->CanUseBomb(1))
+		return;
+	
+	std::shared_ptr<CPickupBomb> bomb = std::dynamic_pointer_cast<CPickupBomb>(CGameClassContainer::GetInst()->Instantiate(82, mRoomOwner.lock()->GetPlayerCoordInGrid()).lock());
+	if (!bomb)
+		return;
+	CGameRuleManager::GetInst()->RemoveBomb(1);
+	bomb->Ignite();
 }
 
 void CCharacter::DropPickupPress()

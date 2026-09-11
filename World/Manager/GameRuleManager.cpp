@@ -280,12 +280,33 @@ bool CGameRuleManager::LoadData()
 	std::shared_ptr<CGameDataManager> mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
 	if (!mgr->LoadDataFile<CRunGData>("SaveFile", EGDataType::Run, L"SaveFile"))
 		return false;
+
+	std::shared_ptr<CChapter> chapter = std::dynamic_pointer_cast<CChapter>(CWorldManager::GetInst()->GetWorld().lock());
+	if (!chapter)
+		return false;
 	
 	FRunData d = mgr->FindData<CRunGData>("SaveFile", EGDataType::Run).lock()->GetData();
 	
 	mCoinCount = d.Player.Coins;
 	mKeyCount = d.Player.Keys;
 	mBombCount = d.Player.Bombs;
+
+	int id = chapter->GetPlayerCharacterID();
+
+	mPlayerHeartContainer[id].RedContainer.clear();
+	mPlayerHeartContainer[id].OtherContainer.clear();
+
+	for (int i = 0; i < d.Player.Hearts.size(); ++i)
+	{
+		FHeartData heart = d.Player.Hearts[i];
+		FPlayerHeartData hd((EPlayerHeartType)heart.Type, (EPlayerHeartState)heart.State);
+		if(EPlayerHeartType::Red == hd.Type)
+			mPlayerHeartContainer[id].RedContainer.push_back(hd);
+		else
+			mPlayerHeartContainer[id].OtherContainer.push_back(hd);
+	}
+
+	CallOnHeartUpdate();
 
 	return true;
 }

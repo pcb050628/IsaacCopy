@@ -479,6 +479,9 @@ bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 	const int classID = gobj->GetGClassID();
 	const int ObjID = gobj->GetID();
 	EObjectType t = gobj->GetObjType();
+	if(EObjectType::Tear != t)
+		LOG_DEBUG("객체 반환 시도", std::to_string(ObjID), ":", std::to_string(classID));
+
 	switch (t)
 	{
 	case EObjectType::Room:
@@ -486,7 +489,7 @@ bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 	case EObjectType::Door:
 		mDoorsDeactive[ObjID] = mDoorsActive[ObjID];
 		mDoorsActive.erase(ObjID);
-		break; 
+		return true; 
 	case EObjectType::Tear: {
 		mTearsDeactivate[ObjID] = mTearsActivate[ObjID];
 		mTearsActivate.erase(ObjID);

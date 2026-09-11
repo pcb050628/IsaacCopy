@@ -3,9 +3,14 @@
 #include "Device.h"
 #include "World/WorldManager.h"
 
+#include "Asset/AssetManager.h"
+#include "../World/Data/GameDataManager.h"
+
 #include "../World/Chapter.h"
 
 #include "../World/Component/SpriteComponent.h"
+
+#include "../World/Data/RunGData.h"
 
 CMenuActor::CMenuActor()
 {
@@ -67,7 +72,7 @@ void CMenuActor::UpdatePointerPos()
 
 int CMenuActor::OnUp()
 {
-	mFocused = (mFocused - 1) % 2;
+	mFocused = abs(mFocused - 1);
 	UpdatePointerPos();
 	return 0;
 }
@@ -97,9 +102,16 @@ int CMenuActor::OnSubmit()
 	{
 	case 0: //캐릭터  창
 		return 1;
-	case 1: //이어하기
-		CChapter::SetLoadMode(true);
-		return 0;
+	case 1: { //이어하기
+		std::shared_ptr<CRunGData> check = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData)->PeekRandom<CRunGData>(EGDataType::Run).lock();
+		if (check)
+		{
+			CChapter::SetLoadMode(true);
+			return 0;
+		}
+		else
+			return 2;
+	}break;
 	}
 }
 

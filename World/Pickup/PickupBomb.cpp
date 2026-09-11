@@ -65,8 +65,6 @@ bool CPickupBomb::Init()
 
 	mCollider.lock()->SetRadius(10.f);
 
-	Ignite();
-
 	return true;
 }
 
@@ -92,10 +90,13 @@ void CPickupBomb::Update(float DeltaTime)
 void CPickupBomb::Reset(bool HardReset)
 {
 	CPickup::Reset(HardReset);
+	mInArea.clear();
 	mbIsIgnited = false;
 	mRemainTime = 2.f;
+	mIntensity = 0.f;
 	mCurrentPaletteIndex = 0;
-
+	mAnimator.lock()->Stop(true);
+	mMeshComp.lock()->SetHitEffectEnable(0, false);
 }
 
 void CPickupBomb::Ignite()
@@ -160,7 +161,7 @@ void CPickupBomb::Explosion()
 
 void CPickupBomb::OnAreaOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
 {
-	if (Collider.expired() || Collider.lock()->GetOwner().expired() || Collider.lock()->GetOwner().lock() == GetThisPtr<CActor>())
+	if (!mbIsIgnited || Collider.expired() || Collider.lock()->GetOwner().expired() || Collider.lock()->GetOwner().lock() == GetThisPtr<CActor>())
 		return;
 
 	std::shared_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
@@ -172,7 +173,7 @@ void CPickupBomb::OnAreaOverlaps(const FVector3& HitPoint, const FVector3& Norma
 
 void CPickupBomb::ExitAreaOverlaps(std::weak_ptr<class CCollider> Collider)
 {
-	if (Collider.expired() || Collider.lock()->GetOwner().expired())
+	if (!mbIsIgnited || Collider.expired() || Collider.lock()->GetOwner().expired())
 		return;
 
 	std::shared_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());

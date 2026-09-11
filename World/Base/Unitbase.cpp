@@ -110,6 +110,11 @@ void CUnitbase::Destroy()
 	CActor::Destroy();
 }
 
+void CUnitbase::Reset(bool HardReset)
+{
+	mOverlaps.clear();
+}
+
 bool CUnitbase::AddAnim(const std::string& Name, const TCHAR* FilePath, bool Upper, float PlayTime, float PlayRate, bool Loop, bool Reverse, bool Symmetry)
 {
 	std::shared_ptr<CGameDataManager> dataMgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);

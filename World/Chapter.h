@@ -354,6 +354,7 @@ public:
 	const FVector2 GetStartRoomCoord() { return FVector2(static_cast<float>(mRoomMapRowMax / 2), static_cast<float>(mRoomMapColMax / 2)); }
 
 	std::weak_ptr<CActor> GetPlayerCharacter() { return mPlayerCharacter; }
+	const int GetPlayerCharacterID() const { return mPlayerCharacter.lock()->GetID(); }
 	const FVector2 GetFocusedRoomCoord() const { return Hash2Coord(mFocusedRoomHash); }
 
 	void RenderTitleWithQuato(const TCHAR* title, const TCHAR* quato);

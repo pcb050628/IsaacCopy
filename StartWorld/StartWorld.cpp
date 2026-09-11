@@ -146,18 +146,19 @@ void CStartWorld::OnSubmit()
             ++mFocused;
         }
         break;
-    case 1:
-        if (!mMenu.lock()->OnSubmit())
+    case 1: {
+        int result = mMenu.lock()->OnSubmit();
+        if (0 == result)
         {
             mbMoveToChapter = true;
         }
-        else
+        else if (1 == result)
         {
             mCam.lock()->MoveDown();
             MoveStart();
             ++mFocused;
         }
-        break;
+    }break;
     case 2:
         if (mCharacterMenu.lock()->OnSubmit())
         {

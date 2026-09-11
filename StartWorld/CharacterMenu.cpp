@@ -34,19 +34,19 @@ bool CCharacterMenu::Init()
     mFrame.lock()->SetWorldScale(resol.Width, resol.Height);
     mBackground.lock()->SetSpriteData("UI_Game_Character_Menu_Background");
     mFrame.lock()->SetSpriteData("UI_Game_Character_Menu_Frame");
-    for (int i = 0; i < 8; ++i)
+    for (int i = 0; i < 16; ++i)
     {
         mSprites.push_back(CreateComponent<CSpriteComponent>("Character"));
-		mSprites[i].lock()->SetMesh("TexRect"); mSprites[i].lock()->SetShader("Sprite2D"); mSprites[i].lock()->SetRenderLayer(2);
-        mSprites[i].lock()->SetWorldScale(100.f, 100.f);
-        std::string str = i % 2 == 0 ? "Spoon_Bender" : "Crooked_Penny";
+		mSprites[i].lock()->SetMesh("TexRect"); mSprites[i].lock()->SetShader("Sprite2D"); mSprites[i].lock()->SetRenderLayer(4);
+        mSprites[i].lock()->SetWorldScale(25.f, 25.f);
+        std::string str = i % 4 == 0 ? "Spoon_Bender" : i % 4 == 1 ? "Crooked_Penny" : i % 4 == 2 ? "The_Belt" : "Bomb";
         mSprites[i].lock()->SetSpriteData(str);
     }
 
-    mWidth = 600.f;
+    mWidth = 1200.f;
     mHeight = 200.f;
 
-    mCenterOffset.x = -mWidth / 3 + -40;
+    mCenterOffset.x = (-mWidth / 3) + -(mWidth / 9.9);
     mCenterOffset.y = 70.f;
 
     ResettingPos();
@@ -60,13 +60,13 @@ void CCharacterMenu::Update(float DeltaTime)
 
 void CCharacterMenu::MoveRight()
 {
-    mFocusedIndex = (mFocusedIndex + 1) % mSprites.size();
+    mFocusedIndex = (mFocusedIndex - 1) % mSprites.size();
     ResettingPos();
 }
 
 void CCharacterMenu::MoveLeft()
 {
-    mFocusedIndex = (mFocusedIndex - 1) % mSprites.size();
+    mFocusedIndex = (mFocusedIndex + 1) % mSprites.size();
     ResettingPos();
 }
 
@@ -85,7 +85,7 @@ void CCharacterMenu::ResettingPos()
         float y = mHeight / length * yo;
         mSprites[(i + mFocusedIndex) % length].lock()->SetRelativePos(mCenterOffset + FVector2(x, y));
         //스케일은 y에 비례해서 정해주기
-        mSprites[(i + mFocusedIndex) % length].lock()->SetWorldScale((length - yo) * 10.f, (length - yo) * 10.f);
+        mSprites[(i + mFocusedIndex) % length].lock()->SetWorldScale((length - yo) * 5.f, (length - yo) * 5.f);
 
         if (xc && xo >= length - length / 4 - 1)
             xc = false;

@@ -52,4 +52,5 @@ void CAttackFly::Reset(bool HardReset)
     CFly::Reset(HardReset);
     mAnimator.lock()->ChangeAnimation("Attack_Fly");
     mAnimator.lock()->Play(true);
+    mTarget.reset();
 }

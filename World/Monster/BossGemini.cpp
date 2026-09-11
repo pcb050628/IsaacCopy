@@ -18,6 +18,8 @@
 #include "../Component/RouteMaker.h"
 #include "../Component/TearShooter.h"
 
+#include "../Pickup/PickupBomb.h"
+
 REGISTER_GAMEOBJCLASS(CBossGemini, "Gemini", EObjectType::Monster)
 
 CBossGemini::CBossGemini()
@@ -114,15 +116,23 @@ bool CBossGemini::Init()
     cHurt->SetBoxSize(80.f, 80.f);
     cHurt->SetRelativePos(0.f, 20.f);
 
+    cHit->SetDebugDraw(true);
+    cHit->SetRadius(40.f);
+    cHit->SetRelativePos(0.f, 20.f);
+
     sHurt->SetDebugDraw(true);
-    sHurt->SetBoxSize(40.f, 40.f);
+    sHurt->SetBoxSize(45.f, 45.f);
     sHurt->SetRelativePos(0.f, 5.f);
+
+    sHit->SetDebugDraw(true);
+    sHit->SetRadius(20.f);
+    sHit->SetRelativePos(0.f, 5.f);
 
     cHurt->SetCollisionProfile("Monster"); cHurt->SetBeginOverlapFunc(this, &CBossGemini::OnContusionHurtOverlap);
     sHurt->SetCollisionProfile("Monster"); sHurt->SetBeginOverlapFunc(this, &CBossGemini::OnSutureHurtOverlap);
 
-    cHit->SetCollisionProfile("Monster_ContactHit");
-    sHit->SetCollisionProfile("Monster_ContactHit");
+    cHit->SetCollisionProfile("ContactHit_Monster"); cHit->SetBeginOverlapFunc(this, &CBossGemini::OnHitOverlap);
+    sHit->SetCollisionProfile("ContactHit_Monster"); sHit->SetBeginOverlapFunc(this, &CBossGemini::OnHitOverlap);
 
     //위치 및 크기 조정
     cFullBody->SetRelativePos(0.f, 20.f);
@@ -203,6 +213,22 @@ void CBossGemini::GetHit(std::weak_ptr<CGameObject> From)
              mbSutureJustHit = false;
          }
     }break;
+    case EObjectType::Pickup: {
+        std::shared_ptr<CPickupBomb> bomb = std::dynamic_pointer_cast<CPickupBomb>(From.lock());
+        if (!bomb)
+            return;
+        if (mbContusionJustHit)
+        {
+            mContusionHP -= 100;
+            mbContusionJustHit = false;
+        }
+        if (mbSutureJustHit)
+        {
+            mSutureHP -= 100;
+            mbSutureJustHit = false;
+        }
+    }
+        break;
     case EObjectType::Obstacle:
         return; //현재는 리턴이지만 나중에 충돌시 피격효과가 있는 오브젝트 작성시 수정하기
     case EObjectType::Tear:
@@ -213,7 +239,6 @@ void CBossGemini::GetHit(std::weak_ptr<CGameObject> From)
     case EObjectType::Boss:
     case EObjectType::Door:
     case EObjectType::Item:
-    case EObjectType::Pickup:
     case EObjectType::End:
     default:
         assert(false && "충돌 프로파일에 오류가 있습니다.");
@@ -331,6 +356,37 @@ void CBossGemini::OnContusionHurtOverlap(const FVector3& HitPoint, const FVector
         return;
     }
     mbContusionJustHit = true;
+}
+
+void CBossGemini::OnHitOverlap(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
+{
+    if (Collider.expired() || Collider.lock()->GetOwner().expired())
+        return;
+
+    std::shared_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
+    if (!obj)
+        return;
+
+    switch (obj->GetObjType())
+    {
+    case EObjectType::PlayerCharacter: {
+        std::shared_ptr<CUnitbase> player = std::dynamic_pointer_cast<CUnitbase>(obj);
+        assert(player && "객체가 잘못된 타입을 가지고 있습니다.");
+        player->GetHit(GetThisPtr<CGameObject>());
+    }return;
+    case EObjectType::Obstacle:
+    case EObjectType::Pickup:
+    case EObjectType::Tear:
+    case EObjectType::Room:
+    case EObjectType::Item:
+    case EObjectType::Door:
+    case EObjectType::Monster:
+    case EObjectType::Boss:
+    case EObjectType::End:
+    default:
+        assert(false && "충돌 프로파일 에러");
+        return;
+    }
 }
 
 void CBossGemini::UpdateSuture(float DeltaTime)

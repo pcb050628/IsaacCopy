@@ -16,7 +16,7 @@ protected:
     std::map<int, std::weak_ptr<class CGameObject>> mInArea;
 
     float mIntensity = 0.f;
-    float mRemainTime = 5.f;
+    float mRemainTime = 2.f;
     int mCurrentPaletteIndex = 0;
 
     static FVector4 ColorPalette[4];

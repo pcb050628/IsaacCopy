@@ -122,8 +122,10 @@ void CWalker::Destory()
 
 void CWalker::Reset(bool HardReset)
 {
+	CUnitbase::Reset(HardReset);
 	mCurrentHP = mMaxHP;
 	mRouteMaker.lock()->SetRoom(mRoomOwner);
+	mTarget.reset();
 }
 
 void CWalker::SetEnable(bool Enable)
@@ -136,7 +138,7 @@ void CWalker::SetEnable(bool Enable)
 
 void CWalker::GetHit(std::weak_ptr<CGameObject> From)
 {
-	if (From.expired())
+	if (!mEnable || From.expired())
 		return;
 	if (mHurtSound.size() > 1)
 	{

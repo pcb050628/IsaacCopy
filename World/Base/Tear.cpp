@@ -84,6 +84,9 @@ bool CTear::Init()
 	//메시 스케일 조정
 	//애니메이션 불러오고
 
+	//중력 설정
+	//mRigidBody.lock()->SetUseGravity(true);
+	//mRigidBody.lock()->SetMass(5.f);
 
 	return true;
 }
@@ -150,7 +153,8 @@ void CTear::Reset(bool HardReset)
 	SetEnable(true);
 	SetRenderEnable(true);
 	mAnimator.lock()->ChangeAnimation("Tear_Default");
-	mAnimator.lock()->SetFrame(3);	
+	mAnimator.lock()->SetFrame(3);
+	mRigidBody.lock()->SetEnable(true);
 }
 
 //생각해보니까 텍스쳐도 골라줘야함
@@ -249,6 +253,7 @@ void CTear::TearDying()
 	mAnimator.lock()->Play(true);
 	mRigidBody.lock()->SetVelocity(FVector3::Zero);
 	mHitBox.lock()->SetEnable(false);
+	mRigidBody.lock()->SetEnable(false);
 }
 
 void CTear::OnCollision(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
@@ -276,6 +281,7 @@ void CTear::OnCollision(const FVector3& HitPoint, const FVector3& Normal, std::w
 			return;
 		break;
 	case EObjectType::Obstacle:
+	case EObjectType::Door:
 		if (mTearAttribute.Spectral)
 			return;
 		break;
@@ -289,7 +295,6 @@ void CTear::OnCollision(const FVector3& HitPoint, const FVector3& Normal, std::w
 		std::dynamic_pointer_cast<CRoomMember>(obj)->GetHit(GetThisPtr<CGameObject>());
 		break;
 	case EObjectType::Room:
-	case EObjectType::Door:
 	case EObjectType::Item:
 	case EObjectType::Pickup:
 	case EObjectType::End:

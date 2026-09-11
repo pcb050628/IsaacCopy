@@ -14,6 +14,7 @@
 
 #include "../Component/TearShooter.h"
 #include "../Component/ItemContainer.h"
+#include "../Component/RigidBodyComponent.h"
 
 REGISTER_GAMEOBJCLASS(CCharacterIsaac, "Isaac", EObjectType::PlayerCharacter);
 
@@ -75,6 +76,11 @@ bool CCharacterIsaac::Init()
     mActorTag = "Isaac";
 
     OnAttributeChanged();
+
+
+    //중력 설정
+    //mRigidBody.lock()->SetUseGravity(true);
+    //mRigidBody.lock()->SetMass(10.f);
 
     return true;
 }
