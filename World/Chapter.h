@@ -45,17 +45,18 @@ protected:
 	//접근은 클래스 아이디로 하고 해당 클래스 아이디 리스트 내부에서 하나 꺼내오면 되니까
 	//이거 그냥 통합해버릴까? 어짜피 전부 GameObject 상속받는데
 	//구분도 내부에서 클래스 아이디로 구분하면 그냥 해도 되는거 아닌가
+	std::map<int, std::weak_ptr<CGameObject>> mObjectList;
 	std::weak_ptr<CUnitbase> mPlayerCharacter;
-	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mUnitsActivate;
-	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mUnitsDeactivate;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mMonsterActive;
+	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mMonsterDeactive;
 	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mObstaclesActivate;
 	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mObstaclesDeactivate;
 	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mPickupsActivate;
 	std::unordered_map<int, std::map<int, std::weak_ptr<CRoomMember>>> mPickupsDeactivate;
-	std::unordered_map<int, std::weak_ptr<CTear>> mTearsActivate;
-	std::unordered_map<int, std::weak_ptr<CTear>> mTearsDeactivate;
 	std::map<int, std::weak_ptr<class CDoor>> mDoorsActive;
 	std::map<int, std::weak_ptr<class CDoor>> mDoorsDeactive;
+	std::unordered_map<int, std::weak_ptr<CTear>> mTearsActivate;
+	std::unordered_map<int, std::weak_ptr<CTear>> mTearsDeactivate;
 
 	//눈물 발사기(컴포넌트) <- 이거 필요한가? 어짜피 보관되는 위치도 Chapter 고 다 여기서 받아오는데 기능도 전부 Chapter 에 의탁해버리면?
 	//							챕터가 너무 방대해지긴하네 이미 다른 유닛들의 관리도 책임지고 있는데 책임을 합치는것이면 모르겠지만 다른 객체들과 다르게
@@ -64,10 +65,6 @@ protected:
 	//2. 필요한 기능(객체 생성 및 가져오기, 객체 반납받기, 발사 위치 조정, 
 
 	//방에 종속되지않는 객체
-	//카메라 및 UI 역할을 겸함 / 각각의 역할을 하는 액터 컴포넌트를 각각 지님 각각각각각각각각
-	//포커스된 방을 비추고
-	//UI On/Off 시 움직이는 효과는 이 객체에 있음
-	//아직 만들지 않았고 만들어야함
 	std::weak_ptr<class CChapterSystemActor> mChapterManagementActor;
 	std::weak_ptr<class CScreenCurtain> mCurtain;
 	std::vector<std::weak_ptr<CActor>> mWalls;
@@ -183,12 +180,12 @@ public:
 	template<typename T>
 	std::weak_ptr<T> CreateMonster(const std::string& Name, const int GObjID, FVector2 Coord, bool OnFocus)
 	{
-		if (!mUnitsDeactivate[GObjID].empty())
+		if (!mMonsterDeactive[GObjID].empty())
 		{
-			std::shared_ptr<CRoomMember> unit = mUnitsDeactivate[GObjID].begin()->second.lock();
+			std::shared_ptr<CRoomMember> unit = mMonsterDeactive[GObjID].begin()->second.lock();
 			std::shared_ptr<T> mon = std::dynamic_pointer_cast<T>(unit);
-			mUnitsDeactivate[GObjID].erase(unit->GetID());
-			mUnitsActivate[GObjID][unit->GetID()] = unit;
+			mMonsterDeactive[GObjID].erase(unit->GetID());
+			mMonsterActive[GObjID][unit->GetID()] = unit;
 
 			unit->Reset(true);
 			if (OnFocus)
@@ -204,7 +201,7 @@ public:
 			return std::weak_ptr<T>();
 
 		std::shared_ptr<CRoomMember> rm = std::dynamic_pointer_cast<CRoomMember>(unit.lock());
-		mUnitsActivate[GObjID][rm->GetID()] = rm;
+		mMonsterActive[GObjID][rm->GetID()] = rm;
 
 		if (OnFocus)
 		{
@@ -332,6 +329,7 @@ public:
 	//받은 오브젝트 반납하기 - 오브젝트 비활성화하고 방에서 분리한 해제안하고 들고있음
 	//눈물은 ClassID 가 아니라 오브젝트 아이디
 	bool ReturnGObj(std::weak_ptr<CGameObject> Obj);
+	std::weak_ptr<CGameObject> GetFindObject(int Key) { return mObjectList.contains(Key) ? mObjectList.find(Key)->second : std::weak_ptr<CGameObject>(); }
 
 public:
 	void MoveRoom(FVector2 Dir);

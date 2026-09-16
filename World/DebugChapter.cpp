@@ -50,7 +50,7 @@ bool CDebugChapter::Init()
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);*/
 
 	debugMode = true;
-	dataType = EGDataType::Room;
+	dataType = EGDataType::Sprite;
 	
 	if (debugMode) //애니메이션 만들기
 	{

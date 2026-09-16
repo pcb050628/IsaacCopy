@@ -45,8 +45,8 @@ bool CPickupBomb::Init()
 
 	mMeshComp = CreateComponent<CMeshComponent>("Mesh");
 	mAnimator = CreateComponent<CAnimation2DComponent>("Animator");
-	mExplosionErea = CreateComponent<CColliderSphere2D>("Area");
-	if (mMeshComp.expired() || mAnimator.expired() || mExplosionErea.expired())
+	mExplosionArea = CreateComponent<CColliderSphere2D>("Area");
+	if (mMeshComp.expired() || mAnimator.expired() || mExplosionArea.expired())
 		return false;
 
 	mMeshComp.lock()->SetMesh("TexRect"); mMeshComp.lock()->SetShader("Animation2D"); mMeshComp.lock()->SetRenderLayer("Pickup");
@@ -57,13 +57,14 @@ bool CPickupBomb::Init()
 	mAnimator.lock()->AddAnimation("Bomb_Explosion", 1.f, 1.f, true);
 	mAnimator.lock()->Stop(true);
 
-	mExplosionErea.lock()->SetDebugDraw(true);
-	mExplosionErea.lock()->SetRadius(130.f);
-	mExplosionErea.lock()->SetCollisionProfile("Blasting");
-	mExplosionErea.lock()->SetBeginOverlapFunc(this, &CPickupBomb::OnAreaOverlaps);
-	mExplosionErea.lock()->SetEndOverlapFunc(this, &CPickupBomb::ExitAreaOverlaps);
+	mExplosionArea.lock()->SetDebugDraw(true);
+	mExplosionArea.lock()->SetRadius(130.f);
+	mExplosionArea.lock()->SetCollisionProfile("Blasting");
+	mExplosionArea.lock()->SetBeginOverlapFunc(this, &CPickupBomb::OnAreaOverlaps);
+	mExplosionArea.lock()->SetEndOverlapFunc(this, &CPickupBomb::ExitAreaOverlaps);
 
 	mCollider.lock()->SetRadius(10.f);
+	mExplosionArea.lock()->SetEnable(false);
 
 	return true;
 }
@@ -97,10 +98,12 @@ void CPickupBomb::Reset(bool HardReset)
 	mCurrentPaletteIndex = 0;
 	mAnimator.lock()->Stop(true);
 	mMeshComp.lock()->SetHitEffectEnable(0, false);
+	mExplosionArea.lock()->SetEnable(false);
 }
 
 void CPickupBomb::Ignite()
 {
+	mExplosionArea.lock()->SetEnable(true);
 	mbIsIgnited = true;
 	CTimeManager::SetTimer(mRemainTime, false, this, &CPickupBomb::Explosion);
 

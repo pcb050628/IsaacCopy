@@ -100,6 +100,13 @@ bool CChapter::Init()
 		}
 
 		RegisterCharacter(run.Player.ID);
+		std::shared_ptr<CCharacter> chara = std::dynamic_pointer_cast<CCharacter>(mPlayerCharacter.lock());
+		if (!chara)
+			return false;
+		for (FItemData item : run.Player.Items)
+		{
+			chara->ContainItem(item.ID);
+		}
 		mFocusedRoomHash = Coord2Hash(run.Player.ChapterCoord);
 
 		CGameRuleManager::GetInst()->LoadData();
@@ -497,8 +504,8 @@ bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 	case EObjectType::Boss: 
 	case EObjectType::Monster: {
 		rm->UnsetRoom().lock()->DisregisterGObj(rm);
-		mUnitsDeactivate[classID][ObjID] = mUnitsActivate[classID][ObjID];
-		mUnitsActivate[classID].erase(ObjID);
+		mMonsterDeactive[classID][ObjID] = mMonsterActive[classID][ObjID];
+		mMonsterActive[classID].erase(ObjID);
 	} return true;
 	case EObjectType::Obstacle: {
 		rm->UnsetRoom().lock()->DisregisterGObj(rm);

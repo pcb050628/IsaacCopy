@@ -11,7 +11,7 @@ public:
 
 protected:
     bool mbIsIgnited = false;
-    std::weak_ptr<class CColliderSphere2D> mExplosionErea;
+    std::weak_ptr<class CColliderSphere2D> mExplosionArea;
 
     std::map<int, std::weak_ptr<class CGameObject>> mInArea;
 

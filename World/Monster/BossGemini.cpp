@@ -364,7 +364,7 @@ void CBossGemini::OnHitOverlap(const FVector3& HitPoint, const FVector3& Normal,
         return;
 
     std::shared_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
-    if (!obj)
+    if (!obj || obj == GetThisPtr<CGameClass>()) 
         return;
 
     switch (obj->GetObjType())
