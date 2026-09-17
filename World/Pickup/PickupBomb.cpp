@@ -64,7 +64,6 @@ bool CPickupBomb::Init()
 	mExplosionArea.lock()->SetEndOverlapFunc(this, &CPickupBomb::ExitAreaOverlaps);
 
 	mCollider.lock()->SetRadius(10.f);
-	mExplosionArea.lock()->SetEnable(false);
 
 	return true;
 }
@@ -98,14 +97,13 @@ void CPickupBomb::Reset(bool HardReset)
 	mCurrentPaletteIndex = 0;
 	mAnimator.lock()->Stop(true);
 	mMeshComp.lock()->SetHitEffectEnable(0, false);
-	mExplosionArea.lock()->SetEnable(false);
 }
 
 void CPickupBomb::Ignite()
 {
-	mExplosionArea.lock()->SetEnable(true);
 	mbIsIgnited = true;
 	CTimeManager::SetTimer(mRemainTime, false, this, &CPickupBomb::Explosion);
+
 
 	mAnimator.lock()->Play();
 }
@@ -164,25 +162,27 @@ void CPickupBomb::Explosion()
 
 void CPickupBomb::OnAreaOverlaps(const FVector3& HitPoint, const FVector3& Normal, std::weak_ptr<class CCollider> Collider)
 {
-	if (!mbIsIgnited || Collider.expired() || Collider.lock()->GetOwner().expired() || Collider.lock()->GetOwner().lock() == GetThisPtr<CActor>())
+	if (Collider.expired() || Collider.lock()->GetOwner().expired() || Collider.lock()->GetOwner().lock() == GetThisPtr<CActor>())
 		return;
 
 	std::shared_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
 	if (!obj)
 		return;
 
+	LOG_DEBUG("추가: ", obj->GetName());
 	mInArea.insert(std::make_pair(obj->GetID(), obj));
 }
 
 void CPickupBomb::ExitAreaOverlaps(std::weak_ptr<class CCollider> Collider)
 {
-	if (!mbIsIgnited || Collider.expired() || Collider.lock()->GetOwner().expired())
+	if (Collider.expired() || Collider.lock()->GetOwner().expired())
 		return;
 
 	std::shared_ptr<CGameObject> obj = std::dynamic_pointer_cast<CGameObject>(Collider.lock()->GetOwner().lock());
 	if (!obj)
 		return;
 
+	LOG_DEBUG("제거: ", obj->GetName());
 	mInArea.erase(obj->GetID());
 }
 

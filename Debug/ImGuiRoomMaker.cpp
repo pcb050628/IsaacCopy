@@ -70,7 +70,8 @@ void CImGuiRoomMaker::DrawGrid()
 			int idx = y * 13 + x;
 			if (!NameVec[idx].empty())
 			{
-				ImGui::SetCursorPos(ImVec2(start.x + ratioX * x, start.y + ratioY * y));
+				int cy = abs(7 - y) - 1;
+				ImGui::SetCursorPos(ImVec2(start.x / 2 + ratioX * x, start.y + ratioY * cy));
 				ImGui::Text(NameVec[idx].c_str());
 			}
 		}
@@ -86,6 +87,7 @@ void CImGuiRoomMaker::DrawGrid()
 
 		int x = static_cast<int>(mouse.x / ratioX);
 		int y = static_cast<int>(mouse.y / ratioY);
+		y = abs(7 - y) - 1;
 		LOG_DEBUG("SELECTED CELL POS: ", x, ", ", y);
 		SelectedIdx = y * 13 + x;
 	}

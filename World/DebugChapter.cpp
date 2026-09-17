@@ -16,8 +16,11 @@
 #include "World/Animation2DComponent.h"
 #include "World/FontRenderer.h"
 
+#include "Asset/AssetManager.h"
+
 #include "Door.h"
 
+#include "Data/RoomGData.h"
 #include "Data/AnimGData.h"
 
 #include "ImGui/include/imgui.h"
@@ -50,7 +53,7 @@ bool CDebugChapter::Init()
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);*/
 
 	debugMode = true;
-	dataType = EGDataType::Sprite;
+	dataType = EGDataType::Room;
 	
 	if (debugMode) //애니메이션 만들기
 	{
@@ -100,11 +103,18 @@ bool CDebugChapter::Init()
 		mInput->AddBindKey("DebugKey", VK_NUMPAD0);
 		mInput->SetBindFunction("DebugKey", EInputType::Press, this, &CDebugChapter::DebugDrawTogle);
 
-		CGameClassContainer::GetInst()->Instantiate(81, FVector2(3, 2));
+		//CGameClassContainer::GetInst()->Instantiate(81, FVector2(3, 2));
 		//CGameClassContainer::GetInst()->Instantiate(82, FVector2(9, 2));
-		CGameClassContainer::GetInst()->Instantiate(41, FVector2(8, 2));
-		CGameClassContainer::GetInst()->Instantiate(41, FVector2(7, 1));
-		CGameClassContainer::GetInst()->Instantiate(22, FVector2(7, 1));
+		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(8, 2));
+		//CGameClassContainer::GetInst()->Instantiate(41, FVector2(7, 1));
+		//CGameClassContainer::GetInst()->Instantiate(22, FVector2(7, 1));
+
+		std::shared_ptr<CGameDataManager> mgr = CAssetManager::GetInst()->GetSubManager<CGameDataManager>(EAssetType::GameData);
+		std::shared_ptr<CRoomGData> data = mgr->FindData<CRoomGData>("testRoom", EGDataType::Room).lock();
+		assert(data && "데이터가 없음");
+		
+		mRoomMap[mFocusedRoomHash].lock()->SetData(data->GetData());
+		SettingFocus();
 
 		/*std::weak_ptr<CActor> actor = CreateActor<CActor>("TEST");
 		std::weak_ptr<CFontRenderer> font = actor.lock()->CreateComponent<CFontRenderer>("Root");
