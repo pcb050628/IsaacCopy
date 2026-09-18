@@ -52,7 +52,7 @@ bool CDebugChapter::Init()
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[2].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);
 	std::dynamic_pointer_cast<CColliderBox2D>(mWalls[3].lock()->GetRootComponent().lock())->SetBoxSize(1300.f, 50.f);*/
 
-	debugMode = true;
+	debugMode = false;
 	dataType = EGDataType::Room;
 	
 	if (debugMode) //애니메이션 만들기
@@ -114,7 +114,7 @@ bool CDebugChapter::Init()
 		assert(data && "데이터가 없음");
 		
 		mRoomMap[mFocusedRoomHash].lock()->SetData(data->GetData());
-		SettingFocus();
+		mRoomMap[mFocusedRoomHash].lock()->EnterRoom();
 
 		/*std::weak_ptr<CActor> actor = CreateActor<CActor>("TEST");
 		std::weak_ptr<CFontRenderer> font = actor.lock()->CreateComponent<CFontRenderer>("Root");

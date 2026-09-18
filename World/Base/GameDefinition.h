@@ -13,7 +13,7 @@
                            const bool GAMEDEF::IsRegister = CGameClassContainer::GetInst()->RegisterGameClass(GAMEDEF::GObjID, NAME, &GAMEDEF::InstanceGDef);
 
 class CGameDefinition :
-    public CGameClass, public std::enable_shared_from_this<CGameClass>
+    public CGameClass, public std::enable_shared_from_this<CGameDefinition>
 {
 public:
     CGameDefinition(EObjectType Type);

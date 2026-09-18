@@ -524,12 +524,14 @@ bool CChapter::ReturnGObj(std::weak_ptr<CGameObject> Obj)
 void CChapter::MoveRoom(FVector2 Dir)
 {
 	mChapterManagementActor.lock()->Move(Dir);
+
 	mPrevRoomHash = mFocusedRoomHash;
 	FVector2 coord = Hash2Coord(mFocusedRoomHash) + Dir;
-	LOG_DEBUG("다음 좌표는: ", std::to_string(coord.x), ", ", std::to_string(coord.y));
 	mFocusedRoomHash = Coord2Hash(coord);
+
 	mInput->SetEnable(false);
 	mPlayerCharacter.lock()->SetEnable(false);
+
 	mRoomMap[mPrevRoomHash].lock()->PauseRoom();
 	mRoomMap[mFocusedRoomHash].lock()->PauseRoom();
 }

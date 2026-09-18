@@ -71,7 +71,7 @@ protected:
     //픽업 복사
 
 	const EPickupType mPickupType;
-    //능력치 관련인지 | 픽업 (획득, 소실)관련인지 |
+    //능력치 관련인지 | 픽업 (획득, 소실)관련인지
     const bool mbIsAboutCharacter;
     CharacterEffect::FPlayerEffect mEffect;
     
