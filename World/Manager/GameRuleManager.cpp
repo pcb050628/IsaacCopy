@@ -6,10 +6,14 @@
 #include "Asset/AssetManager.h"
 #include "../Data/GameDataManager.h"
 
+#include "World/World.h"
+
 #include "../Chapter.h"
 #include "../Base/Character.h"
 #include "../Base/Roombase.h"
 #include "../Component/ItemContainer.h"
+
+#include "../../StartWorld/StartWorld.h"
 
 #include "../Data/RunGData.h"
 #include "../Data/GameObjectStructure.h"
@@ -171,6 +175,20 @@ bool CGameRuleManager::DrainHeart(const int ID, EPlayerHeartState State)
 		{
 			//게임 오버 처리하기
 			LOG_DEBUG("게임 오버");
+
+
+			auto world =  CWorldManager::GetInst()->GetWorld().lock();
+			if (world)
+			{
+				world->InputDeActive();
+				auto chptr = dynamic_cast<CChapter*>(world.get());
+				if (chptr)
+				{
+					
+				}
+
+				CWorldManager::GetInst()->CreateWorld<CStartWorld>(true);
+			}
 		}
 	}
 

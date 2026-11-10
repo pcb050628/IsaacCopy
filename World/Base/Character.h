@@ -25,6 +25,7 @@ protected:
     bool mbIsInvincible = false;
     float mInvincibleDuration = 1.f;
     float mInvincibleEffectIntensity = 0.f;
+    uint64_t mInvincibleTimer = -1;
 
     std::string mHeadAnimName;
     std::string mBodyAnimName;

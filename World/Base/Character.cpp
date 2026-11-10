@@ -35,6 +35,8 @@ CCharacter::CCharacter()
 
 CCharacter::~CCharacter()
 {
+	FTimerHandle handle(mInvincibleTimer);
+	CTimeManager::ClearTimer(handle);
 }
 
 bool CCharacter::Init()
@@ -273,7 +275,7 @@ void CCharacter::GetHit(std::weak_ptr<CGameObject> From)
 		mbIsInvincible = true;
 		mHeadMesh.lock()->SetHitEffect(0, true, 0, FVector4(1, 1, 1, 0));
 		mBodyMesh.lock()->SetHitEffect(0, true, 0, FVector4(1, 1, 1, 0));
-		CTimeManager::SetTimer(mInvincibleDuration, false, this, &CCharacter::InvincibleEnd);
+		mInvincibleTimer = CTimeManager::SetTimer(mInvincibleDuration, false, this, &CCharacter::InvincibleEnd).GetID();
 	}
 
 	while (dmg > 0)
