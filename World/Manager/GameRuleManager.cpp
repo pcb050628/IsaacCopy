@@ -143,6 +143,37 @@ bool CGameRuleManager::DrainHeart(const int ID, EPlayerHeartState State)
 		}
 	}
 	CallOnHeartUpdate();
+
+	if (EPlayerHeartState::Empty == mPlayerHeartContainer[ID].RedContainer.begin()->State) // 빨간 하트가 없을 때만 죽음 확인하기
+	{
+		bool DeadFlag = true;
+		for (const FPlayerHeartData& data : mPlayerHeartContainer[ID].RedContainer)
+		{
+			if (EPlayerHeartState::Empty != data.State)
+			{
+				DeadFlag = false;
+				break;
+			}
+		}
+		if (DeadFlag)
+		{
+			for (const FPlayerHeartData& data : mPlayerHeartContainer[ID].OtherContainer)
+			{
+				if (EPlayerHeartState::Empty != data.State)
+				{
+					DeadFlag = false;
+					break;
+				}
+			}
+		}
+
+		if (DeadFlag)
+		{
+			//게임 오버 처리하기
+			LOG_DEBUG("게임 오버");
+		}
+	}
+
 	return true;
 }
 
