@@ -7,6 +7,8 @@
 #include "Asset/AssetManager.h"
 #include "Asset/TextureManager.h"
 
+#include "../../StartWorld/StartWorld.h"
+
 #include "../Component/SpriteComponent.h"
 
 #include "../Base/Boss.h"
@@ -58,6 +60,8 @@ bool CBossRoom::Init()
 
 	//mOpenInfo.state = EOpenState::Closed;
 
+	mbSpawnCheck = false;
+
 	//보스 랜덤으로 가져와서 아이디 가지고 있기
 	mBossID = 91;
 	
@@ -104,5 +108,9 @@ bool CBossRoom::WinCheck()
 	if (mTargetBoss.expired())
 		return false;
 
-	return mTargetBoss.lock()->GetIsDead();
+	if (mTargetBoss.lock()->GetIsDead())
+	{
+		CWorldManager::GetInst()->CreateWorld<CStartWorld>(true);
+		return true;
+	}
 }
